@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
 #  model tabla 'diagnostics'
 class Diagnostics(db.Model):
     id_diagnostic = db.Column(db.Integer, primary_key=True, autoincrement=True)
