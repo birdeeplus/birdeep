@@ -4,7 +4,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://ebd_user:ebd_pass@localhost/birdeep'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://birdeep_user:clave@localhost/birdeep'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = 'clave'
     JWT_USER = 'user'

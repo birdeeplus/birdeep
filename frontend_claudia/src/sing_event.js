@@ -45,7 +45,7 @@ const InsertEventForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/sing_events', {
+            const response = await fetch('http://127.0.0.1:8080/api/v1/sing_events', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ const GetEventsRecords = () => {
     /* Peticion para la adquisición de todos los valores */
     const fetchData = async () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/sing_events';
+            const url = 'http://127.0.0.1:8080/api/v1/sing_events';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -175,7 +175,7 @@ const GetEventsRecords = () => {
     /* Peticion para el filtrado por especie */
     const handleBuscarPorEspecie = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/sing_events?scientific_name_specie=${name_specie}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/sing_events?scientific_name_specie=${name_specie}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -194,7 +194,7 @@ const GetEventsRecords = () => {
     /* Peticion para el filtrado por tiempo */
     const handleBuscarPorTiempo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/sing_events?time_event=${time_event}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/sing_events?time_event=${time_event}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -221,7 +221,7 @@ const GetEventsRecords = () => {
     /* Almacena los cambios en DB mediante actualización (PUT) */
     const handleSaveButtonClick = async (id_event, updatedData) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/sing_events/${id_event}`;
+            const url = `http://127.0.0.1:8080/api/v1/sing_events/${id_event}`;
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -254,7 +254,7 @@ const GetEventsRecords = () => {
     const handleDeleteConfirm = async () => {
         if (deleteItemId) {
             try {
-                const url = `http://127.0.0.1:5000/api/v1/sing_events/${deleteItemId}`;
+                const url = `http://127.0.0.1:8080/api/v1/sing_events/${deleteItemId}`;
                 const response = await fetch(url, {
                     method: 'DELETE',
                 });

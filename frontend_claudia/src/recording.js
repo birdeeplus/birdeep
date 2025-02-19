@@ -92,7 +92,7 @@ const InsertRecordingForm = () => {
         e.preventDefault();
         console.log(metadata)
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/recordings', {
+            const response = await fetch('http://127.0.0.1:8080/api/v1/recordings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -194,7 +194,7 @@ const GetRecordingsRecords = () => {
     /* Peticion para la adquisición de todos los valores */
     const fetchData = async () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/recordings';
+            const url = 'http://127.0.0.1:8080/api/v1/recordings';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -207,7 +207,7 @@ const GetRecordingsRecords = () => {
             console.error('Error en solicitud GET:', error);
         }
         try{
-            const url = 'http://127.0.0.1:5000/api/v1/recorders';
+            const url = 'http://127.0.0.1:8080/api/v1/recorders';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -225,7 +225,7 @@ const GetRecordingsRecords = () => {
     const handleBuscarPorNombre = async () => {
         if(name_recorder === ''){
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/v1/recordings?id_recorder_recordings=${name_recorder}`);
+                const response = await fetch(`http://127.0.0.1:8080/api/v1/recordings?id_recorder_recordings=${name_recorder}`);
                 if (response.ok) {
                     const jsonData = await response.json();
                     setData(jsonData);
@@ -238,7 +238,7 @@ const GetRecordingsRecords = () => {
         }else{
             const grabador = data_recorder.find(fila => fila.recorder_name === name_recorder);
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/v1/recordings?id_recorder_recordings=${grabador.id_recorder}`);
+                const response = await fetch(`http://127.0.0.1:8080/api/v1/recordings?id_recorder_recordings=${grabador.id_recorder}`);
                 if (response.ok) {
                     const jsonData = await response.json();
                     setData(jsonData);
@@ -254,7 +254,7 @@ const GetRecordingsRecords = () => {
     /* Peticion para el filtrado por Tiempo */
     const handleBuscarPorTiempo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/recordings?time_record=${time_recording}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/recordings?time_record=${time_recording}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -295,7 +295,7 @@ const GetRecordingsRecords = () => {
     /* Almacena los cambios en DB mediante actualización (PUT) */
     const handleSaveButtonClick = async (id_record, updatedData) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/recordings/${id_record}`;
+            const url = `http://127.0.0.1:8080/api/v1/recordings/${id_record}`;
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -328,7 +328,7 @@ const GetRecordingsRecords = () => {
     const handleDeleteConfirm = async () => {
         if (deleteItemId) {
             try {
-                const url = `http://127.0.0.1:5000/api/v1/recordings/${deleteItemId}`;
+                const url = `http://127.0.0.1:8080/api/v1/recordings/${deleteItemId}`;
                 const response = await fetch(url, {
                     method: 'DELETE',
                 });
@@ -362,7 +362,7 @@ const GetRecordingsRecords = () => {
     };
 
     const downloadRecording = (route_recording) => {
-        const url = `http://127.0.0.1:5000/api/v1/download_recording?route_recording=${route_recording}`;
+        const url = `http://127.0.0.1:8080/api/v1/download_recording?route_recording=${route_recording}`;
 
         fetch(url)
             .then(response => response.blob())
@@ -381,7 +381,7 @@ const GetRecordingsRecords = () => {
 
     const downloadAllRecordings = () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/download_all_recordings';
+            const url = 'http://127.0.0.1:8080/api/v1/download_all_recordings';
             const a = document.createElement('a');
             a.href = url;
             a.download = 'archivos.zip';
@@ -396,7 +396,7 @@ const GetRecordingsRecords = () => {
 
     const showSpectrogram = async (uri) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/spectrogram?uri=${uri}`;
+            const url = `http://127.0.0.1:8080/api/v1/spectrogram?uri=${uri}`;
             const response = await fetch(url);
 
             if (response.ok) {
