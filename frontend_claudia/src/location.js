@@ -38,7 +38,7 @@ const InsertLocForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/locations', {
+            const response = await fetch('http://127.0.0.1:8080/api/v1/locations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ const GetLocationRecords = () => {
     /* Peticion para la adquisición de todos los valores */
     const fetchData = async () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/locations';
+            const url = 'http://127.0.0.1:8080/api/v1/locations';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -145,7 +145,7 @@ const GetLocationRecords = () => {
     /* Peticion para el filtrado por ID */
     const handleBuscarPorNombre = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/locations?name_location=${name_location}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/locations?name_location=${name_location}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -179,7 +179,7 @@ const GetLocationRecords = () => {
     /* Almacena los cambios en DB mediante actualización (PUT) */
     const handleSaveButtonClick = async (id_location, updatedData) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/locations/${id_location}`;
+            const url = `http://127.0.0.1:8080/api/v1/locations/${id_location}`;
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -212,7 +212,7 @@ const GetLocationRecords = () => {
     const handleDeleteConfirm = async () => {
         if (deleteItemId) {
             try {
-                const url = `http://127.0.0.1:5000/api/v1/locations/${deleteItemId}`;
+                const url = `http://127.0.0.1:8080/api/v1/locations/${deleteItemId}`;
                 const response = await fetch(url, {
                     method: 'DELETE',
                 });
