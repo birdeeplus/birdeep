@@ -37,7 +37,7 @@ const InsertProcForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/processors', {
+            const response = await fetch('http://127.0.0.1:8080/api/v1/processors', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const GetProcessorRecords = () => {
     /* Peticion para la adquisición de todos los valores */
     const fetchData = async () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/processors';
+            const url = 'http://127.0.0.1:8080/api/v1/processors';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -138,7 +138,7 @@ const GetProcessorRecords = () => {
     /* Peticion para el filtrado por Nombre */
     const handleBuscarPorNombre = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/processors?name_processor=${name_processor}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/processors?name_processor=${name_processor}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -164,7 +164,7 @@ const GetProcessorRecords = () => {
     /* Almacena los cambios en DB mediante actualización (PUT) */
     const handleSaveButtonClick = async (id_processor, updatedData) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/processors/${id_processor}`;
+            const url = `http://127.0.0.1:8080/api/v1/processors/${id_processor}`;
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -197,7 +197,7 @@ const GetProcessorRecords = () => {
     const handleDeleteConfirm = async () => {
         if (deleteItemId) {
             try {
-                const url = `http://127.0.0.1:5000/api/v1/processors/${deleteItemId}`;
+                const url = `http://127.0.0.1:8080/api/v1/processors/${deleteItemId}`;
                 const response = await fetch(url, {
                     method: 'DELETE',
                 });

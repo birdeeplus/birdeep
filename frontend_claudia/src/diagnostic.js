@@ -41,7 +41,7 @@ const InsertDiagForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/diagnostics', {
+            const response = await fetch('http://127.0.0.1:8080/api/v1/diagnostics', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ const GetDiagnosticsRecords = () => {
     /* Peticion para la adquisición de todos los valores */
     const fetchData = async () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/diagnostics';
+            const url = 'http://127.0.0.1:8080/api/v1/diagnostics';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -155,7 +155,7 @@ const GetDiagnosticsRecords = () => {
             console.error('Error en solicitud GET:', error);
         }
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/sing_events';
+            const url = 'http://127.0.0.1:8080/api/v1/sing_events';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -168,7 +168,7 @@ const GetDiagnosticsRecords = () => {
             console.error('Error en solicitud GET:', error);
         }
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/recordings';
+            const url = 'http://127.0.0.1:8080/api/v1/recordings';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -185,7 +185,7 @@ const GetDiagnosticsRecords = () => {
     /* Peticion para el filtrado por Creador */
     const handleBuscarPorCreator = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/diagnostics?created_by=${create_diagnostic}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/diagnostics?created_by=${create_diagnostic}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -199,7 +199,7 @@ const GetDiagnosticsRecords = () => {
 
     const handleBuscarPorModelo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/diagnostics?used_model=${model_diagnostic}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/diagnostics?used_model=${model_diagnostic}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -213,7 +213,7 @@ const GetDiagnosticsRecords = () => {
 
     const handleBuscarPorTiempo = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/diagnostics?time_executed=${time_diagnostic}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/diagnostics?time_executed=${time_diagnostic}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -255,7 +255,7 @@ const GetDiagnosticsRecords = () => {
     /* Almacena los cambios en DB mediante actualización (PUT) */
     const handleSaveButtonClick = async (id_diagnostic, updatedData) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/diagnostics/${id_diagnostic}`;
+            const url = `http://127.0.0.1:8080/api/v1/diagnostics/${id_diagnostic}`;
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -288,7 +288,7 @@ const GetDiagnosticsRecords = () => {
     const handleDeleteConfirm = async () => {
         if (deleteItemId) {
             try {
-                const url = `http://127.0.0.1:5000/api/v1/diagnostics/${deleteItemId}`;
+                const url = `http://127.0.0.1:8080/api/v1/diagnostics/${deleteItemId}`;
                 const response = await fetch(url, {
                     method: 'DELETE',
                 });

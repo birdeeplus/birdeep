@@ -44,7 +44,7 @@ const InsertRecorderForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/api/v1/recorders', {
+            const response = await fetch('http://127.0.0.1:8080/api/v1/recorders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ const GetRecorderRecords = () => {
     /* Peticion para la adquisición de todos los valores */
     const fetchData = async () => {
         try {
-            const url = 'http://127.0.0.1:5000/api/v1/recorders';
+            const url = 'http://127.0.0.1:8080/api/v1/recorders';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -161,7 +161,7 @@ const GetRecorderRecords = () => {
             console.error('Error en solicitud GET:', error);
         }
         try{
-            const url = 'http://127.0.0.1:5000/api/v1/processors';
+            const url = 'http://127.0.0.1:8080/api/v1/processors';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -174,7 +174,7 @@ const GetRecorderRecords = () => {
             console.error('Error en solicitud GET de procesador:', error);
         }
         try{
-            const url = 'http://127.0.0.1:5000/api/v1/microphones';
+            const url = 'http://127.0.0.1:8080/api/v1/microphones';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -187,7 +187,7 @@ const GetRecorderRecords = () => {
             console.error('Error en solicitud GET del microfono:', error);
         }
         try{
-            const url = 'http://127.0.0.1:5000/api/v1/locations';
+            const url = 'http://127.0.0.1:8080/api/v1/locations';
             const response = await fetch(url);
 
             if (response.ok) {
@@ -203,7 +203,7 @@ const GetRecorderRecords = () => {
 
     const handleBuscarPorNombreGrabadora = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/v1/recorders?recorder_name=${name_recorder}`);
+            const response = await fetch(`http://127.0.0.1:8080/api/v1/recorders?recorder_name=${name_recorder}`);
             if (response.ok) {
                 const jsonData = await response.json();
                 setData(jsonData);
@@ -218,7 +218,7 @@ const GetRecorderRecords = () => {
     const handleBuscarPorNombreLocalizacion = async () => {
         if(name_location === '') {
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/v1/recorders?id_location_recorder=${name_location}`);
+                const response = await fetch(`http://127.0.0.1:8080/api/v1/recorders?id_location_recorder=${name_location}`);
                 if (response.ok) {
                     const jsonData = await response.json();
                     setData(jsonData);
@@ -231,7 +231,7 @@ const GetRecorderRecords = () => {
         }else{
             const grabador = dataloc.find(fila => fila.name_location === name_location);
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/v1/recorders?id_location_recorder=${grabador.id_location}`);
+                const response = await fetch(`http://127.0.0.1:8080/api/v1/recorders?id_location_recorder=${grabador.id_location}`);
                 if (response.ok) {
                     const jsonData = await response.json();
                     setData(jsonData);
@@ -280,7 +280,7 @@ const GetRecorderRecords = () => {
     /* Almacena los cambios en DB mediante actualización (PUT) */
     const handleSaveButtonClick = async (id_recorder, updatedData) => {
         try {
-            const url = `http://127.0.0.1:5000/api/v1/recorders/${id_recorder}`;
+            const url = `http://127.0.0.1:8080/api/v1/recorders/${id_recorder}`;
             const response = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -313,7 +313,7 @@ const GetRecorderRecords = () => {
     const handleDeleteConfirm = async () => {
         if (deleteItemId) {
             try {
-                const url = `http://127.0.0.1:5000/api/v1/recorders/${deleteItemId}`;
+                const url = `http://127.0.0.1:8080/api/v1/recorders/${deleteItemId}`;
                 const response = await fetch(url, {
                     method: 'DELETE',
                 });
@@ -579,7 +579,7 @@ const Mapa = () => {
     }, []);
     const fetchData = async () => {
         try{
-            const url = 'http://127.0.0.1:5000/api/v1/locations';
+            const url = 'http://127.0.0.1:8080/api/v1/locations';
             const response = await fetch(url);
 
             if (response.ok) {
