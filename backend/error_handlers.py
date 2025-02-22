@@ -1,5 +1,7 @@
 # error_handlers.py
 
+# gestiona los distintos errores que pueden ocurrir en la aplicación
+
 from flask import jsonify
 
 
