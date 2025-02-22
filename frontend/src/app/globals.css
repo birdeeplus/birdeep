@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #ffffff; /* Fondo blanco por defecto */
+  --foreground: #171717; /* Texto oscuro por defecto */
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a0a0a; /* Fondo oscuro en modo oscuro */
+    --foreground: #ededed;  /* Texto claro en modo oscuro */
   }
 }
 
