@@ -12,3 +12,4 @@ def jwt_token_creation(request, correct_user, correct_password):
         return {'token': token, 'message': 'Created JWT Token', 'code': 200}
     else:
         return {'message': 'Invalid Credentials', 'code': 401}
+ 
