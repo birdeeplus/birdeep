@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
-=======
 # crud_operations.py
 
 # contiene las funciones CRUD (Create, Read, Update, Delete) utilizando SQLAlchemy 
 
->>>>>>> Stashed changes
 import os
 from models import db
 from flask import jsonify

@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
-=======
 # error_handlers.py
 
 # gestiona los distintos errores que pueden ocurrir en la aplicación
 
->>>>>>> Stashed changes
 from flask import jsonify
 
 

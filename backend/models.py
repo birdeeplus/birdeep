@@ -1,10 +1,7 @@
-<<<<<<< Updated upstream
-=======
 # models.py
 
 # contiene las clases que definen las tablas de la base de datos (han de coincidir con las tablas de la base de datos)
 
->>>>>>> Stashed changes
 # from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
