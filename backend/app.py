@@ -16,6 +16,16 @@ import json
 import numpy as np
 
 
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return jsonify({"message": "Bienvenido al backend"}), 200
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
 def create_swagger_template():
     template = {
         "swagger": "2.0",
@@ -1872,5 +1882,4 @@ app.register_error_handler(505, http_version_not_supported_error)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
-
 

@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
+=======
 # crud_operations.py
 
+# contiene las funciones CRUD (Create, Read, Update, Delete) utilizando SQLAlchemy 
+
+>>>>>>> Stashed changes
 import os
 from models import db
 from flask import jsonify
@@ -9,6 +14,7 @@ import pandas as pd
 from io import StringIO
 from datetime import datetime
 
+# obtiene los valores de la base de datos (en vase a los filtros que se le pasen en el request)
 def get_values_from_db(request, db_object):
 
     features_dict = {}
@@ -37,6 +43,10 @@ def get_values_from_db(request, db_object):
 
     return result
 
+# Create, toma los valores del request
+# - Si tiene diccionario traduce
+# - Crea un db_object con los valores del request
+# - Agrega el regisreo a la base de datos
 
 def insert_values_in_db(request, db_object, translate_dict=None, json_loaded=False):
     if json_loaded:
@@ -114,6 +124,13 @@ def insert_in_singevent(request, db_object_sing,db_object_diagnostic,db_object_r
     return {'message': 'Registro creado correctamente'}
 
 
+# Update, toma los valores del request
+# - Toma el elemento de la base de datos con el id indicado
+# - Si no existe el elemento, devuelve un mensaje de error
+# - Si tiene diccionario traduce
+# - Crea un db_object con los valores del request
+# - Agrega el regisreo a la base de datos
+
 def update_values_in_db(request, element_id, db_object, translate_dict=None):
 
     record = db_object.query.get(element_id)
@@ -137,6 +154,10 @@ def update_values_in_db(request, element_id, db_object, translate_dict=None):
 
     return {'message': 'Registro actualizado correctamente'}
 
+# Delete
+# - Toma el elemento de la base de datos con el id indicado
+# - Si no existe el elemento, devuelve un mensaje de error
+# - Elimina el elemento de la base de datos
 
 def delete_values_in_db(element_id, db_object):
 
@@ -150,7 +171,10 @@ def delete_values_in_db(element_id, db_object):
 
     return {'message': 'Elemento eliminado correctamente'}
 
-
+# Almacena los archivos en el storage (en el disco duro en la carpeta dentro de path)
+# - Toma los archivos del request
+# - Guarda el archivo en la carpeta "path"/id_recorder_record
+# - Mirar cual es el nombre del archivo
 def save_files_in_storage(json_data, files, db_object):
     for key in json_data.keys():
         file = files[key]
