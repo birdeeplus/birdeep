@@ -1,3 +1,11 @@
+<<<<<<< Updated upstream
+=======
+# config.py
+
+# realiza la configuración de la base de datos mediante SQLAlchemy
+# y la configuración de la autenticación mediante JWT
+
+>>>>>>> Stashed changes
 class Config:
     pass
 
@@ -49,4 +57,3 @@ class DevelopmentConfig(Config):
 config = {
     'development': DevelopmentConfig,
 }
-
