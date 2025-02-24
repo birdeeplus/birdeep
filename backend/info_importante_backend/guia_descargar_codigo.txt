@@ -48,6 +48,7 @@ SELECT * FROM diagnostics
 DELETE FROM diagnostics;
 DELETE FROM diagnostics WHERE id_diagnostic = 3;
 
+SHOW COLUMNS FROM microphones;
 
 
 # ==================

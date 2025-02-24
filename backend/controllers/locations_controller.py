@@ -2,9 +2,10 @@
 
 import os
 from flask import request, jsonify
-from models import Locations
+from models import Recorders, Locations, Recordings
 from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
 from flasgger import swag_from
+from models.database import db
 
 # Obtener la ruta absoluta de los archivos de documentación Swagger
 BASE_SWAGGER_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../swagger'))
@@ -43,6 +44,23 @@ def delete_location(id_location):
     """
     Delete a location entry from the database
     """
-    response = delete_values_in_db(id_location, Locations)
-    return jsonify(response), 200
+    try:
+        # Eliminar recordings asociados a los recorders de esta location
+        db.session.query(Recordings).filter(
+            Recordings.id_recorder_recordings.in_(
+                db.session.query(Recorders.id_recorder).filter_by(id_location_recorder=id_location)
+            )
+        ).delete(synchronize_session=False)
+
+        # Eliminar recorders asociados a esta location
+        db.session.query(Recorders).filter_by(id_location_recorder=id_location).delete()
+
+        # Ahora eliminar la location
+        response = delete_values_in_db(id_location, Locations)
+        db.session.commit()
+        return jsonify(response), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 400
 

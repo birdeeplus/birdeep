@@ -2,7 +2,8 @@
 
 import os
 from flask import request, jsonify
-from models import Microphones
+from models import Recorders, Microphones, Recordings
+from models.database import db
 from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
 from flasgger import swag_from
 
@@ -43,5 +44,19 @@ def delete_microphone(id_microphone):
     """
     Delete a microphone entry from the database
     """
+
+    # Eliminar grabaciones asociadas a los grabadores que usan el micrófono
+    recorders_to_delete = db.session.query(Recorders).filter_by(id_microphone_recorder=id_microphone).all()
+    
+    for recorder in recorders_to_delete:
+        db.session.query(Recordings).filter_by(id_recorder_recordings=recorder.id_recorder).delete()
+    
+    db.session.commit()
+
+    # Eliminar grabadores asociados al micrófono
+    db.session.query(Recorders).filter_by(id_microphone_recorder=id_microphone).delete()
+    db.session.commit()
+
+    # Eliminar el micrófono
     response = delete_values_in_db(id_microphone, Microphones)
     return jsonify(response), 200
