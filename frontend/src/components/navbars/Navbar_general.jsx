@@ -86,7 +86,7 @@ export default function Navbar({ toggleLanguage, language }) {
                             {/* Opciones del Menú */}
                             <ul className="ml-10 mt-[100] space-y-6">
                                 <li>
-                                    <Link href="/locations_general">
+                                    <Link href="/general/locations_general">
                                         <motion.span
                                             className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
                                             whileHover={{ scale: 1.1 }}
@@ -96,7 +96,7 @@ export default function Navbar({ toggleLanguage, language }) {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/recorders_general">
+                                    <Link href="/general/recorders_general">
                                         <motion.span
                                             className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
                                             whileHover={{ scale: 1.1 }}
@@ -106,7 +106,7 @@ export default function Navbar({ toggleLanguage, language }) {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/recordings_general">
+                                    <Link href="/general/recordings_general">
                                         <motion.span
                                             className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
                                             whileHover={{ scale: 1.1 }}

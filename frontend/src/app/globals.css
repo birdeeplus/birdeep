@@ -7,13 +7,6 @@
   --foreground: #171717; /* Texto oscuro por defecto */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a; /* Fondo oscuro en modo oscuro */
-    --foreground: #ededed;  /* Texto claro en modo oscuro */
-  }
-}
-
 body {
   color: var(--foreground);
   background: var(--background);
