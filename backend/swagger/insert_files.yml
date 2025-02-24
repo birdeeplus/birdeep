@@ -1,0 +1,46 @@
+tags:
+  - name: Insert Files
+    description: Upload and store new audio files in the database
+
+paths:
+  /api/v1/insert_files:
+    post:
+      tags:
+        - Insert Files
+      summary: Upload and store new audio files
+      description: Upload audio files to internal storage and insert metadata into the database
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: json_data
+          in: formData
+          required: true
+          type: string
+          description: JSON Data containing metadata about the uploaded files
+          example: |
+            {
+              "file_1": {
+                "file_name": "file_1.wav",
+                "id_recorder_record": 1,
+                "time_record": "2000-01-01 00:00:00",
+                "filetype_record": ".wav",
+                "bitrate_record": 192,
+                "sample_rate_record": "32000",
+                "gain_record": 2.5,
+                "duration_record": 59
+              }
+            }
+        - name: file_X
+          in: formData
+          required: true
+          type: file
+          description: Audio file to upload
+      responses:
+        "200":
+          description: Files successfully stored in the server
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Files successfully uploaded"

@@ -1,0 +1,206 @@
+tags:
+  - name: Sing Events
+    description: Operations related to sing events in the BIRDeep database
+
+paths:
+  /api/v1/sing_events:
+    post:
+      tags:
+        - Sing Events
+      summary: Insert new sing event
+      description: Creates a new record in the sing_events table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_diagnostic:
+                  type: integer
+                scientific_name_specie:
+                  type: string
+                time:
+                  type: string
+                  format: date-time
+                start:
+                  type: integer
+                end:
+                  type: integer
+                overlap:
+                  type: boolean
+                confidence:
+                  type: number
+                sensitivity:
+                  type: number
+                quality_score:
+                  type: number
+                comment:
+                  type: string
+              example:
+                id_diagnostic: 1
+                scientific_name_specie: "specie"
+                time: "2000-12-1T00:00:00Z"
+                start: 12
+                end: 24
+                overlap: true
+                confidence: 0.5
+                sensitivity: 0.5
+                quality_score: 0.5
+                comment: "comentario"
+      responses:
+        "200":
+          description: Sing Event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    get:
+      tags:
+        - Sing Events
+      summary: Query sing events
+      description: Retrieve sing events records from the database
+      parameters:
+        - name: id_event
+          in: query
+          schema:
+            type: integer
+        - name: id_diagnostic_event
+          in: query
+          schema:
+            type: integer
+        - name: scientific_name_specie
+          in: query
+          schema:
+            type: string
+        - name: time_event
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: start_event
+          in: query
+          schema:
+            type: integer
+        - name: end_event
+          in: query
+          schema:
+            type: integer
+        - name: overlap_event
+          in: query
+          schema:
+            type: boolean
+        - name: confidence_event
+          in: query
+          schema:
+            type: number
+        - name: sensitivity_event
+          in: query
+          schema:
+            type: number
+        - name: quality_score_manual_event
+          in: query
+          schema:
+            type: number
+        - name: comment
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of sing_events in query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/sing_events/{id_event}:
+    put:
+      tags:
+        - Sing Events
+      summary: Update a sing event record
+      description: Update a specific sing event entry by ID
+      parameters:
+        - name: id_event
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_diagnostic:
+                  type: integer
+                scientific_name_specie:
+                  type: string
+                time:
+                  type: string
+                  format: date-time
+                start:
+                  type: integer
+                end:
+                  type: integer
+                overlap:
+                  type: boolean
+                confidence:
+                  type: number
+                sensitivity:
+                  type: number
+                quality_score:
+                  type: number
+                comment:
+                  type: string
+              example:
+                id_diagnostic: 2
+                scientific_name_specie: "specie 2"
+                time: "2000-12-2T12:00:00Z"
+                start: 13
+                end: 22
+                overlap: false
+                confidence: 0.3
+                sensitivity: 0.3
+                quality_score: 0.3
+                comment: "nuevo comentario"
+      responses:
+        "200":
+          description: Sing event record updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      tags:
+        - Sing Events
+      summary: Delete a sing event record
+      description: Delete a sing event record from the database by ID
+      parameters:
+        - name: id_event
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sing event record deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
