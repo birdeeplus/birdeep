@@ -1,0 +1,43 @@
+/* fonts.css */
+
+@font-face{
+    font-family: "BodoniBold";
+    src: url("/Fonts/BodoniBold.ttf");
+}
+
+.Font_BodoniBold
+{
+    font-family: BodoniBold;
+}
+
+@font-face{
+    font-family: "Caslon";
+    src: url("/Fonts/Caslon.ttf");
+}
+
+.Font_Caslon
+{
+    font-family: Caslon;
+}
+
+@font-face{
+    font-family: "Garamond";
+    src: url("/Fonts/Garamond.ttf");
+}
+
+.Font_Garamond
+{
+    font-family: Garamond;
+}
+
+@font-face{
+    font-family: "Garamond";
+    src: url("/Fonts/Inter_Regular.ttf");
+}
+
+.Font_Garamond
+{
+    font-family: InterRegular;
+}
+
+

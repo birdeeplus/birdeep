@@ -1,0 +1,146 @@
+tags:
+  - name: Species
+    description: Operations related to species in the BIRDeep database
+
+paths:
+  /api/v1/species:
+    post:
+      tags:
+        - Species
+      summary: Insert new species
+      description: Creates a new record in the species table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scientific_name:
+                  type: string
+                spanish_name:
+                  type: string
+                english_name:
+                  type: string
+                short_name:
+                  type: string
+                family:
+                  type: string
+              example:
+                scientific_name: "Phoenicopterus roseus"
+                spanish_name: "Flamenco común"
+                english_name: "Greater Flamingo"
+                short_name: "flamenco rosa"
+                family: "Phoenicopteridae"
+      responses:
+        "200":
+          description: Specie created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    get:
+      tags:
+        - Species
+      summary: Query species
+      description: Retrieve species records from the database
+      parameters:
+        - name: scientific_name
+          in: query
+          schema:
+            type: string
+        - name: spanish_name
+          in: query
+          schema:
+            type: string
+        - name: english_name
+          in: query
+          schema:
+            type: string
+        - name: short_name
+          in: query
+          schema:
+            type: string
+        - name: family
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of species in query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/species/{id_specie}:
+    put:
+      tags:
+        - Species
+      summary: Update a species record
+      description: Update a specific species entry by ID
+      parameters:
+        - name: id_specie
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spanish_name:
+                  type: string
+                english_name:
+                  type: string
+                short_name:
+                  type: string
+                family:
+                  type: string
+              example:
+                spanish_name: "Golondrina Africana"
+                english_name: "Lesser Striped Swallow"
+                short_name: "Golondrina Rayada"
+                family: "Hirundinidae"
+      responses:
+        "200":
+          description: Species record updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      tags:
+        - Species
+      summary: Delete a species record
+      description: Delete a species record from the database by ID
+      parameters:
+        - name: id_specie
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Species record deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
