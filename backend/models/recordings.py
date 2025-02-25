@@ -13,6 +13,7 @@ class Recordings(db.Model):
     duration_record = db.Column(db.Integer)  # Duracion en segundos
     uri = db.Column(db.String(100))
     device = db.Column(db.String(100))
+    filename = db.Column(db.String(100))
 
     def __init__(self):
         self.id_recorder_recordings = None
@@ -24,3 +25,4 @@ class Recordings(db.Model):
         self.duration_record = None
         self.uri = None
         self.device = None
+        self.filename = None
