@@ -2,9 +2,10 @@
 
 import os
 from flask import request, jsonify
-from models import SingEvents
+from models import SingEvents, Diagnostics, Species
 from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
 from flasgger import swag_from
+from models.database import db
 
 # Obtener la ruta absoluta de los archivos de documentación Swagger
 BASE_SWAGGER_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../swagger'))
@@ -17,8 +18,16 @@ def get_swagger_path(filename):
 @swag_from(get_swagger_path('sing_events.yml'))
 def insert_new_sing_event():
     """
-    Insert a new sing event into the database
+    Insert a new sing event into the database, ensuring the diagnostic and species exist
     """
+    data = request.get_json()
+
+    # Verificar si el diagnóstico existe en la base de datos
+    diagnostic = db.session.get(Diagnostics, data.get("id_diagnostic_event"))
+    if not diagnostic:
+        return jsonify({"error": "Diagnóstico no encontrado"}), 400
+
+    # Insertar el evento solo si las claves foráneas existen
     response = insert_values_in_db(request, SingEvents)
     return jsonify(response), 200
 
