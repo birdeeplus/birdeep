@@ -44,7 +44,7 @@ mariadb -u birdeep_user -p
 USE birdeep;
 SHOW TABLES;
 
-SELECT * FROM diagnostics
+SELECT * FROM locations;
 DELETE FROM diagnostics;
 DELETE FROM diagnostics WHERE id_diagnostic = 3;
 

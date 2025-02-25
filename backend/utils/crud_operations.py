@@ -168,20 +168,30 @@ def delete_values_in_db(element_id, db_object):
     return {'message': 'Elemento eliminado correctamente'}
 
 # Almacena los archivos en el storage (en el disco duro en la carpeta dentro de path)
-# - Toma los archivos del request
-# - Guarda el archivo en la carpeta "path"/id_recorder_record
-# - Mirar cual es el nombre del archivo
 def save_files_in_storage(json_data, files, db_object):
+    base_path = './datos_audios_bd/audio_data/'  # Directorio raíz donde se guardarán los archivos
+
     for key in json_data.keys():
         file = files[key]
         file_info = json_data[str(key)]
-        # path = '/datos2/audio_data/{}'.format(str(file_info['id_recorder_record']))
-        path = '/home/miguel-ebd/prueba_almacenamiento/{}'.format(str(file_info['id_recorder_record']))
+
+        # Crear un directorio basado en el ID del recorder
+        recorder_id = str(file_info['id_recorder_record'])
+        path = os.path.join(base_path, recorder_id)  
+
         if not os.path.exists(path):
             os.makedirs(path)
-        uri = path + '/' + str(file_info['id_recorder_record'])
-        file.save(uri)
-        file_info.update({'uri': uri, 'device': 'ebd-server'})
+
+        # Definir el nombre del archivo
+        file_path = os.path.join(path, file.filename)
+
+        # Guardar el archivo en la ruta correspondiente
+        file.save(file_path)
+
+        # Actualizar la información antes de insertarla en la base de datos
+        file_info.update({'uri': file_path, 'device': 'ebd-server'})
+
+        # Insertar en la base de datos
         insert_values_in_db(file_info, db_object, json_loaded=True)
 
     return {'message': 'Archivos almacenados correctamente'}
