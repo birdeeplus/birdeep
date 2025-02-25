@@ -3,6 +3,7 @@ from .database import db
 class Species(db.Model):
     __tablename__ = 'species'
 
+    id_specie = db.Column(db.Integer, primary_key=True, autoincrement=True)
     scientific_name = db.Column(db.String(50), primary_key=True)
     spanish_name = db.Column(db.String(50))
     english_name = db.Column(db.String(50))
@@ -10,6 +11,7 @@ class Species(db.Model):
     family = db.Column(db.String(15))
 
     def __init__(self):
+        self.scientific_name = None
         self.spanish_name = None
         self.english_name = None
         self.short_name = None

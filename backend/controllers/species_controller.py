@@ -33,15 +33,32 @@ def query_species():
 @swag_from(get_swagger_path('species.yml'))
 def update_specie(id_specie):
     """
-    Update a species entry in the database
+    Update a species entry in the database, ensuring it exists
     """
+    specie = Species.query.get(id_specie)
+    if not specie:
+        return jsonify({"error": "Especie no encontrada"}), 404
+
     response = update_values_in_db(request, id_specie, Species)
-    return jsonify(response), 200
+
+    if isinstance(response, dict):  
+        return jsonify(response), 200
+    else:
+        return jsonify({"error": "Error inesperado al actualizar"}), 500
 
 @swag_from(get_swagger_path('species.yml'))
 def delete_specie(id_specie):
     """
-    Delete a species entry from the database
+    Delete a species entry from the database, ensuring it exists
     """
+    specie = Species.query.get(id_specie)
+    if not specie:
+        return jsonify({"error": "Especie no encontrada"}), 404
+
     response = delete_values_in_db(id_specie, Species)
-    return jsonify(response), 200
+
+    if isinstance(response, dict):  
+        return jsonify(response), 200
+    else:
+        return jsonify({"error": "Error inesperado al eliminar"}), 500
+

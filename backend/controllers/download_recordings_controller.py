@@ -23,7 +23,17 @@ def download_recording():
     Download a single audio recording from the database
     """
     ruta = request.data.decode('utf-8')
-    return send_file(ruta, as_attachment=True, mimetype='audio/wav')
+
+    if not os.path.exists(ruta):
+        return jsonify({"error": "Archivo no encontrado"}), 404
+
+    filename = os.path.basename(ruta)  # Extrae el nombre del archivo
+    return send_file(
+        ruta,
+        as_attachment=True,
+        download_name=filename,  # Cambia el nombre del archivo en la descarga
+        mimetype="audio/wav"
+    )
 
 @swag_from(get_swagger_path('download_all_recordings.yml'), methods=['GET'])
 def download_all_recordings():
