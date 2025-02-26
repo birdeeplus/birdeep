@@ -1,0 +1,88 @@
+backend/
+│── config/               # Configuración de la app (Base de datos, JWT, etc.)
+│   ├── __init__.py
+│   ├── config.py
+│
+│── controllers/          # Lógica de las rutas (maneja peticiones HTTP y llama a los servicios)
+│   ├── __init__.py
+│   ├── login_controller.py
+│   ├── diagnostics_controller.py
+│   ├── locations_controller.py
+│   ├── log_recorders_controller.py
+│   ├── microphones_controller.py
+│   ├── processors_controller.py
+│   ├── recorders_controller.py
+│   ├── recordings_controller.py
+│   ├── sing_events_controller.py
+│   ├── species_controller.py
+│   ├── upload_singevent_controller.py
+│   ├── download_recordings_controller.py
+│   ├── insert_files_controller.py
+│
+│── models/               # Modelos de la base de datos (SQLAlchemy)
+│   ├── __init__.py
+│   ├── database.py
+│   ├── diagnostics.py
+│   ├── locations.py
+│   ├── log_recorders.py
+│   ├── microphones.py
+│   ├── processors.py
+│   ├── recorders.py
+│   ├── recordings.py
+│   ├── sing_events.py
+│   ├── species.py
+│
+│── routes/               # Define los endpoints y usa Blueprints
+│   ├── __init__.py
+│   ├── auth_routes.py
+│   ├── diagnostics_routes.py
+│   ├── locations_routes.py
+│   ├── log_recorders_routes.py
+│   ├── microphones_routes.py
+│   ├── processors_routes.py
+│   ├── recorders_routes.py
+│   ├── recordings_routes.py
+│   ├── sing_events_routes.py
+│   ├── species_routes.py
+│
+│── utils/                # Funciones auxiliares y manejadores de errores
+│   ├── __init__.py
+│   ├── auxiliar_functions.py
+│   ├── crud_operations.py
+│   ├── autentication.py
+│   ├── error_handlers.py
+│
+│── swagger/              # Documentación de API con Swagger (Flasgger)
+│   ├── login.yml
+│   ├── diagnostics.yml
+│   ├── locations.yml
+│   ├── log_recorders.yml
+│   ├── microphones.yml
+│   ├── processors.yml
+│   ├── recorders.yml
+│   ├── recordings.yml
+│   ├── sing_events.yml
+│   ├── species.yml
+│   ├── upload_singevent.yml
+│   ├── download_recording.yml
+│   ├── download_all_recordings.yml
+│   ├── insert_files.yml
+│
+│── static/               # Archivos estáticos si es necesario
+│
+│── deployment_scripts/   # Scripts para despliegue en servidores
+│
+│── datos_audios_bd/      # Almacena datos de audio
+│   ├── audio_data/
+│
+│── app.py                # Punto de entrada de la aplicación Flask
+│── API_Env.yml           # Archivo de configuración de entorno
+│── dump_db.sql           # Backup de la base de datos
+│── test_app.py           # Pruebas unitarias
+│── package-lock.json     # Dependencias bloqueadas
+│── package.json          # Dependencias del proyecto
+│── .venv/                # Entorno virtual de Python
+
+
+
+

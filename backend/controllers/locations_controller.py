@@ -64,3 +64,18 @@ def delete_location(id_location):
         db.session.rollback()
         return jsonify({"error": str(e)}), 400
 
+
+
+def get_location_by_id(id_location):
+    location = Locations.query.get(id_location)  # Cambié "Location" por "Locations"
+    
+    if location is None:
+        return jsonify({"error": "Location not found"}), 404  # Devuelve 404 si no encuentra la ubicación
+    
+    return jsonify({
+        "id_location": location.id_location,  # Ajusta los nombres de los atributos si es necesario
+        "name_location": location.name_location,
+        "latitude_location": location.latitude_location,
+        "longitude_location": location.longitude_location,
+        "habitat_location": location.habitat_location if location.habitat_location else "N/A"
+    }), 200  # Devuelve un código de éxito 200
