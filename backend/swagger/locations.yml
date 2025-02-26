@@ -1,0 +1,143 @@
+tags:
+  - name: Locations
+    description: Operations related to locations in the BIRDeep database
+
+paths:
+  /api/v1/locations:
+    post:
+      tags:
+        - Locations
+      summary: Insert new location
+      description: Creates a new record in the locations table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_location:
+                  type: string
+                latitude_location:
+                  type: float
+                longitude_location:
+                  type: float
+                habitat_location:
+                  type: string
+              example:
+                name_location: "Laguna Prueba"
+                latitude_location: 0.5
+                longitude_location: 0.5
+                habitat_location: "Tundra"
+      responses:
+        "200":
+          description: Location created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    get:
+      tags:
+        - Locations
+      summary: Query locations
+      description: Retrieve location records from the database
+      parameters:
+        - name: name_location
+          in: query
+          schema:
+            type: string
+        - name: id_location
+          in: query
+          schema:
+            type: integer
+        - name: latitude_location
+          in: query
+          schema:
+            type: float
+        - name: longitude_location
+          in: query
+          schema:
+            type: float
+        - name: habitat_location
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of locations in query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/locations/{id_location}:
+    put:
+      tags:
+        - Locations
+      summary: Update a location record
+      description: Update a specific location entry by ID
+      parameters:
+        - name: id_location
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name_location:
+                  type: string
+                latitude_location:
+                  type: float
+                longitude_location:
+                  type: float
+                habitat_location:
+                  type: string
+              example:
+                name_location: "Duna Prueba"
+                latitude_location: 1.0
+                longitude_location: 1.0
+                habitat_location: "Desierto"
+      responses:
+        "200":
+          description: Location record updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      tags:
+        - Locations
+      summary: Delete a location record
+      description: Delete a location record from the database by ID
+      parameters:
+        - name: id_location
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Location record deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

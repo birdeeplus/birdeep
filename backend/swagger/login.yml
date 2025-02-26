@@ -1,0 +1,18 @@
+tags:
+  - Login and Security
+methods:
+  - POST
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+responses:
+  200:
+    description: JWT token returned

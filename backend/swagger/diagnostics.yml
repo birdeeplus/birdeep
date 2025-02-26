@@ -1,0 +1,166 @@
+tags:
+  - name: Diagnostics
+    description: Operations related to diagnostics in the BIRDeep database
+
+paths:
+  /api/v1/diagnostics:
+    post:
+      tags:
+        - Diagnostics
+      summary: Insert new diagnostic record
+      description: Creates a new record in the diagnostics table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_record:
+                  type: integer
+                time_executed:
+                  type: string
+                  format: date-time
+                used_model:
+                  type: string
+                model_version:
+                  type: string
+                pretreatment:
+                  type: string
+                created_by:
+                  type: string
+              example:
+                id_record: 1
+                time_executed: "2000-12-01T00:00:00"
+                used_model: "prueba"
+                model_version: "0.0"
+                pretreatment: "prueba_pretreatment"
+                created_by: "usuario"
+      responses:
+        "200":
+          description: Diagnostic created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    get:
+      tags:
+        - Diagnostics
+      summary: Query diagnostics
+      description: Retrieve diagnostic records from the database
+      parameters:
+        - name: id_diagnostic
+          in: query
+          schema:
+            type: integer
+        - name: id_record_diagnostic
+          in: query
+          schema:
+            type: integer
+        - name: time_executed
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: used_model
+          in: query
+          schema:
+            type: string
+        - name: model_version
+          in: query
+          schema:
+            type: string
+        - name: pretreatment
+          in: query
+          schema:
+            type: string
+        - name: created_by
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Array of diagnostic records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/diagnostics/{id_diagnostic}:
+    put:
+      tags:
+        - Diagnostics
+      summary: Update a diagnostic record
+      description: Update a specific diagnostic entry by ID
+      parameters:
+        - name: id_diagnostic
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_record_diagnostic:
+                  type: integer
+                time_executed:
+                  type: string
+                  format: date-time
+                used_model:
+                  type: string
+                model_version:
+                  type: string
+                pretreatment:
+                  type: string
+                created_by:
+                  type: string
+              example:
+                id_record_diagnostic: 1
+                time_executed: "2112-12-01T23:59:59"
+                used_model: "prueba_upd"
+                model_version: "0.5"
+                pretreatment: "prueba_pre_upd"
+                created_by: "upd_user"
+      responses:
+        "200":
+          description: Diagnostic record updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      tags:
+        - Diagnostics
+      summary: Delete a diagnostic record
+      description: Delete a diagnostic record from the database by ID
+      parameters:
+        - name: id_diagnostic
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Diagnostic record deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

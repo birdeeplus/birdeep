@@ -1,0 +1,63 @@
+tags:
+  - name: Upload Sing Events
+    description: Operations related to uploading sing events to the BIRDeep database
+
+paths:
+  /api/v1/upload_singevent:
+    post:
+      tags:
+        - Upload Sing Events
+      summary: Insert new sing events
+      description: Creates new records in the sing_events table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_diagnostic:
+                  type: integer
+                scientific_name_specie:
+                  type: string
+                time:
+                  type: string
+                  format: date-time
+                start:
+                  type: integer
+                end:
+                  type: integer
+                overlap:
+                  type: boolean
+                confidence:
+                  type: number
+                  format: float
+                sensitivity:
+                  type: number
+                  format: float
+                quality_score:
+                  type: number
+                  format: float
+                comment:
+                  type: string
+              example:
+                id_diagnostic: 1
+                scientific_name_specie: "Passer domesticus"
+                time: "2025-01-01T10:00:00Z"
+                start: 12
+                end: 24
+                overlap: true
+                confidence: 0.85
+                sensitivity: 0.92
+                quality_score: 0.78
+                comment: "Test event"
+      responses:
+        "200":
+          description: Sing event uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

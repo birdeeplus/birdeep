@@ -1,2 +1,4 @@
 /fontend/node-modules
 /backend/.venv
+/fontend/.babelrc
+/frontend_claudia
