@@ -1,15 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
 import Navbar from "../../../components/navbars/Navbar_general";
+import Link from "next/link";
 
 export default function RecordersGeneral() {
     const [language, setLanguage] = useState("en");
     const [recorders, setRecorders] = useState([]);
-    const [recordings, setRecordings] = useState({});
-    const [expandedRecorder, setExpandedRecorder] = useState(null);
-    const [currentAudio, setCurrentAudio] = useState(null);
-    const [isPlaying, setIsPlaying] = useState(false);
 
     const textContent = {
         en: {
@@ -35,33 +31,7 @@ export default function RecordersGeneral() {
             .catch((error) => console.error("Error fetching recorders:", error));
     }, []);
 
-    const fetchRecordings = (recorderId) => {
-        if (expandedRecorder === recorderId) {
-            setExpandedRecorder(null);
-        } else {
-            if (!recordings[recorderId]) {
-                fetch(`http://localhost:8080/api/v1/recordings?id_recorder_recordings=${recorderId}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        setRecordings((prev) => ({ ...prev, [recorderId]: data }));
-                        setExpandedRecorder(recorderId);
-                    })
-                    .catch((error) => console.error("Error fetching recordings:", error));
-            } else {
-                setExpandedRecorder(recorderId);
-            }
-        }
-    };
 
-    const togglePlay = (audioSrc) => {
-        if (currentAudio === audioSrc) {
-            setIsPlaying(!isPlaying);
-            setCurrentAudio(null);
-        } else {
-            setCurrentAudio(audioSrc);
-            setIsPlaying(true);
-        }
-    };
     return (
         <div className="relative w-full h-screen">
             <Navbar toggleLanguage={() => setLanguage(language === "en" ? "es" : "en")} language={language} />
@@ -79,59 +49,23 @@ export default function RecordersGeneral() {
                                 ))}
                             </tr>
                         </thead>
+
                         <tbody>
                             {recorders.map((recorder) => (
-                                <React.Fragment key={recorder.id_recorder}>
-                                    <tr className="text-center">
-                                        <td className="border border-gray-300 px-4 py-2">{recorder.id_recorder}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{recorder.id_location_recorder}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{recorder.id_microphone_recorder}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{recorder.id_processor_recorder}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{recorder.installation_date}</td>
-                                    </tr>  
-                                </React.Fragment>
+                                <tr key={recorder.id_recorder} className="text-center">
+                                    <td className="border border-gray-300 px-4 py-2">
+                                        <Link href={`/general/recorders_general/${recorder.id_recorder}`} className="text-blue-500 hover:underline">
+                                            {recorder.id_recorder}
+                                        </Link>
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">{recorder.id_location_recorder}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{recorder.id_microphone_recorder}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{recorder.id_processor_recorder}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{recorder.installation_date}</td>
+                                </tr>
                             ))}
                         </tbody>
                     </table>
-                                    
-
-                {/* Audios de cada grabadora */}
-                <div className="mt-8 w-full">
-                    {recorders.map((recorder) => (
-                        <div key={recorder.id_recorder} className="mb-4">
-                            <button 
-                                className="flex items-center px-3 py-1 bg-black text-white rounded-full transition text-sm font-medium font-sans"
-                                onClick={() => fetchRecordings(recorder.id_recorder)}
-                            >
-                                {expandedRecorder === recorder.id_recorder
-                                    ? textContent[language].hideRecordings(recorder.recorder_name)
-                                    : textContent[language].viewRecordings(recorder.recorder_name)}
-                            </button>
-                            {expandedRecorder === recorder.id_recorder && recordings[recorder.id_recorder] && (
-                                <div className="mt-4 space-y-2">
-                                    {recordings[recorder.id_recorder].map((recording) => (
-                                        <div key={recording.id_record} className="flex items-center gap-4 border-b pb-2">
-                                            <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
-                                                {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}
-                                            </button>
-                                            <span className="flex-grow">{recording.filename}</span>
-                                            <a href={recording.uri} download={recording.filename} className="text-xl">
-                                                <FaDownload />
-                                            </a>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {/* Reproductor del audio */}
-                {currentAudio && (
-                    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white p-4 rounded-lg w-2/3 shadow-lg">
-                        <audio controls autoPlay={isPlaying} src={currentAudio} className="w-full" />
-                    </div>
-                )}
             </div>
         </div>
     </div>
