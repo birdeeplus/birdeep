@@ -3,7 +3,7 @@ import librosa
 import json
 import numpy as np
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flasgger import Swagger
@@ -54,6 +54,12 @@ def create_app(environment_fn):
     register_routes(app_fn)
     register_error_handlers(app_fn)
 
+    # Ruta para servir archivos de audio
+    @app_fn.route('/static/datos2/audio_data/<path:filename>')
+    def serve_audio(filename):
+        # Ruta a la carpeta de los audios
+        audio_directory = r'datos2/audio_data'
+        return send_from_directory(audio_directory, filename)
     return app_fn
 
 # Definir entorno y crear la app

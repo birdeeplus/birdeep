@@ -38,6 +38,11 @@ def query_recordings():
     Query recordings from the database
     """
     response = get_values_from_db(request, Recordings)
+
+    # Actualizamos las URIs para que apunten a la ruta que Flask sirve
+    for recording in response:
+        recording["uri"] = f"http://localhost:8080/static{recording['uri']}"
+    
     return jsonify(response), 200
 
 @swag_from(get_swagger_path('recordings.yml'))
