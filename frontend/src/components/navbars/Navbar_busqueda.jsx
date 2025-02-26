@@ -33,7 +33,14 @@ export default function Navbar({ toggleLanguage, language }) {
                     <Image src="/photos/logo.png" alt="Logo" width={85} height={85} className="cursor-pointer" />
                 </Link>
             </div>
-
+            {/* Barra de búsqueda */}
+            <div className="flex-grow mx-10">
+                <input
+                    type="text"
+                    placeholder="Buscar..."
+                    className="w-2/3 py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:border-black"
+                />
+            </div>
             {/* Controles de Usuario */}
             <div className="flex items-center gap-5">
                 {/* Botón de Cambio de Idioma */}
