@@ -10,13 +10,23 @@ import moment from "moment";
 import { decode } from "wav-decoder";
 import { useDropzone } from "react-dropzone";
 
+
+
 //Imports de componentes
 import Navbar from "../../../components/navbars/Navbar_busqueda";
+
+
+//add
+import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
+
 
 function RecordingsGeneral() {
 
     const [language, setLanguage] = useState("en");
     const [recordings, setRecordings] = useState([]);
+    //add
+    const [currentAudio, setCurrentAudio] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     const toggleLanguage = () => {
       setLanguage((prev) => (prev === "en" ? "es" : "en"));
@@ -47,6 +57,19 @@ function RecordingsGeneral() {
       },
     };
 
+//add
+const togglePlay = (audioSrc) => {
+  if (currentAudio === audioSrc) {
+      setIsPlaying(!isPlaying);
+      setCurrentAudio(null);
+  } else {
+      setCurrentAudio(audioSrc);
+      setIsPlaying(true);
+  }
+};
+
+
+
 return (
   <div id="cliente" className="relative w-full h-screen">
     {/* Navbar */}
@@ -60,7 +83,32 @@ return (
         <p className="mt-4 text-lg max-w-md">{textContent[language].content}</p>
       </div>
 
-      {/* Tabla de registros */}
+      {recordings.length === 0 ? (
+                <p className="mt-4 text-lg text-gray-500">No hay grabaciones en este intervalo.</p>
+            ) : (
+                <div className="ml-10 mt-10 space-y-2 w-full">
+                    {recordings.slice(0, 5).map((recording) => (
+                        <div key={recording.id_record} className="flex items-center gap-4 border-b pb-2">
+                            <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
+                                {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}
+                            </button>
+                            <span className="flex-grow">{recording.filename}</span>
+                              <a href={recording.uri} download={recording.filename} className="text-xl mr-10">
+                                  <FaDownload />
+                              </a>
+                        </div>  
+                    ))}
+                </div>
+            )}
+
+            {currentAudio && (
+                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white p-4 rounded-lg w-2/3 shadow-lg">
+                    <audio controls autoPlay={isPlaying} src={currentAudio} className="w-full" />
+                </div>
+            )}
+
+{/* 
+      {/* Tabla de registros
       <div className="w-full mt-10">
         <table className="border-collapse border border-gray-400 w-full">
           <thead>
@@ -71,6 +119,7 @@ return (
             </tr>
           </thead>
           <tbody>
+
             {recordings.slice(0, 5).map((record) => (
               <tr key={record.id_record} className="text-center">
                 <td className="border border-gray-300 px-4 py-2">{record.id_record}</td>
@@ -80,7 +129,7 @@ return (
             ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
     </div>
   </div>
   );
