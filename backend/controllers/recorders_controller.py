@@ -32,6 +32,7 @@ def query_recorders():
     response = get_values_from_db(request, Recorders)
     return jsonify(response), 200
 
+
 @swag_from(get_swagger_path('recorders.yml'))
 def update_recorder(id_recorder):
     """
