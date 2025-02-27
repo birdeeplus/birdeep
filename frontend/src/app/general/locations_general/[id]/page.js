@@ -55,7 +55,7 @@ export default function RecorderDetails() {
         <div className="relative w-full h-screen">
             <Navbar />
             <div className="container mx-auto px-10 py-10">
-                <h1 className="text-4xl font-bold">Grabadoras {id}</h1>
+                <h1 className="text-4xl font-bold">Grabadora {id}</h1>
                 <p className="mt-4 text-lg">Filtrar grabaciones por fecha y hora:</p>
 
                 {/* Inputs de fecha y hora */}
