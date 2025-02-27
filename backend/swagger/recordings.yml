@@ -194,3 +194,62 @@ paths:
                 properties:
                   message:
                     type: string
+
+    get:
+        tags:
+          - Recording
+        summary: Recording by id
+        description: Retrieve recording records from the database
+        parameters:
+          - name: id_record
+            in: query
+            schema:
+              type: integer
+          - name: id_recorder_recordings
+            in: query
+            schema:
+              type: integer
+          - name: time_record
+            in: query
+            schema:
+              type: string
+              format: date-time
+          - name: filetype_record
+            in: query
+            schema:
+              type: string
+          - name: bitrate_record
+            in: query
+            schema:
+              type: integer
+          - name: sample_rate_record
+            in: query
+            schema:
+              type: string
+          - name: gain_record
+            in: query
+            schema:
+              type: number
+          - name: duration_record
+            in: query
+            schema:
+              type: integer
+          - name: uri
+            in: query
+            schema:
+              type: string
+          - name: device
+            in: query
+            schema:
+              type: string
+        responses:
+          "200":
+            description: A recording by id
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+

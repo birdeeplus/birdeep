@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import "../../app/styles/fonts.css";
+import LanguageToggleButton from "../Button_language";
 
 export default function Navbar({ toggleLanguage, language }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -25,8 +26,36 @@ export default function Navbar({ toggleLanguage, language }) {
         }
     };
 
+    // Opciones del menú según el idioma
+    const menuOptions = {
+        en: {
+            locations: "Locations",
+            recorders: "Recorders",
+            recordings: "Recordings",
+        },
+        es: {
+            locations: "Ubicaciones",
+            recorders: "Grabadoras",
+            recordings: "Grabaciones",
+        },
+    };
+
+    // Opciones del formulario de login según el idioma
+    const loginFormOptions = {
+        en: {
+            username: "Username",
+            password: "Password",
+            login: "Login",
+        },
+        es: {
+            username: "Usuario",
+            password: "Contraseña",
+            login: "Iniciar sesión",
+        },
+    };
+
     return (
-        <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50 bg-transparent">
+        <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50">
             {/* Logo con Link a la página principal */}
             <div className="flex items-center pl-10">
                 <Link href="/" passHref>
@@ -37,13 +66,7 @@ export default function Navbar({ toggleLanguage, language }) {
             {/* Controles de Usuario */}
             <div className="flex items-center gap-5">
                 {/* Botón de Cambio de Idioma */}
-                <button
-                    onClick={toggleLanguage}
-                    className="flex items-center px-3 py-1 bg-black text-white rounded-full transition text-sm font-medium font-sans"
-                >
-                    <Image src="/iconos/globe.png" alt="Language" width={17} height={17} className="mr-2" />
-                    <span className="InterRegular">{language === "en" ? "español" : "english"}</span>
-                </button>
+                <LanguageToggleButton toggleLanguage={toggleLanguage} language={language} /> {/* Usar el componente aquí */}
 
                 {/* Botón de Usuario */}
                 <button className="p-2" onClick={() => setLoginOpen(true)}>
@@ -91,7 +114,7 @@ export default function Navbar({ toggleLanguage, language }) {
                                             className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
                                             whileHover={{ scale: 1.1 }}
                                         >
-                                            Locations
+                                            {menuOptions[language].locations}
                                         </motion.span>
                                     </Link>
                                 </li>
@@ -101,7 +124,7 @@ export default function Navbar({ toggleLanguage, language }) {
                                             className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
                                             whileHover={{ scale: 1.1 }}
                                         >
-                                            Recorders
+                                            {menuOptions[language].recorders}
                                         </motion.span>
                                     </Link>
                                 </li>
@@ -111,7 +134,7 @@ export default function Navbar({ toggleLanguage, language }) {
                                             className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
                                             whileHover={{ scale: 1.1 }}
                                         >
-                                            Recordings
+                                            {menuOptions[language].recordings}
                                         </motion.span>
                                     </Link>
                                 </li>
@@ -149,11 +172,15 @@ export default function Navbar({ toggleLanguage, language }) {
                             </button>
 
                             {/* Formulario de Login */}
-                            <h2 className="InterRegular text-2xl font-bold text-gray-900 text-center mt-6 mb-8">Login</h2>
+                            <h2 className="InterRegular text-2xl font-bold text-gray-900 text-center mt-6 mb-8">
+                                {loginFormOptions[language].login}
+                            </h2>
 
                             {/* Usuario */}
                             <div className="mb-5 px-[70]">
-                                <label className="InterRegular block text-sm font-medium text-gray-900">Usuario</label>
+                                <label className="InterRegular block text-sm font-medium text-gray-900">
+                                    {loginFormOptions[language].username}
+                                </label>
                                 <div className="mt-2">
                                     <div className="flex items-center rounded-md bg-white pl-3 border border-gray-300 transition">
                                         <input
@@ -166,7 +193,9 @@ export default function Navbar({ toggleLanguage, language }) {
 
                             {/* Contraseña */}
                             <div className="mb-6 px-[70]">
-                                <label className="InterRegular block text-sm font-medium text-gray-900">Contraseña</label>
+                                <label className="InterRegular block text-sm font-medium text-gray-900">
+                                    {loginFormOptions[language].password}
+                                </label>
                                 <div className="mt-2">
                                     <div className="flex items-center rounded-md bg-white pl-3 border border-gray-300 transition">
                                         <input
@@ -180,7 +209,7 @@ export default function Navbar({ toggleLanguage, language }) {
                             {/* Botón de Login */}
                             <div className="flex justify-center">
                                 <button className="px-6 py-2 bg-black text-white text-md font-medium rounded-xl hover:bg-gray-900 transition">
-                                    Login
+                                    {loginFormOptions[language].login}
                                 </button>
                             </div>
                         </motion.div>
@@ -190,6 +219,3 @@ export default function Navbar({ toggleLanguage, language }) {
         </nav>
     );
 }
-
-
-
