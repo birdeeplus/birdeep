@@ -26,7 +26,7 @@ export default function Navbar({ toggleLanguage, language }) {
     };
 
     return (
-        <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50">
+        <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50 bg-white">
             {/* Logo con Link a la página principal */}
             <div className="flex items-center pl-10">
                 <Link href="/" passHref>

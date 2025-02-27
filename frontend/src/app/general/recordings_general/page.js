@@ -111,11 +111,11 @@ return (
         <p className="mt-20 text-lg max-w-md font-bold">{textContent[language].content}</p>
       </div>
 
-      {recordings.length === 0 ? (
+      {paginatedRecordings.length === 0 ? (
                 <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
             ) : (
                 <div className="ml-10 mt-10 space-y-2 w-full">
-                    {recordings.slice(0, 5).map((recording) => (
+                    {paginatedRecordings.slice(0, 5).map((recording) => (
                         <div key={recording.id_record} className="flex items-center gap-4 border-b pb-4 pt-3">
                             <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
                                 {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}

@@ -26,8 +26,8 @@ export default function Navbar({ toggleLanguage, language }) {
     };
 
     return (
-        <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50">
-            {/* Logo con Link a la página principal */}
+        <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50 bg-white">
+        {/* Logo con Link a la página principal */}
             <div className="flex items-center pl-10">
                 <Link href="/" passHref>
                     <Image src="/photos/logo.png" alt="Logo" width={85} height={85} className="cursor-pointer" />
