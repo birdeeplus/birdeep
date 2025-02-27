@@ -29,7 +29,17 @@ def query_recorders():
     """
     Query recorders from the database
     """
-    response = get_values_from_db(request, Recorders)
+    location_id = request.args.get("location_id")  # Obtiene el parámetro location_id de la query
+    query = db.session.query(Recorders)
+    
+    if location_id:  # Filtra por location_id si está presente
+        query = query.filter(Recorders.id_location_recorder == location_id)
+
+    recorders = query.all()
+    
+    # Serializar los resultados
+    response = [{"id_recorder": r.id_recorder} for r in recorders]
+
     return jsonify(response), 200
 
 @swag_from(get_swagger_path('recorders.yml'))
