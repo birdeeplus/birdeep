@@ -16,15 +16,7 @@ export default function RecorderDetails() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
-<<<<<<< Updated upstream
     const [language, setLanguage] = useState("en");
-=======
-    const [language, setLanguage] = useState("en"); // Estado para el idioma
-
-    const toggleLanguage = () => {
-        setLanguage((prev) => (prev === "en" ? "es" : "en")); // Cambiar el idioma
-    };
->>>>>>> Stashed changes
 
     const toggleLanguage = () => {
         setLanguage((prev) => (prev === "en" ? "es" : "en"));
@@ -52,45 +44,6 @@ export default function RecorderDetails() {
         }
     };
 
-    //idioma y traduccion
-    const textContent = {
-        en: {
-            titulo: 
-              "Recorder",
-            description:
-              "Filter recordings by date and time:",
-            fechaInicio:
-                "Start Date",
-            horaInicio:
-                "Start Time",
-            fechaFin:
-                "End Date",
-            horaFin:
-                "End Time",
-            filtrar:
-              "Filter",
-            error:
-              "No recordings in this time interval.",
-        },
-        es: {
-          titulo:
-            "Grabadora",
-          description:
-            "Filtrar grabaciones por fecha y hora:",
-          fechaInicio:
-            "Fecha Inicio",
-          horaInicio:
-            "Hora Inicio",
-          fechaFin:
-            "Fecha Fin",
-          horaFin:
-            "Hora Fin",
-          filtrar:
-            "Filtrar",
-          error:
-            "No hay grabaciones en este intervalo.",
-        },
-      };
 
     const filterByDateTime = () => {
         if (!startDate || !endDate || !startTime || !endTime) return;
@@ -167,7 +120,6 @@ export default function RecorderDetails() {
             <div className="container mx-auto px-10 py-10">
                 <br></br>
                 <br></br>
-<<<<<<< Updated upstream
                 <h1 className="text-4xl font-bold">{textContent[language].titulo} {id}</h1>
                 <p className="mt-4 text-lg">{textContent[language].description}</p>
                 <div className="flex gap-4 mt-4 flex-wrap">
@@ -193,35 +145,6 @@ export default function RecorderDetails() {
                 </div>
                 {paginatedRecordings.length === 0 ? (
                     <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
-=======
-                <h1 className="text-4xl font-bold">{textContent[language].title} {id}</h1>
-                <p className="mt-4 text-lg">{textContent[language].filterByDateTime}</p>
-                <div className="flex gap-4 mt-4 flex-wrap">
-                    <div>
-                        <label className="block text-sm font-semibold">{textContent[language].startDate}</label>
-                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded w-full" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold">{textContent[language].startTime}</label>
-                        <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded w-full" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold">{textContent[language].endDate}</label>
-                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded w-full" />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold">{textContent[language].endTime}</label>
-                        <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded w-full" />
-                    </div>
-                    <div className="self-end">
-                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">
-                            {textContent[language].filterButton}
-                        </button>
-                    </div>
-                </div>
-                {paginatedRecordings.length === 0 ? (
-                    <p className="mt-4 text-lg text-gray-500">{textContent[language].noRecordings}</p>
->>>>>>> Stashed changes
                 ) : (
                     <div className="mt-4 space-y-2">
                         {paginatedRecordings.map((recording) => (
