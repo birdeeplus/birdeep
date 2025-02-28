@@ -4,21 +4,12 @@
 
 //Imports de librerias
 import { useState, useEffect } from "react";
-import { Card, Form, Button, Table, Row, Col, Modal } from 'react-bootstrap';
-import moment from "moment";
-//import SpectrogramPlayer from "react-audio-spectrogram-player";
-import { decode } from "wav-decoder";
-import { useDropzone } from "react-dropzone";
-
-
 
 //Imports de componentes
 import Navbar from "../../../components/navbars/Navbar_busqueda";
 
-
 //add
 import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
-
 
 function RecordingsGeneral() {
 
@@ -26,10 +17,8 @@ function RecordingsGeneral() {
     const [recordings, setRecordings] = useState([]);
     const [currentAudio, setCurrentAudio] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-
-    //add
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
+    const itemsPerPage = 5;
 
 
     const toggleLanguage = () => {
@@ -115,7 +104,7 @@ return (
                 <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
             ) : (
                 <div className="ml-10 mt-10 space-y-2 w-full">
-                    {paginatedRecordings.slice(0, 5).map((recording) => (
+                    {paginatedRecordings.map((recording) => (
                         <div key={recording.id_record} className="flex items-center gap-4 border-b pb-4 pt-3">
                             <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
                                 {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}
@@ -148,7 +137,7 @@ return (
             </div>
 
             {currentAudio && (
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white p-4 rounded-lg w-2/3 shadow-lg">
+                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 text-white p-4 rounded-lg w-2/3">
                     <audio controls autoPlay={isPlaying} src={currentAudio} className="w-full" />
                 </div>
             )}

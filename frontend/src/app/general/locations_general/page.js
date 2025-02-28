@@ -34,7 +34,7 @@ export default function LocationsGeneral() {
         <div className="relative w-full h-screen">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
             <div className="container mx-auto px-10 flex flex-col items-center h-full py-10">
-                <h1 className="text-4xl font-bold">{textContent[language].title}</h1>
+                <h1 className=" mt-10 text-4xl font-bold">{textContent[language].title}</h1>
                 <p className="mt-4 text-lg">{textContent[language].description}</p>
                 <div className="mt-6 w-full max-w-md">
                     {locations.map((location) => (
