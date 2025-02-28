@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
-import Navbar from "../../../../components/navbars/Navbar_general";
+import Navbar from "../../../../components/navbars/Navbar_busqueda";
 
 export default function RecorderDetails() {
     const { id } = useParams();
@@ -16,7 +16,20 @@ export default function RecorderDetails() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
+<<<<<<< Updated upstream
+    const [language, setLanguage] = useState("en");
+=======
+    const [language, setLanguage] = useState("en"); // Estado para el idioma
 
+    const toggleLanguage = () => {
+        setLanguage((prev) => (prev === "en" ? "es" : "en")); // Cambiar el idioma
+    };
+>>>>>>> Stashed changes
+
+    const toggleLanguage = () => {
+        setLanguage((prev) => (prev === "en" ? "es" : "en"));
+      };
+      
     useEffect(() => {
         if (id) {
             fetch(`http://localhost:8080/api/v1/recordings?id_recorder_recordings=${id}`)
@@ -38,6 +51,46 @@ export default function RecorderDetails() {
             setIsPlaying(true);
         }
     };
+
+    //idioma y traduccion
+    const textContent = {
+        en: {
+            titulo: 
+              "Recorder",
+            description:
+              "Filter recordings by date and time:",
+            fechaInicio:
+                "Start Date",
+            horaInicio:
+                "Start Time",
+            fechaFin:
+                "End Date",
+            horaFin:
+                "End Time",
+            filtrar:
+              "Filter",
+            error:
+              "No recordings in this time interval.",
+        },
+        es: {
+          titulo:
+            "Grabadora",
+          description:
+            "Filtrar grabaciones por fecha y hora:",
+          fechaInicio:
+            "Fecha Inicio",
+          horaInicio:
+            "Hora Inicio",
+          fechaFin:
+            "Fecha Fin",
+          horaFin:
+            "Hora Fin",
+          filtrar:
+            "Filtrar",
+          error:
+            "No hay grabaciones en este intervalo.",
+        },
+      };
 
     const filterByDateTime = () => {
         if (!startDate || !endDate || !startTime || !endTime) return;
@@ -75,39 +128,100 @@ export default function RecorderDetails() {
             })
             .catch(error => console.error("Error al descargar el archivo:", error));
     };
-    
+
+    // Traducciones para los textos
+    const textContent = {
+        en: {
+            title: "Recorders",
+            filterByDateTime: "Filter recordings by date and time:",
+            startDate: "Start Date",
+            startTime: "Start Time",
+            endDate: "End Date",
+            endTime: "End Time",
+            filterButton: "Filter",
+            noRecordings: "No recordings in this interval.",
+            previousPage: "Previous",
+            nextPage: "Next",
+            pageOf: "Page",
+            download: "Download"
+        },
+        es: {
+            title: "Grabadoras",
+            filterByDateTime: "Filtrar grabaciones por fecha y hora:",
+            startDate: "Fecha Inicio",
+            startTime: "Hora Inicio",
+            endDate: "Fecha Fin",
+            endTime: "Hora Fin",
+            filterButton: "Filtrar",
+            noRecordings: "No hay grabaciones en este intervalo.",
+            previousPage: "Anterior",
+            nextPage: "Siguiente",
+            pageOf: "Página",
+            download: "Descargar"
+        },
+    };
 
     return (
         <div className="relative w-full h-screen">
-            <Navbar />
+            <Navbar toggleLanguage={toggleLanguage} language={language} />
             <div className="container mx-auto px-10 py-10">
                 <br></br>
                 <br></br>
-                <h1 className="text-4xl font-bold">Grabadoras {id}</h1>
-                <p className="mt-4 text-lg">Filtrar grabaciones por fecha y hora:</p>
+<<<<<<< Updated upstream
+                <h1 className="text-4xl font-bold">{textContent[language].titulo} {id}</h1>
+                <p className="mt-4 text-lg">{textContent[language].description}</p>
                 <div className="flex gap-4 mt-4 flex-wrap">
                     <div>
-                        <label className="block text-sm font-semibold">Fecha Inicio</label>
+                        <label className="block text-sm font-semibold">{textContent[language].fechaInicio}</label>
                         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold">Hora Inicio</label>
+                        <label className="block text-sm font-semibold">{textContent[language].horaInicio}</label>
                         <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold">Fecha Fin</label>
+                        <label className="block text-sm font-semibold">{textContent[language].fechaFin}</label>
                         <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold">Hora Fin</label>
+                        <label className="block text-sm font-semibold">{textContent[language].horaFin}</label>
                         <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div className="self-end">
-                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">Filtrar</button>
+                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">{textContent[language].filtrar}</button>
                     </div>
                 </div>
                 {paginatedRecordings.length === 0 ? (
-                    <p className="mt-4 text-lg text-gray-500">No hay grabaciones en este intervalo.</p>
+                    <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
+=======
+                <h1 className="text-4xl font-bold">{textContent[language].title} {id}</h1>
+                <p className="mt-4 text-lg">{textContent[language].filterByDateTime}</p>
+                <div className="flex gap-4 mt-4 flex-wrap">
+                    <div>
+                        <label className="block text-sm font-semibold">{textContent[language].startDate}</label>
+                        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded w-full" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold">{textContent[language].startTime}</label>
+                        <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded w-full" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold">{textContent[language].endDate}</label>
+                        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded w-full" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-semibold">{textContent[language].endTime}</label>
+                        <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded w-full" />
+                    </div>
+                    <div className="self-end">
+                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">
+                            {textContent[language].filterButton}
+                        </button>
+                    </div>
+                </div>
+                {paginatedRecordings.length === 0 ? (
+                    <p className="mt-4 text-lg text-gray-500">{textContent[language].noRecordings}</p>
+>>>>>>> Stashed changes
                 ) : (
                     <div className="mt-4 space-y-2">
                         {paginatedRecordings.map((recording) => (
@@ -119,7 +233,6 @@ export default function RecorderDetails() {
                                 <button onClick={() => downloadRecording(recording.uri, recording.filename)} className="text-xl">
                                     <FaDownload />
                                 </button>
-
                             </div>
                         ))}
                     </div>
@@ -130,15 +243,17 @@ export default function RecorderDetails() {
                         disabled={currentPage === 0}
                         className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
                     >
-                        Anterior
+                        {textContent[language].previousPage}
                     </button>
-                    <span className="self-center">Página {currentPage + 1} de {totalPages}</span>
+                    <span className="self-center">
+                        {textContent[language].pageOf} {currentPage + 1} {textContent[language].of} {totalPages}
+                    </span>
                     <button
                         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
                         disabled={currentPage >= totalPages - 1}
                         className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
                     >
-                        Siguiente
+                        {textContent[language].nextPage}
                     </button>
                 </div>
                 {currentAudio && (
