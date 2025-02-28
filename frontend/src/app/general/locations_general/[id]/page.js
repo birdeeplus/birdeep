@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
-import Navbar from "../../../../components/navbars/Navbar_general";
+import Navbar from "../../../../components/navbars/Navbar_busqueda";
 
 export default function RecorderDetails() {
     const { id } = useParams();
@@ -54,7 +54,7 @@ export default function RecorderDetails() {
     return (
         <div className="relative w-full h-screen">
             <Navbar />
-            <div className="container mx-auto px-10 py-10">
+            <div className="mt-10 container mx-auto px-10 py-10">
                 <h1 className="text-4xl font-bold">Grabadora {id}</h1>
                 <p className="mt-4 text-lg">Filtrar grabaciones por fecha y hora:</p>
 
