@@ -3,7 +3,7 @@
 from .diagnostics_controller import insert_new_diagnostic, query_diagnostics, update_diagnostic, delete_diagnostic
 from .download_recordings_controller import download_recording, download_all_recordings, spectrogram
 from .insert_files_controller import insert_files
-from .locations_controller import insert_new_location, query_locations, update_location, delete_location
+from .locations_controller import insert_new_location, query_locations, update_location, delete_location, get_location_by_id, get_recorders_by_location
 from .log_recorders_controller import insert_status
 from .login_controller import login
 from .microphones_controller import insert_new_microphone, query_microphones, update_microphone, delete_microphone
