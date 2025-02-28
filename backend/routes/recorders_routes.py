@@ -9,4 +9,3 @@ recorders_bp.add_url_rule('/api/v1/recorders', view_func=insert_new_recorder, me
 recorders_bp.add_url_rule('/api/v1/recorders', view_func=query_recorders, methods=['GET'])
 recorders_bp.add_url_rule('/api/v1/recorders/<int:id_recorder>', view_func=update_recorder, methods=['PUT'])
 recorders_bp.add_url_rule('/api/v1/recorders/<int:id_recorder>', view_func=delete_recorder, methods=['DELETE'])
-recorders_bp.add_url_rule('/api/v1/recorders/<int:id_recorder>', view_func=query_recorders, methods=['GET'])

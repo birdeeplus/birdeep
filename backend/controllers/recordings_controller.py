@@ -73,27 +73,3 @@ def delete_recording(id_record):
     """
     response = delete_values_in_db(id_record, Recordings)
     return jsonify(response), 200
-
-@swag_from(get_swagger_path('recordings.yml'))
-def get_recording_by_id(id_record):
-    """
-    get a recording entry from the database
-    """
-    recording = Recordings.query.get(id_record)  
-
-    if recording is None:
-        return jsonify({"error": "Recording not found"}), 404 
-    
-    return jsonify({
-        "id_record": recording.id_record,  
-        "id_recorder_recordings": recording.id_recorder_recordings,
-        "time_record": recording.time_record,
-        "filetype_record": recording.filetype_record,
-        "bitrate_record": recording.bitrate_record,
-        "sample_rate_record": recording.sample_rate_record,
-        "gain_record": recording.bitrate_record,
-        "duration_record": recording.duration_record,
-        "uri": recording.uri,
-        "device": recording.device,
-        "filename": recording.filename
-    }), 200  # Devuelve un código de éxito 200

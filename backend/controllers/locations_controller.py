@@ -67,15 +67,45 @@ def delete_location(id_location):
 
 
 def get_location_by_id(id_location):
-    location = Locations.query.get(id_location)  # Cambié "Location" por "Locations"
+    location = Locations.query.get(id_location)  
     
     if location is None:
-        return jsonify({"error": "Location not found"}), 404  # Devuelve 404 si no encuentra la ubicación
+        return jsonify({"error": "Location not found"}), 404  
     
     return jsonify({
-        "id_location": location.id_location,  # Ajusta los nombres de los atributos si es necesario
+        "id_location": location.id_location,  
         "name_location": location.name_location,
         "latitude_location": location.latitude_location,
         "longitude_location": location.longitude_location,
         "habitat_location": location.habitat_location if location.habitat_location else "N/A"
-    }), 200  # Devuelve un código de éxito 200
+    }), 200  
+
+
+
+def get_recorders_by_location(id_location):
+    """
+    Devuelve todas las grabadoras asociadas a una localización
+    """
+    try:
+        # Obtener las grabadoras asociadas a la localización
+        recorders = db.session.query(Recorders).filter_by(id_location_recorder=id_location).all()
+
+        # Si no hay grabadoras asociadas
+        if not recorders:
+            return jsonify({"message": "No recorders found for this location"}), 404
+
+        # Serializar la respuesta
+        recorders_data = [
+            {
+                "id_recorder": recorder.id_recorder,
+                "recorder_name": recorder.recorder_name,
+                "installation_date": recorder.installation_date,
+                "status": recorder.status
+            }
+            for recorder in recorders
+        ]
+
+        return jsonify(recorders_data), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
