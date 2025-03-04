@@ -10,7 +10,11 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuración para el entorno de desarrollo."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://birdeep_user:clave@localhost/birdeep'
+    # Para local
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://birdeep_user:clave@localhost/birdeep'
+    # Para servidor por ssh
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://birdeep_user:clave@localhost:3306/birdeep'
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = 'clave'  # Se usa para la autenticación con JWT
     JWT_USER = 'user'
