@@ -110,7 +110,7 @@ export default function RecorderDetails() {
             previousPage: "Anterior",
             nextPage: "Siguiente",
             pageOf: "Página",
-            download: "Descargar"
+            download: "Descargar",
         },
     };
 
@@ -120,31 +120,31 @@ export default function RecorderDetails() {
             <div className="container mx-auto px-10 py-10">
                 <br></br>
                 <br></br>
-                <h1 className="text-4xl font-bold">{textContent[language].titulo} {id}</h1>
-                <p className="mt-4 text-lg">{textContent[language].description}</p>
+                <h1 className="text-4xl font-bold">{textContent[language].title} {id}</h1>
+                <p className="mt-4 text-lg">{textContent[language].filterByDateTime}</p>
                 <div className="flex gap-4 mt-4 flex-wrap">
                     <div>
-                        <label className="block text-sm font-semibold">{textContent[language].fechaInicio}</label>
+                        <label className="block text-sm font-semibold">{textContent[language].startDate}</label>
                         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold">{textContent[language].horaInicio}</label>
+                        <label className="block text-sm font-semibold">{textContent[language].startTime}</label>
                         <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold">{textContent[language].fechaFin}</label>
+                        <label className="block text-sm font-semibold">{textContent[language].endDate}</label>
                         <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold">{textContent[language].horaFin}</label>
+                        <label className="block text-sm font-semibold">{textContent[language].endTime}</label>
                         <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div className="self-end">
-                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">{textContent[language].filtrar}</button>
+                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">{textContent[language].filterButton}</button>
                     </div>
                 </div>
                 {paginatedRecordings.length === 0 ? (
-                    <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
+                    <p className="mt-4 text-lg text-gray-500">{textContent[language].noRecordings}</p>
                 ) : (
                     <div className="mt-4 space-y-2">
                         {paginatedRecordings.map((recording) => (
