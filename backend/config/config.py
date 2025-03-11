@@ -1,7 +1,8 @@
-# config.py
+from dotenv import load_dotenv
+import os
 
-# Realiza la configuración de la base de datos mediante SQLAlchemy
-# y la configuración de la autenticación mediante JWT
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 class Config:
     """Clase base para configuraciones."""
@@ -10,15 +11,14 @@ class Config:
 class DevelopmentConfig(Config):
     """Configuración para el entorno de desarrollo."""
     DEBUG = True
-    # Para local
-    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://birdeep_user:clave@localhost/birdeep'
-    # Para servidor por ssh
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://birdeep_user:clave@localhost:3306/birdeep'
-
+    # Usar las variables de entorno para formar la cadena de conexión
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = 'clave'  # Se usa para la autenticación con JWT
-    JWT_USER = 'user'
-    JWT_PASSWORD = 'password'
+
+    # Usar JWT_USER y JWT_PASSWORD desde el .env
+    JWT_SECRET_KEY = os.getenv('JWT_PASSWORD')  # Usamos el JWT_PASSWORD de .env como clave secreta
+    JWT_USER = os.getenv('JWT_USER')
+    JWT_PASSWORD = os.getenv('JWT_PASSWORD')
 
     # Diccionarios de traducción para mapear nombres en las solicitudes
     TRANSLATION_DIAGNOSTIC_DICT = {

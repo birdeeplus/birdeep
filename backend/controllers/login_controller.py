@@ -23,7 +23,13 @@ def login():
     valid_password = current_app.config['JWT_PASSWORD']
     
     token = jwt_token_creation(request, valid_user, valid_password)
+    
     if token['code'] == 200:
-        return jsonify(access_token=token['token']), 200
+        # Aquí estamos agregando la lógica para verificar si el usuario es admin.
+        # En este caso, lo estamos configurando estáticamente (puedes cambiar esto según tu lógica).
+        is_admin = True if valid_user == "BirdeepAdmin" else False  # Cambiar según tu lógica
+        
+        # Responder con el token y la información sobre el rol (si es admin o no)
+        return jsonify(access_token=token['token'], is_admin=is_admin), 200
     else:
         return jsonify(message=token['message']), token['code']
