@@ -35,6 +35,12 @@ export default function Navbar({ toggleLanguage, language }) {
         es: { locations: "Ubicaciones", recorders: "Grabadoras", recordings: "Grabaciones" },
     };
 
+    // Opciones del menú para Admin
+    const adminMenuOptions = {
+        en: { microphones: "Microphones", procesors: "Procesors" },
+        es: { microphones: "Micrófonos", procesors: "Porcesadores" },
+    };
+
     const handleLoginSuccess = (isAdmin) => {
         setLoginOpen(false);
         setIsLoggedIn(true);
@@ -131,6 +137,20 @@ export default function Navbar({ toggleLanguage, language }) {
                                                 whileHover={{ scale: 1.1 }}
                                             >
                                                 {menuOptions[language][key]}
+                                            </motion.span>
+                                        </Link>
+                                    </li>
+                                ))}
+                                
+                                {/* Mostrar opciones del menú admin solo si es admin */}
+                                {isLoggedIn && isAdmin && Object.keys(adminMenuOptions[language]).map((key) => (
+                                    <li key={key}>
+                                        <Link href={`/admin/${key}_general`}>
+                                            <motion.span
+                                                className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
+                                                whileHover={{ scale: 1.1 }}
+                                            >
+                                                {adminMenuOptions[language][key]}
                                             </motion.span>
                                         </Link>
                                     </li>
