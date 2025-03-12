@@ -8,38 +8,37 @@ import { useRouter } from "next/navigation";
 import Navbar from "../../../components/navbars/Navbar_busqueda";
 
 // Add imports de íconos
-import { FaPlay, FaPause, FaDownload, FaSpinner } from "react-icons/fa";
+import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
+
+// Add imports de íconos de carga
+import { FaSpinner } from "react-icons/fa";
 
 function RecordingsGeneral() {
   const [language, setLanguage] = useState("en");
   const [recordings, setRecordings] = useState([]);
   const [currentAudio, setCurrentAudio] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(true);
-  const perPage = 10;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const itemsPerPage = 5;
   const router = useRouter(); // hook de router
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "es" : "en"));
   };
-
+  
   useEffect(() => {
-    setLoading(true);
-    
-    fetch(`http://localhost:8080/api/v1/recordings_paginacion?page=${currentPage}&per_page=${perPage}`)
+    fetch("http://localhost:8080/api/v1/recordings")
       .then((response) => response.json())
       .then((data) => {
         setRecordings(data);
-        setLoading(false);
-        setHasMore(data.length === perPage); // Si devuelve menos de perPage, no hay más páginas
+        setLoading(false); // Se termina de cargar las grabaciones
       })
       .catch((error) => {
         console.error("Error fetching recordings:", error);
-        setLoading(false);
+        setLoading(false); // Se termina de cargar aunque haya error
       });
-  }, [currentPage]); // Ejecutar cada vez que currentPage cambie
+  }, []);
 
   // Traducción de textos
   const textContent = {
@@ -66,6 +65,13 @@ function RecordingsGeneral() {
     }
   };
 
+  // Paginación
+  const totalPages = Math.ceil(recordings.length / itemsPerPage);
+  const paginatedRecordings = recordings.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
+
   // Función para descargar la grabación
   const downloadRecording = (audioUrl, filename) => {
     fetch(audioUrl)
@@ -74,7 +80,7 @@ function RecordingsGeneral() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = filename || "audio.wav";
+        a.download = filename || "audio.wav"; // Nombre del archivo
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -102,13 +108,13 @@ function RecordingsGeneral() {
 
         {loading ? (
           <div className="flex justify-center items-center mt-20">
-            <FaSpinner className="animate-spin text-4xl" />
+            <FaSpinner className="animate-spin text-4xl" /> {/* Spinner de carga */}
           </div>
-        ) : recordings.length === 0 ? (
+        ) : paginatedRecordings.length === 0 ? (
           <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
         ) : (
           <div className="ml-10 mt-10 space-y-2 w-full">
-            {recordings.map((recording) => (
+            {paginatedRecordings.map((recording) => (
               <div key={recording.id_record} className="flex items-center gap-4 border-b pb-4 pt-3">
                 <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
                   {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}
@@ -124,19 +130,18 @@ function RecordingsGeneral() {
           </div>
         )}
 
-        {/* Controles de paginación */}
         <div className="mt-10 flex items-center justify-center gap-4 w-full">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0}
             className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
           >
             Anterior
           </button>
-          <span className="self-center">Página {currentPage}</span>
+          <span className="self-center">Página {currentPage + 1} de {totalPages}</span>
           <button
-            onClick={() => setCurrentPage((prev) => (hasMore ? prev + 1 : prev))}
-            disabled={!hasMore}
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
+            disabled={currentPage >= totalPages - 1}
             className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
           >
             Siguiente
