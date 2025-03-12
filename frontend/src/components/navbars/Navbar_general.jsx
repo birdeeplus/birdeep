@@ -32,12 +32,6 @@ export default function Navbar({ toggleLanguage, language }) {
         es: { locations: "Ubicaciones", recorders: "Grabadoras", recordings: "Grabaciones" },
     };
 
-    // Opciones del menú para Admin
-    const adminMenuOptions = {
-        en: { microphones: "Microphones", procesors: "Procesors" },
-        es: { microphones: "Micrófonos", procesors: "Porcesadores" },
-    };
-
     const handleLoginSuccess = (isAdmin) => {
         setLoginOpen(false);
         setIsLoggedIn(true);
@@ -130,7 +124,6 @@ export default function Navbar({ toggleLanguage, language }) {
                                         </Link>
                                     </li>
                                 ))}
-<<<<<<< HEAD
                                 {isLoggedIn && isAdmin && (
                                     <>
                                         <li>
@@ -155,22 +148,6 @@ export default function Navbar({ toggleLanguage, language }) {
                                         </li>
                                     </>
                                 )}
-=======
-                                
-                                {/* Mostrar opciones del menú admin solo si es admin */}
-                                {isLoggedIn && isAdmin && Object.keys(adminMenuOptions[language]).map((key) => (
-                                    <li key={key}>
-                                        <Link href={`/admin/${key}_general`}>
-                                            <motion.span
-                                                className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
-                                                whileHover={{ scale: 1.1 }}
-                                            >
-                                                {adminMenuOptions[language][key]}
-                                            </motion.span>
-                                        </Link>
-                                    </li>
-                                ))}
->>>>>>> 6a2d83f6f06e33c7b342672a89c0d18825e6cf5a
                             </ul>
                         </motion.div>
                     </motion.div>
