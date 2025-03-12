@@ -60,3 +60,24 @@ def delete_processor(id_processor):
     db.session.commit()
     return jsonify(response), 200
 
+def query_processors_with_recorders():
+    """
+    Query processors with their associated recorders.
+    """
+    result = (
+        db.session.query(Processors.id_processor, Processors.model_processor, Processors.comment_processor, Recorders.id_recorder)
+        .outerjoin(Recorders, Processors.id_processor == Recorders.id_processor_recorder)
+        .all()
+    )
+
+    processors_list = [
+        {
+            "id_processor": row.id_processor,
+            "model_processor": row.model_processor,
+            "comment_processor": row.comment_processor,
+            "id_recorder": row.id_recorder
+        }
+        for row in result
+    ]
+
+    return jsonify(processors_list), 200

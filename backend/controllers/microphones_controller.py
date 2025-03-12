@@ -60,3 +60,25 @@ def delete_microphone(id_microphone):
     # Eliminar el micrófono
     response = delete_values_in_db(id_microphone, Microphones)
     return jsonify(response), 200
+
+def query_microphones_with_recorders():
+    """
+    Query microphones with their associated recorders.
+    """
+    result = (
+        db.session.query(Microphones.id_microphone, Microphones.model_microphone, Microphones.comment_microphone, Recorders.id_recorder)
+        .outerjoin(Recorders, Microphones.id_microphone == Recorders.id_microphone_recorder)
+        .all()
+    )
+
+    microphones_list = [
+        {
+            "id_microphone": row.id_microphone,
+            "model_microphone": row.model_microphone,
+            "comment_microphone": row.comment_microphone,
+            "id_recorder": row.id_recorder
+        }
+        for row in result
+    ]
+
+    return jsonify(microphones_list), 200
