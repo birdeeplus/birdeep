@@ -7,6 +7,8 @@ import "../../app/styles/fonts.css";
 import LanguageToggleButton from "../Button_language";
 import LoginForm from "../Login"; 
 import LogoutModal from "../Logout";
+import { jwtDecode } from "jwt-decode";
+
 
 export default function Navbar({ toggleLanguage, language }) {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -36,7 +38,11 @@ export default function Navbar({ toggleLanguage, language }) {
         setLoginOpen(false);
         setIsLoggedIn(true);
         setIsAdmin(isAdmin);
+        
+        localStorage.setItem("is_admin", isAdmin);  // Asegurarse de que se guarda correctamente
+        window.dispatchEvent(new Event("storage")); // Disparar evento de cambio en storage
     };
+    
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -44,7 +50,10 @@ export default function Navbar({ toggleLanguage, language }) {
         setIsLoggedIn(false);
         setIsAdmin(false);
         setLogoutOpen(false);
+        
+        window.dispatchEvent(new Event("storage")); // Disparar evento de cambio en storage
     };
+    
 
     useEffect(() => {
         const token = localStorage.getItem("token");
