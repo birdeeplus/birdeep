@@ -7,53 +7,53 @@ import "../../app/styles/fonts.css";
 import LanguageToggleButton from "../Button_language";
 import LoginForm from "../Login"; 
 import LogoutModal from "../Logout";
+import { jwtDecode } from "jwt-decode";
+
 
 export default function Navbar({ toggleLanguage, language }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
-    const [logoutOpen, setLogoutOpen] = useState(false); // Estado para abrir el modal de logout
+    const [logoutOpen, setLogoutOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
-    // Función para cerrar el menú si se hace clic fuera de él
     const closeMenuOutsideClick = (event) => {
         if (event.target.id === "menuOverlay") {
             setMenuOpen(false);
         }
     };
 
-    // Función para cerrar el modal de login si se hace clic fuera de él
     const closeLoginOutsideClick = (event) => {
         if (event.target.id === "loginOverlay") {
             setLoginOpen(false);
         }
     };
 
-    // Opciones del menú según el idioma
     const menuOptions = {
         en: { locations: "Locations", recorders: "Recorders", recordings: "Recordings" },
         es: { locations: "Ubicaciones", recorders: "Grabadoras", recordings: "Grabaciones" },
-    };
-
-    // Opciones del menú para Admin
-    const adminMenuOptions = {
-        en: { microphones: "Microphones", procesors: "Procesors" },
-        es: { microphones: "Micrófonos", procesors: "Porcesadores" },
     };
 
     const handleLoginSuccess = (isAdmin) => {
         setLoginOpen(false);
         setIsLoggedIn(true);
         setIsAdmin(isAdmin);
+        
+        localStorage.setItem("is_admin", isAdmin);  // Asegurarse de que se guarda correctamente
+        window.dispatchEvent(new Event("storage")); // Disparar evento de cambio en storage
     };
+    
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("is_admin");
         setIsLoggedIn(false);
         setIsAdmin(false);
-        setLogoutOpen(false); // Cerrar el modal después del logout
+        setLogoutOpen(false);
+        
+        window.dispatchEvent(new Event("storage")); // Disparar evento de cambio en storage
     };
+    
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -66,24 +66,20 @@ export default function Navbar({ toggleLanguage, language }) {
 
     return (
         <nav className="w-full flex justify-between items-center py-2 px-2 fixed top-0 z-50">
-            {/* Logo con Link a la página principal */}
             <div className="flex items-center pl-10">
                 <Link href="/" passHref>
                     <Image src="/photos/logo.png" alt="Logo" width={85} height={85} className="cursor-pointer" />
                 </Link>
             </div>
 
-            {/* Controles de Usuario */}
             <div className="flex items-center gap-5">
-                {/* Botón de Cambio de Idioma */}
                 <LanguageToggleButton toggleLanguage={toggleLanguage} language={language} />
 
-                {/* Si el usuario está logueado como Admin, solo mostrar "Admin" */}
                 {isLoggedIn && isAdmin ? (
                     <div className="flex items-center gap-3">
                         <span
                             className="text-green-500 font-bold cursor-pointer"
-                            onClick={() => setLogoutOpen(true)} // Abrir el modal de logout al hacer clic
+                            onClick={() => setLogoutOpen(true)}
                         >
                             Admin
                         </span>
@@ -94,13 +90,11 @@ export default function Navbar({ toggleLanguage, language }) {
                     </button>
                 )}
 
-                {/* Menú Hamburguesa */}
                 <button onClick={() => setMenuOpen(true)} className="pr-10 rounded-full">
                     <Image src="/iconos/menu.png" alt="Menu" width={33} height={33} />
                 </button>
             </div>
 
-            {/* Menú Desplegable con Animación */}
             <AnimatePresence>
                 {menuOpen && (
                     <motion.div
@@ -119,7 +113,6 @@ export default function Navbar({ toggleLanguage, language }) {
                             exit={{ x: "100%" }}
                             transition={{ duration: 0.6, ease: "easeInOut" }}
                         >
-                            {/* Botón de Cierre */}
                             <button
                                 onClick={() => setMenuOpen(false)}
                                 className="absolute top-4 right-4 text-xl font-bold"
@@ -127,7 +120,6 @@ export default function Navbar({ toggleLanguage, language }) {
                                 ✕
                             </button>
 
-                            {/* Opciones del Menú */}
                             <ul className="ml-10 mt-[100] space-y-6">
                                 {Object.keys(menuOptions[language]).map((key) => (
                                     <li key={key}>
@@ -141,27 +133,36 @@ export default function Navbar({ toggleLanguage, language }) {
                                         </Link>
                                     </li>
                                 ))}
-                                
-                                {/* Mostrar opciones del menú admin solo si es admin */}
-                                {isLoggedIn && isAdmin && Object.keys(adminMenuOptions[language]).map((key) => (
-                                    <li key={key}>
-                                        <Link href={`/admin/${key}_general`}>
-                                            <motion.span
-                                                className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
-                                                whileHover={{ scale: 1.1 }}
-                                            >
-                                                {adminMenuOptions[language][key]}
-                                            </motion.span>
-                                        </Link>
-                                    </li>
-                                ))}
+                                {isLoggedIn && isAdmin && (
+                                    <>
+                                        <li>
+                                            <Link href="/general/processors_general">
+                                                <motion.span
+                                                    className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
+                                                    whileHover={{ scale: 1.1 }}
+                                                >
+                                                    Procesadores
+                                                </motion.span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/general/microphones_general">
+                                                <motion.span
+                                                    className="InterRegular font-bold cursor-pointer hover:text-gray-600 transition duration-300 block"
+                                                    whileHover={{ scale: 1.1 }}
+                                                >
+                                                    Micrófonos
+                                                </motion.span>
+                                            </Link>
+                                        </li>
+                                    </>
+                                )}
                             </ul>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Modal de Login */}
             <AnimatePresence>
                 {loginOpen && (
                     <motion.div
@@ -182,7 +183,6 @@ export default function Navbar({ toggleLanguage, language }) {
                 )}
             </AnimatePresence>
 
-            {/* Modal de Logout */}
             <AnimatePresence>
                 {logoutOpen && (
                     <motion.div
