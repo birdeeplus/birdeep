@@ -1,0 +1,28 @@
+tags:
+  - name: Login and Security
+
+methods:
+  - POST
+parameters:
+  - name: loging_credentials
+    description: Admin credentials with username and password
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+responses:
+  200:
+    description: Login successful, JWT token returned
+  400:
+    description: Bad request, missing or incorrect username/password
+  401:
+    description: Unauthorized, invalid credentials
+  500:
+    description: Internal server error, unable to process the request
+  505:
+    description: Server error, request method not supported

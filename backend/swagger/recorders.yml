@@ -1,0 +1,169 @@
+tags:
+  - name: Recorders
+    description: Operations related to recorders in the BIRDeep database
+
+paths:
+  /api/v1/recorders:
+    post:
+      tags:
+        - Recorders
+      summary: Insert new recorder
+      description: Creates a new record in the recorders table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_location_recorder:
+                  type: integer
+                id_microphone_recorder:
+                  type: integer
+                id_processor_recorder:
+                  type: integer
+                status:
+                  type: string
+                  format: date-time
+                recorder_name:
+                  type: string
+                installation_date:
+                  type: string
+                  format: date-time
+              example:
+                id_location_recorder: 1
+                id_microphone_recorder: 1
+                id_processor_recorder: 1
+                status: "2000-12-1T00:00:00Z"
+                recorder_name: "name"
+                installation_date: "2000-12-1T00:00:00Z"
+      responses:
+        "200":
+          description: Recorder created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    get:
+      tags:
+        - Recorders
+      summary: Query recorders
+      description: Retrieve recorder records from the database
+      parameters:
+        - name: id_recorder
+          in: query
+          schema:
+            type: integer
+        - name: id_location_recorder
+          in: query
+          schema:
+            type: integer
+        - name: id_microphone_recorder
+          in: query
+          schema:
+            type: integer
+        - name: id_processor_recorder
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: recorder_name
+          in: query
+          schema:
+            type: string
+        - name: installation_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        "200":
+          description: Array of recorders in query
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/recorders/{id_recorder}:
+    put:
+      tags:
+        - Recorders
+      summary: Update a recorder record
+      description: Update a specific recorder entry by ID
+      parameters:
+        - name: id_recorder
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_location_recorder:
+                  type: integer
+                id_microphone_recorder:
+                  type: integer
+                id_processor_recorder:
+                  type: integer
+                status:
+                  type: string
+                  format: date-time
+                recorder_name:
+                  type: string
+                installation_date:
+                  type: string
+                  format: date-time
+              example:
+                id_location_recorder: 2
+                id_microphone_recorder: 2
+                id_processor_recorder: 2
+                status: "2000-12-1T00:00:00Z"
+                recorder_name: "updated_name"
+                installation_date: "2000-12-1T00:00:00Z"
+      responses:
+        "200":
+          description: Recorder record updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      tags:
+        - Recorders
+      summary: Delete a recorder record
+      description: Delete a recorder record from the database by ID
+      parameters:
+        - name: id_recorder
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recorder record deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

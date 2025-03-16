@@ -1,0 +1,14 @@
+# Ignorar la carpeta node_modules en el frontend
+/frontend/node_modules
+
+# Ignorar el entorno virtual en el backend
+/backend/.venv
+
+# Ignorar archivo de configuración Babel en frontend
+/frontend/.babelrc
+
+# Ignorar frontend_claudia
+/frontend_claudia
+
+# Ignorar archivos .env (normalmente para evitar exponer variables sensibles)
+.env
