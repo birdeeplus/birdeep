@@ -3,7 +3,7 @@
 import os
 from flask import request, jsonify
 from models import Recordings, Recorders
-from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
+from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db, get_values_from_db_paginacion
 from flasgger import swag_from
 from models.database import db
 
@@ -44,6 +44,31 @@ def query_recordings():
         recording["uri"] = f"http://localhost:8080/static{recording['uri']}"
     
     return jsonify(response), 200
+
+"""usando paginacion"""
+
+def query_recordings_paginacion():
+    """
+    Query recordings from the database with pagination
+    """
+    # Obtener los parámetros de la consulta para la paginación
+    page = int(request.args.get('page', 1))  # Página por defecto es 1
+    per_page = int(request.args.get('per_page', 10))  # Número de elementos por página
+
+    # Realizar la consulta con paginación
+    offset = (page - 1) * per_page
+    limit = per_page
+
+    # Usamos un método que te permita paginar los resultados
+    response = get_values_from_db_paginacion(request, Recordings, offset=offset, limit=limit)
+
+    # Actualizamos las URIs para que apunten a la ruta que Flask sirve
+    for recording in response:
+        recording["uri"] = f"http://localhost:8080/static{recording['uri']}"
+
+    return jsonify(response), 200
+
+
 
 @swag_from(get_swagger_path('recordings.yml'))
 def update_recording(id_record):
