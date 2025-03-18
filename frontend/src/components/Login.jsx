@@ -1,17 +1,17 @@
 "use client";
 import { useState } from "react";
 
-export default function LoginForm({ language, onClose, onLoginSuccess }) {
-    const [error, setError] = useState(""); // Estado para manejar el mensaje de error
+export default function LoginForm({ language, onLoginSuccess }) {
+    const [error, setError] = useState("");
 
     const loginFormOptions = {
-        en: { username: "Username", password: "Password", login: "Login" },
-        es: { username: "Usuario", password: "Contraseña", login: "Iniciar sesión" },
+        en: { title: "Sign in", username: "Username", password: "Password", login: "Sign in" },
+        es: { title: "Inicio de sesión", username: "Usuario", password: "Contraseña", login: "Iniciar sesión" },
     };
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        setError(""); // Limpiar error antes de la petición
+        setError("");
 
         const username = event.target.username.value;
         const password = event.target.password.value;
@@ -34,17 +34,12 @@ export default function LoginForm({ language, onClose, onLoginSuccess }) {
             }
 
             if (response.ok) {
-                // Guardar el token en localStorage
                 localStorage.setItem("token", data.access_token);
-
-                // Guardar el rol (si es admin) en localStorage
-                const isAdmin = data.is_admin || false; // Suponiendo que el servidor manda un campo 'is_admin'
+                const isAdmin = data.is_admin || false;
                 localStorage.setItem("is_admin", isAdmin);
-
-                // Llamar a la función onLoginSuccess para actualizar el estado de sesión
                 onLoginSuccess(isAdmin);
             } else {
-                setError(data.message || "Credenciales incorrectas"); // Mostrar mensaje de error debajo del formulario
+                setError(data.message || "Credenciales incorrectas");
             }
         } catch (error) {
             console.error("Error en el login:", error);
@@ -53,33 +48,47 @@ export default function LoginForm({ language, onClose, onLoginSuccess }) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-8 w-[550px] h-[460px] relative flex flex-col justify-center">
-            <button onClick={onClose} className="absolute top-4 right-6 text-lg font-bold text-gray-500 hover:text-black transition">
-                ✕
-            </button>
+        <div className="bg-[#F8F8F8] rounded-2xl shadow-lg p-6 w-[400px] h-[410px] relative flex flex-col justify-center">
+            {/* Título */}
+            <h2 className="text-center text-[#375B38] font-semibold text-lg mb-5">
+                {loginFormOptions[language].title}
+            </h2>
 
-            <form onSubmit={handleLogin}>
-                <div className="mb-5 px-[70]">
-                    <label className="InterRegular block text-sm font-medium text-gray-900">
+            <form onSubmit={handleLogin} className="flex flex-col items-center">
+                <div className="mb-3 w-[85%]">
+                    <label className="block text-xs text-gray-900 font-medium mb-1">
                         {loginFormOptions[language].username}
                     </label>
-                    <input type="text" name="username" required className="block w-full py-2 px-3 border border-gray-300 rounded-md" />
+                    <input
+                        type="text"
+                        name="username"
+                        required
+                        className="w-full py-1.5 px-3 text-sm border border-gray-300 rounded-md"
+                    />
                 </div>
 
-                <div className="mb-6 px-[70]">
-                    <label className="InterRegular block text-sm font-medium text-gray-900">
+                <div className="mb-5 w-[85%]">
+                    <label className="block text-xs text-gray-900 font-medium mb-1">
                         {loginFormOptions[language].password}
                     </label>
-                    <input type="password" name="password" required className="block w-full py-2 px-3 border border-gray-300 rounded-md" />
+                    <input
+                        type="password"
+                        name="password"
+                        required
+                        className="w-full py-1.5 px-3 text-sm border border-gray-300 rounded-md"
+                    />
                 </div>
 
-                {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+                {error && <p className="text-red-500 text-xs text-center mb-3">{error}</p>}
 
-                <div className="flex justify-center">
-                    <button type="submit" className="px-6 py-2 bg-black text-white text-md font-medium rounded-xl hover:bg-gray-900 transition">
-                        {loginFormOptions[language].login}
-                    </button>
-                </div>
+                {/* Botón de inicio de sesión*/}
+                <button
+                    type="submit"
+                    className="mt-5 px-5 py-1.5 border-2 border-[#375B38] text-[#375B38] rounded-full flex items-center group transition-all duration-300 ease-in-out hover:bg-[#375B38] hover:text-white text-sm font-semibold"
+                >
+                    <span className="mr-1">{loginFormOptions[language].login}</span>
+                    <span className="text-sm">›</span>
+                </button>
             </form>
         </div>
     );

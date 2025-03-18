@@ -4,8 +4,8 @@ import LoginForm from "../Login";
 
 export default function LoginModal({ isOpen, onClose, language, onLoginSuccess }) {
     const handleLogin = () => {
-        onLoginSuccess(); // Notifica al Navbar que el login fue exitoso
-        onClose(); // Cierra el modal después de iniciar sesión
+        onLoginSuccess();
+        onClose();
     };
 
     return (
