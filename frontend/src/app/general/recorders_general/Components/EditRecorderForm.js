@@ -1,17 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder, setRecorders, recorders, language }) {
+export default function EditRecorderForm({ selectedModifyRecorder, setSelectedModifyRecorder, setRecorders, recorders, language }) {
     
     const [locations, setLocations] = useState([]);
     const [microphones, setMicrophones] = useState([]);
     const [processors, setProcessors] = useState([]);
     const [formData, setFormData] = useState({
-        recorder_name : selectedRecorder.recorder_name || "",
-        id_location_recorder: selectedRecorder.id_location_recorder || "",
-        id_microphone_recorder: selectedRecorder.id_microphone_recorder || "",
-        id_processor_recorder: selectedRecorder.id_processor_recorder || "",
-        installation_date: selectedRecorder.installation_date || "",
+        id_recorder: selectedModifyRecorder.id_recorder,
+        recorder_name : selectedModifyRecorder.recorder_name || "",
+        id_location_recorder: selectedModifyRecorder.id_location_recorder || "",
+        id_microphone_recorder: selectedModifyRecorder.id_microphone_recorder || "",
+        id_processor_recorder: selectedModifyRecorder.id_processor_recorder || "",
+        installation_date: selectedModifyRecorder.installation_date || "",
+        status: selectedModifyRecorder.status || "", 
     });
     const textContent = {
         en: {
@@ -44,15 +46,16 @@ export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder
             const date = new Date(dateString);
             return date.toISOString().split("T")[0]; // "YYYY-MM-DD"
         };   
-        if (selectedRecorder) {
+        if (selectedModifyRecorder) {
 
             setFormData({
-                recorder_name : selectedRecorder.recorder_name || "",
-                id_location_recorder: selectedRecorder.id_location_recorder || "",
-                id_microphone_recorder: selectedRecorder.id_microphone_recorder || "",
-                id_processor_recorder: selectedRecorder.id_processor_recorder || "",
-                installation_date: convertDate(selectedRecorder.installation_date) || "",
-                status: convertDate(selectedRecorder.status) || "",
+                id_recorder: selectedModifyRecorder.id_recorder,
+                recorder_name : selectedModifyRecorder.recorder_name || "",
+                id_location_recorder: selectedModifyRecorder.id_location_recorder || "",
+                id_microphone_recorder: selectedModifyRecorder.id_microphone_recorder || "",
+                id_processor_recorder: selectedModifyRecorder.id_processor_recorder || "",
+                installation_date: convertDate(selectedModifyRecorder.installation_date) || "",
+                status: convertDate(selectedModifyRecorder.status) || "",
             });
         }
         fetch("http://localhost:8080/api/v1/locations")
@@ -69,7 +72,7 @@ export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder
             .then((response) => response.json())
             .then((data) => setProcessors(data))
             .catch((error) => console.error("Error fetching processors:", error));
-    }, [selectedRecorder]);
+    }, [selectedModifyRecorder]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -79,7 +82,8 @@ export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/recorders/${selectedRecorder.id_recorder}`, {
+            console.log(formData)
+            const response = await fetch(`http://localhost:8080/api/v1/recorders/${selectedModifyRecorder.id_recorder}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -90,8 +94,14 @@ export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder
             if (!response.ok) throw new Error("Error updating recorder");
 
             const updatedRecorder = await response.json();
-            setRecorders(recorders.map((rec) => (rec.id_recorder === selectedRecorder.id_recorder ? updatedRecorder : rec)));
-            setSelectedRecorder(null);
+            // Cambiar el formato de la fecha
+            const formattedRecorder = {
+                ...updatedRecorder.recorder,
+                installation_date: new Date(updatedRecorder.recorder.installation_date).toUTCString(),
+                status: new Date(updatedRecorder.recorder.status).toUTCString(),
+            };
+            setRecorders(recorders.map((rec) => (rec.id_recorder === selectedModifyRecorder.id_recorder ? formattedRecorder : rec)));
+            setSelectedModifyRecorder(null);
         } catch (error) {
             console.error("Error updating recorder:", error);
         }
@@ -105,8 +115,7 @@ export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder
                     <p>{textContent[language].recorderName}</p>
                     <input 
                         type="text" 
-                        name="name_recorder" 
-                        placeholder={textContent[language].name_recorder}
+                        name="recorder_name" 
                         value={formData.recorder_name} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded" 
@@ -167,7 +176,7 @@ export default function EditRecorderForm({ selectedRecorder, setSelectedRecorder
                         <button type="submit" className="px-4 py-2 bg-black text-white rounded">
                             {textContent[language].save}
                         </button>
-                        <button onClick={() => setSelectedRecorder(null)} className="px-4 py-2 bg-black text-white rounded">
+                        <button onClick={() => setSelectedModifyRecorder(null)} className="px-4 py-2 bg-black text-white rounded">
                             {textContent[language].cancel}
                         </button>
                     </div>

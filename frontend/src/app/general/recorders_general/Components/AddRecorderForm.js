@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 
 export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, language }) {
     const [locations, setLocations] = useState([]);
@@ -8,10 +9,11 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
     const lastRecorder = recorders[recorders.length - 1];
     const nextId = lastRecorder.id_recorder + 1;
     const [formData, setFormData] = useState({
-        name_recorder: "",
+        id_recorder: nextId,
+        recorder_name: "",
         id_location_recorder: "",
         id_microphone_recorder: "",
-        id_processor_recorder: "",
+        id_processor_recorder: "", 
         installation_date: "",
         status: ""
     });
@@ -56,6 +58,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
             .then((response) => response.json())
             .then((data) => setProcessors(data))
             .catch((error) => console.error("Error fetching processors:", error));
+            
     }, []);
 
     const handleChange = (e) => {
@@ -72,7 +75,13 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
             });
             if (response.ok) {
                 const newRecorder = await response.json();
-                setRecorders([...recorders, newRecorder.recorder]);
+                // Cambiar el formato de la fecha
+                const formattedRecorder = {
+                    ...newRecorder.recorder,
+                    installation_date: new Date(newRecorder.recorder.installation_date).toUTCString(),
+                    status: new Date(newRecorder.recorder.status).toUTCString(),
+                };
+                setRecorders([...recorders, formattedRecorder]);
                 setIsAdding(false);
             } else {
                 console.error("Error adding recorder");
@@ -92,9 +101,9 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                     <p>{textContent[language].recorderName}</p>
                     <input 
                         type="text" 
-                        name="name_recorder" 
+                        name="recorder_name" 
                         placeholder={textContent[language].recorderName}
-                        value={formData.name_recorder} 
+                        value={formData.recorder_name} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded" 
                         required

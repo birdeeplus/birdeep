@@ -9,6 +9,7 @@ import DeleteRecorderModal from "./Components/DeleteRecorderModal";
 
 export default function RecordersGeneral() {
     const [language, setLanguage] = useState("en");
+    const [isAdmin, setIsAdmin] = useState(false);
     const [recorders, setRecorders] = useState([]);
     const [selectedModifyRecorder, setSelectedModifyRecorder] = useState(null);
     const [selectedDeleteRecorder, setSelectedDeleteRecorder] = useState(null);
@@ -36,6 +37,8 @@ export default function RecordersGeneral() {
             .then((response) => response.json())
             .then((data) => setRecorders(data))
             .catch((error) => console.error("Error fetching recorders:", error));
+        const userIsAdmin = localStorage.getItem("is_admin") === "true";
+        setIsAdmin(userIsAdmin);
     }, []);
 
     const handleDeleteClick = (recorder) => {
@@ -61,12 +64,16 @@ export default function RecordersGeneral() {
     return (
         <div className="relative w-full h-screen">
             <Navbar toggleLanguage={() => setLanguage(language === "en" ? "es" : "en")} language={language} />
+            <br></br>
             <div className="container mx-auto px-10 py-10">
                 <h1 className="text-4xl font-bold">{textContent[language].title}</h1>
                 <p className="mt-4 text-lg max-w-md">{textContent[language].description}</p>
-                <button onClick={() => setIsAdding(true)} className="mt-4 px-4 py-2 bg-black text-white rounded-lg flex items-center">
-                    <FaPlus className="mr-2" /> {textContent[language].add}
-                </button>
+
+                {isAdmin && (
+                    <button onClick={() => setIsAdding(true)} className="mt-4 px-4 py-2 bg-black text-white rounded-lg flex items-center">
+                        <FaPlus className="mr-2" /> {textContent[language].add}
+                    </button>
+                )}
 
                 <table className="w-full border-collapse border border-gray-300 mt-8">
                     <thead>
@@ -88,16 +95,22 @@ export default function RecordersGeneral() {
                                 <td className="border border-gray-300 px-4 py-2">{recorder.id_microphone_recorder}</td>
                                 <td className="border border-gray-300 px-4 py-2">{recorder.id_processor_recorder}</td>
                                 <td className="border border-gray-300 px-4 py-2">{recorder.installation_date}</td>
-                                <td className="border border-gray-300 px-4 py-2">
-                                    <button onClick={(e) => { e.stopPropagation(); setSelectedModifyRecorder(recorder); }} className="text-black-500 hover:text-black-700">
-                                        <FaEdit />
-                                    </button>
-                                </td>
-                                <td className="border border-gray-300 px-4 py-2">
-                                    <button onClick={(e) => { e.stopPropagation(); handleDeleteClick(recorder); }} className="text-black-500 hover:text-black-700">
-                                        <FaTrash />
-                                    </button>
-                                </td>
+
+                                {isAdmin && (
+                                    <>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            <button onClick={(e) => { e.stopPropagation(); setSelectedModifyRecorder(recorder); }} className="text-black-500 hover:text-black-700">
+                                                <FaEdit />
+                                            </button>
+                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            <button onClick={(e) => { e.stopPropagation(); handleDeleteClick(recorder); }} className="text-black-500 hover:text-black-700">
+                                                <FaTrash />
+                                            </button>
+                                        </td>
+                                    </>
+                                )}
+                                
                             </tr>
                         ))}
                     </tbody>
