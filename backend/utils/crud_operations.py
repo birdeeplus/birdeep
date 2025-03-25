@@ -92,6 +92,7 @@ def insert_values_in_db(request, db_object, translate_dict=None, json_loaded=Fal
 
     keys_request = list(request_json.keys())
 
+    print("Datos recividos: ", request_json)
 
     if translate_dict is not None:
         request_json, keys_request = translate_keys_json(request_json, translate_dict, keys_request)
@@ -101,10 +102,12 @@ def insert_values_in_db(request, db_object, translate_dict=None, json_loaded=Fal
     for i, key in enumerate(keys_request):
         setattr(new_record, key, request_json[key])
 
+    print(new_record)
+
     db.session.add(new_record)
     db.session.commit()
 
-    return {'message': 'Registro creado correctamente'}
+    return {'message': 'Registro creado correctamente', "recorder": request_json}
 
 def insert_in_singevent(request, db_object_sing,db_object_diagnostic,db_object_recording, json_loaded=False):
     if json_loaded:
@@ -188,7 +191,7 @@ def update_values_in_db(request, element_id, db_object, translate_dict=None):
 
     db.session.commit()
 
-    return {'message': 'Registro actualizado correctamente'}
+    return {'message': 'Registro actualizado correctamente', "recorder": request_json}
 
 # Delete
 # - Toma el elemento de la base de datos con el id indicado
