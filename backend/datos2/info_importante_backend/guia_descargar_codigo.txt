@@ -11,7 +11,7 @@ BACKEND:
 
 4. Conectarse a MariaDB: mariadb -u root -p
 
-5. Crear base de datos: mariadb -u root -p birdeep < "dump_db.sql"
+5. Crear base de datos: mariadb -u root -p birdeep < "./dump_db.sql"
 
 6. Crear usuario:
 

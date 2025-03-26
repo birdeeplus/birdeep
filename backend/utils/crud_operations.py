@@ -39,6 +39,46 @@ def get_values_from_db(request, db_object):
 
     return result
 
+def get_values_from_db_paginacion(request, db_object, offset, limit):
+    # Obtener los parámetros de la solicitud
+    features_dict = {}
+
+    for key, value in request.args.items():
+        if key not in ["page", "per_page"]:
+            features_dict[key] = value
+
+    # Obtener parámetros de paginación
+    page = int(request.args.get('page', 1))  # Página por defecto es 1
+    per_page = limit  # Elementos por página por defecto es 10
+
+    # Realizar la consulta base
+    query = db_object.query
+
+    # Aplicar filtros a la consulta
+    for key, value in features_dict.items():
+        if value is not None:
+            query = query.filter(getattr(db_object, key).like(f"%{value}%"))
+
+    # Realizar la paginación
+    query = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    # Obtener los resultados paginados
+    filtered_query = query.items
+
+    result = []
+
+    for item in filtered_query:
+        result_dict = {}
+        for column in item.__table__.columns.keys():
+            if item in ['status', 'installation_date', 'time_record', 'time_executed','time_event']:
+                result_dict[column] = getattr(parser.parse(item), column)
+            else:
+                result_dict[column] = getattr(item, column)
+        result.append(result_dict)
+
+    return result
+
+
 # Create, toma los valores del request
 # - Si tiene diccionario traduce
 # - Crea un db_object con los valores del request
@@ -52,6 +92,7 @@ def insert_values_in_db(request, db_object, translate_dict=None, json_loaded=Fal
 
     keys_request = list(request_json.keys())
 
+    print("Datos recividos: ", request_json)
 
     if translate_dict is not None:
         request_json, keys_request = translate_keys_json(request_json, translate_dict, keys_request)
@@ -61,10 +102,12 @@ def insert_values_in_db(request, db_object, translate_dict=None, json_loaded=Fal
     for i, key in enumerate(keys_request):
         setattr(new_record, key, request_json[key])
 
+    print(new_record)
+
     db.session.add(new_record)
     db.session.commit()
 
-    return {'message': 'Registro creado correctamente'}
+    return {'message': 'Registro creado correctamente', "recorder": request_json}
 
 def insert_in_singevent(request, db_object_sing,db_object_diagnostic,db_object_recording, json_loaded=False):
     if json_loaded:
@@ -148,7 +191,7 @@ def update_values_in_db(request, element_id, db_object, translate_dict=None):
 
     db.session.commit()
 
-    return {'message': 'Registro actualizado correctamente'}
+    return {'message': 'Registro actualizado correctamente', "recorder": request_json}
 
 # Delete
 # - Toma el elemento de la base de datos con el id indicado

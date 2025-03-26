@@ -85,7 +85,7 @@ export default function RecorderDetails() {
     // Traducciones para los textos
     const textContent = {
         en: {
-            title: "Recorders",
+            title: "Recorder",
             filterByDateTime: "Filter recordings by date and time:",
             startDate: "Start Date",
             startTime: "Start Time",
@@ -99,7 +99,7 @@ export default function RecorderDetails() {
             download: "Download"
         },
         es: {
-            title: "Grabadoras",
+            title: "Grabadora",
             filterByDateTime: "Filtrar grabaciones por fecha y hora:",
             startDate: "Fecha Inicio",
             startTime: "Hora Inicio",

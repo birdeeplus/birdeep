@@ -63,8 +63,8 @@ export default function LocationsGeneral() {
             {/* Contenedor del mapa */}
             <div className="relative w-full h-full pt-[90px]">
                 <MapContainer
-                    center={[37.105556, -6.586944]} // Doñana como centro del mapa
-                    zoom={11}
+                    center={[36.990000, -6.440000]} // Doñana como centro del mapa
+                    zoom={12}
                     className="absolute top-0 left-0 w-full h-full z-0"
                 >
                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />

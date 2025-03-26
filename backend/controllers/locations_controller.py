@@ -18,27 +18,10 @@ def get_swagger_path(filename):
 @swag_from(get_swagger_path('locations.yml'), methods=['POST'])
 def insert_new_location():
     """
-    Insert a new location into the database, asegurando que el ID continúe correctamente.
+    Insert a new location into the database
     """
-    data = request.get_json()
-
-    # Obtener el último ID en la base de datos
-    last_location = db.session.query(Locations).order_by(Locations.id_location.desc()).first()
-    next_id = (last_location.id_location + 1) if last_location else 1  # Si no hay registros, empieza en 1
-
-    new_location = Locations()
-    new_location.id_location = next_id  # Asigna el ID correcto
-    new_location.name_location = data.get("name_location")
-    new_location.latitude_location = data.get("latitude_location")
-    new_location.longitude_location = data.get("longitude_location")
-    new_location.habitat_location = data.get("habitat_location")
-
-    db.session.add(new_location)
-    db.session.commit()
-
-    return jsonify({"message": "Location added successfully", "id_location": new_location.id_location}), 201
-
-
+    response = insert_values_in_db(request, Locations)
+    return jsonify(response), 200
 
 @swag_from(get_swagger_path('locations.yml'), methods=['GET'])
 def query_locations():

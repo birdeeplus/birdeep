@@ -40,4 +40,46 @@
     font-family: InterRegular;
 }
 
+@font-face{
+    font-family: "NeueHaasDisplayRoman";
+    src: url("/Fonts/NeueHaasDisplayRoman.ttf");
+}
+
+.NeueHaasDisplayRoman
+{
+    font-family: NeueHaasDisplayRoman;
+}
+
+@font-face{
+    font-family: "NeueHaasDisplayBold";
+    src: url("/Fonts/NeueHaasDisplayBold.ttf");
+}
+
+.NeueHaasDisplayBold
+{
+    font-family: NeueHaasDisplayBold;
+}
+
+@font-face{
+    font-family: "NeueHaasDisplayMediu";
+    src: url("/Fonts/NeueHaasDisplayMediu.ttf");
+}
+
+.NeueHaasDisplayMediu
+{
+    font-family: NeueHaasDisplayMediu;
+}
+
+@font-face{
+    font-family: "Montserrat";
+    src: url("/Fonts/Montserrat.ttf");
+}
+
+.Montserrat
+{
+    font-family: Montserrat;
+}
+
+
+
 
