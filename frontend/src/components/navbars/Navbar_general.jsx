@@ -8,7 +8,7 @@ import SidebarMenu from "./SidebarMenu";
 import LoginModal from "./LoginModal";
 import LogoutConfirmation from "./LogoutModal";
 
-export default function Navbar({ toggleLanguage, language }) {
+export default function Navbar({ toggleLanguage, language, background = "transparent" }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [loginOpen, setLoginOpen] = useState(false);
     const [logoutOpen, setLogoutOpen] = useState(false);
@@ -25,7 +25,11 @@ export default function Navbar({ toggleLanguage, language }) {
     }, []);
 
     return (
-        <nav className="w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50">
+        <nav
+            className={`w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50 ${background === "f8" ? "bg-[#F8F8F8]" : "bg-transparent"
+                }`}
+        >
+
             {/* Menú Hamburguesa + Logo */}
             <div className="flex pl-6 items-center gap-4">
                 {/* Botón Menú Hamburguesa */}
