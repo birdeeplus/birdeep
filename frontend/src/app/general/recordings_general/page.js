@@ -10,9 +10,6 @@ import AudioPlayer from "../../../components/AudioPlayer";
 // Imports de componentes
 import Navbar from "../../../components/navbars/Navbar_general";
 
-// Add imports de íconos
-import { FaPlay, FaPause, FaDownload, FaSpinner } from "react-icons/fa";
-
 function RecordingsGeneral() {
   const [language, setLanguage] = useState("en");
   const [recordings, setRecordings] = useState([]);
