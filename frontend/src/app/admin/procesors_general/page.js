@@ -156,11 +156,12 @@ export default function ProcessorsGeneral() {
         <div className="relative w-full h-screen p-6">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
 
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-bold text-center mb-4">
-                {language === "en" ? "Processor List" : "Lista de Procesadores"}
-            </h2>
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-full pb-36">
 
+            {/* Titulo */}
+            <h1 className="Montserrat text-[#375B38] text-2xl mt-24 sm:text-3xl font-bold mb-8">
+                {language === "en" ? "Processor List" : "Lista de Procesadores"}
+            </h1>
 
                 <div className="flex justify-end mb-4">
                     <button
@@ -172,37 +173,37 @@ export default function ProcessorsGeneral() {
                     </button>
                 </div>
 
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="text-[#375B38] w-full mt-8 rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="border border-gray-300 px-4 py-2 text-center">ID</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center">{language === "en" ? "Model" : "Modelo"}</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center">{language === "en" ? "Comment" : "Comentario"}</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center">{language === "en" ? "ID Recorder" : "ID Grabadora"}</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center">{language === "en" ? "Delete" : "Eliminar"}</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center">{language === "en" ? "Edit" : "Modificar"}</th>
+                            <th className="px-4 py-2">ID</th>
+                            <th className="px-4 py">{language === "en" ? "Model" : "Modelo"}</th>
+                            <th className="px-4 py">{language === "en" ? "Comment" : "Comentario"}</th>
+                            <th className="px-4 py">{language === "en" ? "ID Recorder" : "ID Grabadora"}</th>
+                            <th className="px-4 py">{language === "en" ? "Delete" : "Eliminar"}</th>
+                            <th className="px-4 py">{language === "en" ? "Edit" : "Modificar"}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {processors.length > 0 ? (
                             processors.map((processor) => (
-                                <tr key={processor.id_processor} className="hover:bg-gray-100">
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                <tr key={processor.id_processor} className="text-center cursor-pointer hover:bg-gray-100">
+                                    <td className="px-4 py-2 rounded-l-lg">
                                         {processor.id_processor}
                                     </td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                    <td className="px-4 py-2">
                                         {processor.model_processor}
                                     </td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                    <td className="px-4 py-2">
                                         {processor.comment_processor || (language === "en" ? "No comments" : "Sin comentarios")}
                                     </td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                    <td className="px-4 py-2">
                                         {processor.id_recorder 
                                             ? processor.id_recorder 
                                             : (language === "en" ? "Not assigned" : "No asignado")}
                                     </td>
 
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                    <td className="px-4 py-2">
                                         <button
                                             onClick={() => handleDelete(processor.id_processor)}
                                             className="text-black hover:text-black"
@@ -210,7 +211,7 @@ export default function ProcessorsGeneral() {
                                             <FaTrash />
                                         </button>
                                     </td>
-                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                    <td className="px-4 py-2">
                                         <button
                                             onClick={() => handleEdit(processor)}
                                             className="text-black hover:text-black"

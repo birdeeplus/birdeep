@@ -65,7 +65,7 @@ export default function RecordersGeneral() {
         <div className="relative w-full h-screen">
             <Navbar toggleLanguage={() => setLanguage(language === "en" ? "es" : "en")} language={language} />
             <br />
-            <div className="container mx-auto px-10 py-10">
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-80 pb-36 mt-20">
                 <h1 className="text-[#375B38] text-4xl font-bold">{textContent[language].title}</h1>
                 <p className="text-[#375B38] mt-4 text-lg max-w-md">{textContent[language].description}</p>
 
