@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaPlay, FaPause, FaRedoAlt, FaUndoAlt, FaForward, FaBackward } from "react-icons/fa";
 import Image from "next/image";
 
-export default function AudioPlayer({ src, filename = "grabación", onClose }) {
+export default function AudioPlayer({ src, filename = "grabación", recorderId = "", onClose }) {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
@@ -53,11 +53,11 @@ export default function AudioPlayer({ src, filename = "grabación", onClose }) {
   }, []);
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-xl w-[95%] sm:w-3/4 md:w-2/3 px-10 py-4 text-[#375B38]">
-      <div className="flex justify-between items-start mb-2">
-        <div className="mb-3">
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-xl w-full max-w-6xl px-6 py-3 text-[#375B38] shadow-lg">
+      <div className="flex justify-between items-start mb-3">
+        <div>
           <p className="text-sm font-semibold">{filename}</p>
-          <p className="text-xs text-gray-500">grabadora</p>
+          <p className="text-xs text-gray-500">grabadora #{recorderId}</p>
         </div>
         <button
           onClick={() => {
@@ -72,7 +72,7 @@ export default function AudioPlayer({ src, filename = "grabación", onClose }) {
       </div>
 
       {/* Barra de progreso */}
-      <div className="w-full bg-gray-200 h-[6px] rounded-full overflow-hidden mb-5">
+      <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mb-4">
         <div
           className="bg-[#375B38] h-full transition-all duration-300"
           style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
@@ -82,7 +82,7 @@ export default function AudioPlayer({ src, filename = "grabación", onClose }) {
       {/* Tiempos + Controles */}
       <div className="flex items-center justify-between">
         <span className="text-xs text-gray-500">{formatTime(currentTime)}</span>
-        <div className="flex items-center gap-4 text-lg">
+        <div className="flex items-center gap-3 text-base">
           <FaUndoAlt onClick={() => skipTime(-10)} className="cursor-pointer" />
           <FaBackward onClick={() => skipTime(-5)} className="cursor-pointer" />
           {isPlaying ? (
