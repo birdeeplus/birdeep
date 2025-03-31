@@ -9,6 +9,24 @@ export default function AudioPlayer({ src, filename = "grabación", recorderId =
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  
+  // Función para descargar la grabación
+  const downloadRecording = (audioUrl, filename) => {
+    fetch(audioUrl)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename || "audio.wav";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => console.error("Error al descargar el archivo:", error));
+  };
+
   const togglePlay = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -59,15 +77,8 @@ export default function AudioPlayer({ src, filename = "grabación", recorderId =
           <p className="text-sm font-semibold">{filename}</p>
           <p className="text-xs text-gray-500">grabadora #{recorderId}</p>
         </div>
-        <button
-          onClick={() => {
-            const a = document.createElement("a");
-            a.href = src;
-            a.download = filename;
-            a.click();
-          }}
-        >
-          <Image src="/iconos/download.png" alt="descargar" width={18} height={18} />
+        <button onClick={() => downloadRecording(src, filename)} className="w-5 h-5">
+          <Image src="/iconos/download.png" alt="download" width={18} height={18} />
         </button>
       </div>
 
