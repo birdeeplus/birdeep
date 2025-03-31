@@ -25,7 +25,7 @@ export default function Navbar({ toggleLanguage, language }) {
     }, []);
 
     return (
-        <nav className="w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50 bg-white">
+        <nav className="w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50">
             {/* Menú Hamburguesa + Logo */}
             <div className="flex pl-6 items-center gap-4">
                 {/* Botón Menú Hamburguesa */}

@@ -103,7 +103,7 @@ function RecordingsGeneral() {
   };
 
   return (
-    <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen ">
+    <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen">
       {/* Navbar */}
       <Navbar toggleLanguage={toggleLanguage} language={language} background="f8" />
 
