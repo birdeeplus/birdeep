@@ -3,12 +3,14 @@
 // Imports de librerías
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import AudioPlayer from "../../../components/AudioPlayer";
+import RecordingDetailsModal from "../../../components/RecordingDetailsModal";
+
+
 
 // Imports de componentes
-import Navbar from "../../../components/navbars/Navbar_busqueda";
-
-// Add imports de íconos
-import { FaPlay, FaPause, FaDownload, FaSpinner } from "react-icons/fa";
+import Navbar from "../../../components/navbars/Navbar_general";
 
 function RecordingsGeneral() {
   const [language, setLanguage] = useState("en");
@@ -18,7 +20,9 @@ function RecordingsGeneral() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
-  const perPage = 10;
+  const [lastClicked, setLastClicked] = useState(null);
+  const [selectedRecordingId, setSelectedRecordingId] = useState(null);
+  const perPage = 6; // Número de grabaciones por página
   const router = useRouter(); // hook de router
 
   const toggleLanguage = () => {
@@ -26,20 +30,26 @@ function RecordingsGeneral() {
   };
 
   useEffect(() => {
+    // Oculta el reproductor al cambiar de página
+    setCurrentAudio(null);
+    setLastClicked(null);
+    setIsPlaying(false);
+
     setLoading(true);
-    
+
     fetch(`http://localhost:8080/api/v1/recordings_paginacion?page=${currentPage}&per_page=${perPage}`)
       .then((response) => response.json())
       .then((data) => {
+        console.log("Grabaciones recibidas:", data);
         setRecordings(data);
         setLoading(false);
-        setHasMore(data.length === perPage); // Si devuelve menos de perPage, no hay más páginas
+        setHasMore(data.length === perPage);
       })
       .catch((error) => {
         console.error("Error fetching recordings:", error);
         setLoading(false);
       });
-  }, [currentPage]); // Ejecutar cada vez que currentPage cambie
+  }, [currentPage]);
 
   // Traducción de textos
   const textContent = {
@@ -55,16 +65,20 @@ function RecordingsGeneral() {
     },
   };
 
-  // Función para controlar la reproducción de audio
   const togglePlay = (audioSrc) => {
-    if (currentAudio === audioSrc) {
-      setIsPlaying(!isPlaying);
+    if (currentAudio === audioSrc && lastClicked === audioSrc) {
+      // Doble clic sobre la misma grabación -> ocultar reproductor
       setCurrentAudio(null);
+      setIsPlaying(false);
+      setLastClicked(null);
     } else {
+      // Primer clic o cambio de grabación -> mostrar o actualizar
       setCurrentAudio(audioSrc);
       setIsPlaying(true);
+      setLastClicked(audioSrc);
     }
   };
+
 
   // Función para descargar la grabación
   const downloadRecording = (audioUrl, filename) => {
@@ -89,65 +103,189 @@ function RecordingsGeneral() {
   };
 
   return (
-    <div id="cliente" className="relative w-full h-screen">
+    <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen ">
       {/* Navbar */}
-      <Navbar toggleLanguage={toggleLanguage} language={language} />
-      
+      <Navbar toggleLanguage={toggleLanguage} language={language} background="f8" />
+
       {/* Contenido principal */}
-      <div className="container mx-auto px-10 flex flex-col items-start h-full mt-24">
-        <div className="w-1/2">
-          <h1 className="text-4xl font-bold">{textContent[language].title}</h1>
-          <p className="mt-20 text-lg max-w-md font-bold">{textContent[language].content}</p>
+      <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-full pb-36">
+
+        {/* Titulo */}
+        <h1 className="Montserrat text-[#375B38] text-2xl mt-24 sm:text-3xl font-bold mb-8">
+          {textContent[language].title}
+        </h1>
+
+        {/* Filtros */}
+        <div className="grid grid-cols-12 gap-x-24 gap-y-3 mb-5 text-sm text-[#375B38] Montserrat items-center">
+
+          {/* Grupo Horas */}
+          <div className="flex items-center gap-2 col-span-4">
+            {/* Icono con tooltip */}
+            <div className="relative group flex flex-col items-center">
+              <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
+              <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap montserrat">
+                Rango de horas
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <input
+              type="time"
+              defaultValue="00:00"
+              className="bg-white rounded px-3 py-1 min-w-[6rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none text-center"
+            />
+            <input
+              type="time"
+              defaultValue="00:00"
+              className="bg-white rounded px-3 py-1 min-w-[6rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none text-center"
+            />
+          </div>
+
+
+          {/* Grupo Fechas */}
+          <div className="flex items-center gap-2 col-span-5">
+            {/* Icono con tooltip */}
+            <div className="relative group flex flex-col items-center">
+              <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
+              <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                Rango de fechas
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <input
+              type="date"
+              className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+            />
+            <input
+              type="date"
+              className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+            />
+          </div>
+
+
+          {/* Localización */}
+          <div className="flex items-center gap-2 col-span-3">
+            {/* Icono con tooltip */}
+            <div className="relative group flex flex-col items-center">
+              <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
+              <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                Ubicación
+              </div>
+            </div>
+
+            {/* Selector */}
+            <select
+              className="bg-white rounded px-3 py-1 w-full border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+            >
+              <option>localizaciones</option>
+            </select>
+          </div>
+
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center mt-20">
-            <FaSpinner className="animate-spin text-4xl" />
+
+
+        <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
+          {language === "es" ? "todas las grabaciones (nº)" : "all recordings (#)"}
+        </p>
+
+
+        {/* Lista de grabaciones */}
+        {recordings.map((recording) => (
+          <div
+            key={recording.id_record}
+            className="rounded-xl flex items-center justify-between mb-1 px-4 py-3 Montserrat transition duration-300 hover:bg-white w-full"
+          >
+            <div className="flex items-center gap-4">
+              <button onClick={() => togglePlay(recording.uri)} className="w-7 h-7">
+                <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
+              </button>
+
+              <div className="cursor-pointer">
+                <p className="text-sm font-semibold text-[#375B38]">{recording.filename}</p>
+                <p className="text-xs text-gray-500">grabadora #{recording.id_recorder_recordings}</p>
+              </div>
+
+            </div>
+
+            <div className="flex items-center gap-3 pr-2">
+              <button onClick={() => setSelectedRecordingId(recording.id_record)} className="w-5 h-5">
+                <Image src="/iconos/info.png" alt="info" width={18} height={18} />
+              </button>
+              <button onClick={() => downloadRecording(recording.uri, recording.filename)} className="w-5 h-5">
+                <Image src="/iconos/download.png" alt="download" width={18} height={18} />
+              </button>
+            </div>
+
           </div>
-        ) : recordings.length === 0 ? (
-          <p className="mt-4 text-lg text-gray-500">{textContent[language].error}</p>
-        ) : (
-          <div className="ml-10 mt-10 space-y-2 w-full">
-            {recordings.map((recording) => (
-              <div key={recording.id_record} className="flex items-center gap-4 border-b pb-4 pt-3">
-                <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
-                  {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}
+        ))}
+
+
+
+        {/* Paginación dinámica */}
+        <div className="w-full flex justify-center mt-2">
+          <div className="flex items-center gap-3 text-sm Montserrat text-[#375B38] select-none">
+
+            {/* Botón anterior */}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-200 disabled:opacity-30"
+            >
+              <span className="text-lg">&lt;</span>
+            </button>
+
+            {/* Páginas dinámicas */}
+            {Array.from({ length: 4 }).map((_, i) => {
+              const pageNum = Math.max(1, currentPage - 1) + i;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-6 h-6 flex items-center justify-center rounded-full transition ${currentPage === pageNum
+                    ? "bg-white font-semibold shadow"
+                    : "hover:underline"
+                    }`}
+                >
+                  {pageNum}
                 </button>
-                <span className="flex-grow cursor-pointer" onClick={() => goToRecordingDetails(recording.id_record)}>
-                  {recording.filename}
-                </span>
-                <button onClick={() => downloadRecording(recording.uri, recording.filename)} className="text-xl mr-10">
-                  <FaDownload />
-                </button>
-              </div>  
-            ))}
+              );
+            })}
+
+            {/* Botón siguiente */}
+            <button
+              onClick={() => setCurrentPage((prev) => (hasMore ? prev + 1 : prev))}
+              disabled={!hasMore}
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-200 disabled:opacity-30"
+            >
+              <span className="text-lg">&gt;</span>
+            </button>
           </div>
+        </div>
+
+
+        {selectedRecordingId && (
+          <RecordingDetailsModal
+            id={selectedRecordingId}
+            onClose={() => setSelectedRecordingId(null)}
+            language={language}
+          />
         )}
 
-        {/* Controles de paginación */}
-        <div className="mt-10 flex items-center justify-center gap-4 w-full">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-          >
-            Anterior
-          </button>
-          <span className="self-center">Página {currentPage}</span>
-          <button
-            onClick={() => setCurrentPage((prev) => (hasMore ? prev + 1 : prev))}
-            disabled={!hasMore}
-            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-          >
-            Siguiente
-          </button>
-        </div>
 
         {currentAudio && (
-          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 text-white p-4 rounded-lg w-2/3">
-            <audio controls autoPlay={isPlaying} src={currentAudio} className="w-full" />
-          </div>
+          <AudioPlayer
+            src={currentAudio}
+            filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
+            recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
+            onClose={() => {
+              setCurrentAudio(null);
+              setLastClicked(null);
+            }}
+          />
         )}
+
       </div>
     </div>
   );

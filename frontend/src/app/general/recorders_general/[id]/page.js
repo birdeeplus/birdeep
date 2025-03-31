@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { FaPlay, FaPause, FaDownload } from "react-icons/fa";
 import Navbar from "../../../../components/navbars/Navbar_busqueda";
+import AudioPlayer from "@/components/AudioPlayer";
 
 export default function RecorderDetails() {
     const { id } = useParams();
     const [recordings, setRecordings] = useState([]);
-    const [filteredRecordings, setFilteredRecordings] = useState([]);
+    const [filteredRecordings, setFilteredRecordings] = useState([]); // Inicializar con un array vacío
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [startTime, setStartTime] = useState("00:00");
@@ -15,24 +16,28 @@ export default function RecorderDetails() {
     const [currentAudio, setCurrentAudio] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 10;
+    const perPage = 10;
     const [language, setLanguage] = useState("en");
+    const [hasMore, setHasMore] = useState(true);
 
     const toggleLanguage = () => {
         setLanguage((prev) => (prev === "en" ? "es" : "en"));
-      };
-      
+    };
+
     useEffect(() => {
         if (id) {
-            fetch(`http://localhost:8080/api/v1/recordings?id_recorder_recordings=${id}`)
+            fetch(`http://localhost:8080/api/v1/recordings_paginacion?page=${currentPage}&per_page=${perPage}&id_recorder_recordings=${id}`)
                 .then((response) => response.json())
                 .then((data) => {
                     setRecordings(data);
-                    setFilteredRecordings(data);
+                    setFilteredRecordings(data); // Si quieres filtrar aquí también, lo puedes ajustar
+                    setHasMore(data.length === perPage); // Si devuelve menos de perPage, no hay más páginas
                 })
-                .catch((error) => console.error("Error fetching recordings:", error));
+                .catch((error) => {
+                    console.error("Error fetching recordings:", error);
+                });
         }
-    }, [id]);
+    }, [currentPage, id, perPage]); // Se ejecuta cuando currentPage, id o perPage cambian
 
     const togglePlay = (audioSrc) => {
         if (currentAudio === audioSrc) {
@@ -44,27 +49,20 @@ export default function RecorderDetails() {
         }
     };
 
+    // const filterByDateTime = () => {
+    //     if (!startDate || !endDate || !startTime || !endTime) return;
 
-    const filterByDateTime = () => {
-        if (!startDate || !endDate || !startTime || !endTime) return;
+    //     const startTimestamp = new Date(`${startDate}T${startTime}`).getTime();
+    //     const endTimestamp = new Date(`${endDate}T${endTime}`).getTime();
 
-        const startTimestamp = new Date(`${startDate}T${startTime}`).getTime();
-        const endTimestamp = new Date(`${endDate}T${endTime}`).getTime();
+    //     const filtered = recordings.filter((recording) => {
+    //         const recordTime = new Date(recording.time_record).getTime();
+    //         return recordTime >= startTimestamp && recordTime <= endTimestamp;
+    //     });
 
-        const filtered = recordings.filter((recording) => {
-            const recordTime = new Date(recording.time_record).getTime();
-            return recordTime >= startTimestamp && recordTime <= endTimestamp;
-        });
-
-        setFilteredRecordings(filtered);
-        setCurrentPage(0); // Reset page on new filter
-    };
-
-    const totalPages = Math.ceil(filteredRecordings.length / itemsPerPage);
-    const paginatedRecordings = filteredRecordings.slice(
-        currentPage * itemsPerPage,
-        (currentPage + 1) * itemsPerPage
-    );
+    //     setFilteredRecordings(filtered);
+    //     setCurrentPage(0); // Reset page on new filter
+    // };
 
     const downloadRecording = (audioUrl, filename) => {
         fetch(audioUrl)
@@ -121,7 +119,7 @@ export default function RecorderDetails() {
                 <br></br>
                 <br></br>
                 <h1 className="text-4xl font-bold">{textContent[language].title} {id}</h1>
-                <p className="mt-4 text-lg">{textContent[language].filterByDateTime}</p>
+                {/* <p className="mt-4 text-lg">{textContent[language].filterByDateTime}</p> */}
                 <div className="flex gap-4 mt-4 flex-wrap">
                     <div>
                         <label className="block text-sm font-semibold">{textContent[language].startDate}</label>
@@ -140,14 +138,14 @@ export default function RecorderDetails() {
                         <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="border p-2 rounded w-full" />
                     </div>
                     <div className="self-end">
-                        <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">{textContent[language].filterButton}</button>
+                        {/* <button onClick={filterByDateTime} className="bg-black text-white px-4 py-2 rounded">{textContent[language].filterButton}</button> */}
                     </div>
                 </div>
-                {paginatedRecordings.length === 0 ? (
+                {recordings.length === 0 ? (
                     <p className="mt-4 text-lg text-gray-500">{textContent[language].noRecordings}</p>
                 ) : (
                     <div className="mt-4 space-y-2">
-                        {paginatedRecordings.map((recording) => (
+                        {recordings.map((recording) => (
                             <div key={recording.id_record} className="flex items-center gap-4 border-b pb-2">
                                 <button onClick={() => togglePlay(recording.uri)} className="text-2xl">
                                     {currentAudio === recording.uri && isPlaying ? <FaPause /> : <FaPlay />}
@@ -160,30 +158,44 @@ export default function RecorderDetails() {
                         ))}
                     </div>
                 )}
-                <div className="mt-4 flex justify-center gap-4">
-                    <button
-                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-                        disabled={currentPage === 0}
-                        className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    >
-                        {textContent[language].previousPage}
-                    </button>
-                    <span className="self-center">
-                        {textContent[language].pageOf} {currentPage + 1} {textContent[language].of} {totalPages}
-                    </span>
-                    <button
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
-                        disabled={currentPage >= totalPages - 1}
-                        className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                    >
-                        {textContent[language].nextPage}
-                    </button>
-                </div>
-                {currentAudio && (
-                    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white p-4 rounded-lg w-2/3 shadow-lg">
-                        <audio controls autoPlay={isPlaying} src={currentAudio} className="w-full" />
-                    </div>
-                )}
+
+        {/* Paginación numerada */}
+        <div className="w-full flex justify-center mt-2">
+          <div className="flex items-center gap-6 text-sm Montserrat text-[#375B38]">
+
+            {/* Números de página */}
+            <div className="flex gap-2">
+              {Array.from({ length: Math.ceil(currentPage + (hasMore ? 1 : 0)) }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-6 h-6 flex items-center justify-center rounded-full transition ${currentPage === pageNum
+                    ? "bg-white font-semibold shadow"
+                    : "hover:underline"
+                    }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+            </div>
+
+            {/* Botón siguiente */}
+            <button
+              onClick={() => setCurrentPage((prev) => (hasMore ? prev + 1 : prev))}
+              disabled={!hasMore}
+              className="px-4 py-[4px] border border-[#375B38] rounded-full hover:bg-[#F2F2F2] disabled:opacity-30"
+            >
+              {language === "es" ? "siguiente" : "next"}
+            </button>
+          </div>
+        </div>
+
+
+        <AudioPlayer
+          src={currentAudio}
+          filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
+          onClose={() => setCurrentAudio(null)}
+        />
             </div>
         </div>
     );

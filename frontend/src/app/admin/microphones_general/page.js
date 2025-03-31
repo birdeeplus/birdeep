@@ -177,11 +177,11 @@ export default function MicrophonesTable() {
         <div className="w-full h-screen">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
 
-            <div className="w-full max-w-4xl mx-auto mt-20 p-4">
-                <h2 className="text-2xl font-bold text-center mb-4">
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-full pb-36">
+                <h2 className="Montserrat text-[#375B38] text-2xl mt-24 sm:text-3xl font-bold mb-8">
                     {language === "en" ? "Microphones List" : "Lista de Micrófonos"}
                 </h2>
-                <div className="flex justify-end mb-6">
+                <div className="flex justify-end mb-4">
                     <button
                         style={{ backgroundColor: '#375B38' }}
                         className="text-white px-3 py-1 rounded hover:opacity-80"
@@ -192,44 +192,44 @@ export default function MicrophonesTable() {
                     <br></br>
                 </div>
 
-                <table className="w-full border-collapse border border-gray-300">
+                <table className="text-[#375B38] text-center w-full mt-8 rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="border border-gray-300 px-4 py-2">ID</th>
-                            <th className="border border-gray-300 px-4 py-2">
+                            <th className="px-4 py-2">ID</th>
+                            <th className="px-4 py-22">
                                 {language === "en" ? "Model" : "Modelo"}
                             </th>
-                            <th className="border border-gray-300 px-4 py-2">
+                            <th className="px-4 py-2">
                                 {language === "en" ? "Comment" : "Comentario"}
                             </th>
-                            <th className="border border-gray-300 px-4 py-2">
+                            <th className="px-4 py-2">
                                 {language === "en" ? "Recorder ID" : "ID Grabador"}
                             </th>
-                            <th className="border border-gray-300 px-4 py-2">
+                            <th className="px-4 py-2">
                                 {language === "en" ? "Delete" : "Eliminar"}
                             </th>
-                            <th className="border border-gray-300 px-4 py-2">
+                            <th className="px-4 py-2">
                                 {language === "en" ? "Modify" : "Modificar"}
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {microphones.map((microphone, index) => (
-                            <tr key={microphone.id_microphone ?? `temp-${index}`} className="hover:bg-gray-100">
-                                <td className="border border-gray-300 px-4 py-2 text-center">
+                            <tr key={microphone.id_microphone ?? `temp-${index}`} className="px-4 py-2 rounded-l-lg">
+                                <td className="px-4 py-2">
                                     {microphone.id_microphone}
                                 </td>
-                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                <td className="px-4 py-2">
                                     {microphone.model_microphone}
                                 </td>
-                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                <td className="px-4 py-2">
                                     {microphone.comment_microphone || (language === "en" ? "No comments" : "Sin comentarios")}
                                 </td>
-                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                <td className="px-4 py-2">
                                     {microphone.id_recorder || (language === "en" ? "Not assigned" : "No asignado")}
                                 </td>
                                 {/* Icono de eliminar */}
-                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                <td className="c">
                                     <button
                                         onClick={() => handleDelete(microphone.id_microphone)}
                                         className="text-black hover:text-black"
@@ -237,7 +237,7 @@ export default function MicrophonesTable() {
                                         <FaTrash />
                                     </button>
                                 </td>
-                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                <td className="text-center">
                                     <button
                                         onClick={() => handleEdit(microphone)}
                                         className="text-black hover:text-black"
