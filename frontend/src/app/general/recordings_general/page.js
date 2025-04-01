@@ -15,6 +15,7 @@ import Navbar from "../../../components/navbars/Navbar_general";
 function RecordingsGeneral() {
   const [language, setLanguage] = useState("en");
   const [recordings, setRecordings] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [currentAudio, setCurrentAudio] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,6 +51,16 @@ function RecordingsGeneral() {
         setLoading(false);
       });
   }, [currentPage]);
+
+  useEffect(() => {
+    // Cargar las localizaciones desde la API
+    fetch("http://localhost:8080/api/v1/locations")
+      .then((response) => response.json())
+      .then((data) => {
+        setLocations(data); // Guardar las localizaciones en el estado
+      })
+      .catch((error) => console.error("Error fetching locations:", error));
+  }, []);
 
   // Traducción de textos
   const textContent = {
@@ -175,10 +186,13 @@ function RecordingsGeneral() {
             </div>
 
             {/* Selector */}
-            <select
-              className="bg-white rounded px-3 py-1 w-full border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
-            >
-              <option>localizaciones</option>
+            <select className="bg-white rounded px-3 py-1 w-full border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none">
+              <option value="">Selecciona una localización</option>
+              {locations.map((location) => (
+                <option key={location.id_location} value={location.id_location}>
+                  {location.name_location}
+                </option>
+              ))}
             </select>
           </div>
 
