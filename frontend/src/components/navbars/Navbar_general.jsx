@@ -14,20 +14,55 @@ export default function Navbar({ toggleLanguage, language, background = "transpa
     const [logoutOpen, setLogoutOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [isFirstLoad, setIsFirstLoad] = useState(true);  // Nuevo estado para detectar el primer renderizado
 
     useEffect(() => {
+        // Recupera los datos del localStorage al cargar la página
         const token = localStorage.getItem("token");
-        const adminStatus = localStorage.getItem("is_admin") === "true";
-        if (token) {
-            setIsLoggedIn(true);
-            setIsAdmin(adminStatus);
+        const adminStatus = localStorage.getItem("is_admin");
+    
+        // Solo la primera vez que se carga la aplicación, se establece como usuario no autenticado
+        if (!localStorage.getItem("isFirstLoad")) {
+            localStorage.setItem("isFirstLoad", "true");
+            setIsLoggedIn(false);  // Establecer como usuario normal en la primera carga
+            setIsAdmin(false);      // Asegurarse de que no se inicia como admin
+        } else {
+            // Si ya es una recarga o una navegación posterior, recuperar el estado desde localStorage
+            if (token) {
+                setIsLoggedIn(true);
+                setIsAdmin(adminStatus === "true");
+            } else {
+                setIsLoggedIn(false);
+                setIsAdmin(false);
+            }
         }
     }, []);
+    
+
+    const handleLoginSuccess = (adminStatus) => {
+        setIsLoggedIn(true);
+        setIsAdmin(adminStatus);
+    
+        localStorage.setItem("token", "your_token_value_here");
+        localStorage.setItem("is_admin", adminStatus ? "true" : "false");
+    
+        window.dispatchEvent(new Event("authChange")); // Emitir evento de cambio
+    };
+    
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+    
+        localStorage.removeItem("token");
+        localStorage.removeItem("is_admin");
+    
+        window.dispatchEvent(new Event("authChange")); // Emitir evento de cambio
+    };
+    
 
     return (
         <nav
-            className={`w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50 ${background === "f8" ? "bg-[#F8F8F8]" : "bg-transparent"
-                }`}
+            className={`w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50 ${background === "f8" ? "bg-[#F8F8F8]" : "bg-transparent"}`}
         >
 
             {/* Menú Hamburguesa + Logo */}
@@ -82,7 +117,7 @@ export default function Navbar({ toggleLanguage, language, background = "transpa
                 isOpen={loginOpen}
                 onClose={() => setLoginOpen(false)}
                 language={language}
-                onLoginSuccess={() => setIsLoggedIn(true)}
+                onLoginSuccess={handleLoginSuccess}  // Pasa la función con el estado admin
             />
 
             {/* LogoutModal */}
@@ -90,7 +125,7 @@ export default function Navbar({ toggleLanguage, language, background = "transpa
                 isOpen={logoutOpen}
                 onClose={() => setLogoutOpen(false)}
                 language={language}
-                onLogoutConfirm={() => setIsLoggedIn(false)}
+                onLogoutConfirm={handleLogout} // Llama a la función de logout
             />
         </nav>
     );

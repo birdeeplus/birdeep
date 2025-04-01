@@ -37,20 +37,25 @@ export default function LocationsGeneral() {
     };
 
     useEffect(() => {
+        const updateAdminStatus = () => {
+            const userRole = localStorage.getItem("is_admin");
+            setIsAdmin(userRole === "true");
+        };
+    
         updateAdminStatus(); // Ejecutar al inicio
         fetchLocations();
-
-        // Escuchar cambios en localStorage
-        const handleStorageChange = () => {
-            updateAdminStatus();
+    
+        const handleAuthChange = () => {
+            updateAdminStatus(); // Actualizar estado cuando cambie la autenticación
         };
-
-        window.addEventListener("storage", handleStorageChange);
-
+    
+        window.addEventListener("authChange", handleAuthChange);
+    
         return () => {
-            window.removeEventListener("storage", handleStorageChange);
+            window.removeEventListener("authChange", handleAuthChange);
         };
     }, []);
+    
 
     return (
         <div className="relative w-full h-screen">

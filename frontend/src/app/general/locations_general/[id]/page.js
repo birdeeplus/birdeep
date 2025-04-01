@@ -21,7 +21,8 @@ export default function LocationDetails() {
 
     useEffect(() => {
         if (!id) return;
-
+    
+        // Cargar la información de la ubicación
         fetch(`http://localhost:8080/api/v1/locations/${id}`)
             .then((response) => response.json())
             .then((data) => {
@@ -29,7 +30,8 @@ export default function LocationDetails() {
                 setFormData(data);
             })
             .catch((error) => console.error("Error fetching location details:", error));
-
+    
+        // Cargar grabadoras asociadas a la ubicación
         fetch(`http://localhost:8080/api/v1/locations/${id}/recorders`)
             .then((response) => response.json())
             .then((data) => {
@@ -40,10 +42,26 @@ export default function LocationDetails() {
                 }
             })
             .catch((error) => console.error("Error fetching recorders:", error));
-
-        const userIsAdmin = localStorage.getItem("is_admin") === "true";
-        setIsAdmin(userIsAdmin);
-    }, [id]); 
+    
+        // Función para actualizar el estado de admin
+        const updateAdminStatus = () => {
+            setIsAdmin(localStorage.getItem("is_admin") === "true");
+        };
+    
+        updateAdminStatus(); // Ejecutar al cargar la página
+    
+        // Escuchar cambios en la autenticación
+        const handleAuthChange = () => {
+            updateAdminStatus();
+        };
+    
+        window.addEventListener("authChange", handleAuthChange);
+    
+        return () => {
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, [id]);
+    
 
     if (!location) {
         return <p className="text-center mt-10">Loading...</p>;
