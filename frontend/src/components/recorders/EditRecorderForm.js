@@ -14,6 +14,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
         id_processor_recorder: selectedModifyRecorder.id_processor_recorder || "",
         installation_date: selectedModifyRecorder.installation_date || "",
         status: selectedModifyRecorder.status || "", 
+        version : selectedModifyRecorder.version || "",
     });
     const textContent = {
         en: {
@@ -24,6 +25,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             selectMicrophone: "Select microphone",
             selectProcessor: "Select processor",
             recorderName: "Recorder name",
+            recorderVersion: "Recorder versoin",
             installationDate: "Installation date",
             status: "Status",
         },
@@ -35,6 +37,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             selectMicrophone: "Seleccionar micrófono",
             selectProcessor: "Seleccionar procesador",
             recorderName: "Nombre de la grabadora",
+            recorderVersion: "Versión de la grabadora",
             installationDate: "Fecha de instalación",
             status: "Estado",
         },
@@ -56,6 +59,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                 id_processor_recorder: selectedModifyRecorder.id_processor_recorder || "",
                 installation_date: convertDate(selectedModifyRecorder.installation_date) || "",
                 status: convertDate(selectedModifyRecorder.status) || "",
+                version : selectedModifyRecorder.version || "",
             });
         }
         fetch("http://localhost:8080/api/v1/locations")
@@ -81,8 +85,13 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (formData.version === ''){
+            formData.version = null;
+        }
+        if (formData.status === ''){
+            formData.status = null;
+        }
         try {
-            console.log(formData)
             const response = await fetch(`http://localhost:8080/api/v1/recorders/${selectedModifyRecorder.id_recorder}`, {
                 method: "PUT",
                 headers: {
@@ -170,7 +179,13 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                         value={formData.status} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded" 
-                        required
+                    />
+                    <input 
+                        type="text" 
+                        name="version" 
+                        value={formData.version} 
+                        onChange={handleChange} 
+                        className="w-full p-2 border border-gray-300 rounded" 
                     />
                     <div className="flex justify-between mt-4">
                         <button type="submit" className="px-4 py-2 bg-black text-white rounded">

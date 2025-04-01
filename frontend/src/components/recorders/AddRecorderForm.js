@@ -15,7 +15,8 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
         id_microphone_recorder: "",
         id_processor_recorder: "", 
         installation_date: "",
-        status: ""
+        status: "",
+        version: ""
     });
 
     const textContent = {
@@ -27,6 +28,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
             selectMicrophone: "Select microphone",
             selectProcessor: "Select processor",
             recorderName: "Recorder name",
+            recorderVersion: "Recorder version",
             installationDate: "Installation date",
             status: "Status",
         },
@@ -38,6 +40,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
             selectMicrophone: "Seleccionar micrófono",
             selectProcessor: "Seleccionar procesador",
             recorderName: "Nombre de la grabadora",
+            recorderVersion: "Versión de la grabadora",
             installationDate: "Fecha de instalación",
             status: "Estado",
         },
@@ -67,6 +70,12 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (formData.version === ''){
+            formData.version = null;
+        }
+        if (formData.status === ''){
+            formData.status = null;
+        }
         try {
             const response = await fetch("http://localhost:8080/api/v1/recorders", {
                 method: "POST",
@@ -157,7 +166,16 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                         value={formData.status} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded" 
-                        required
+                
+                    />
+                    <p>{textContent[language].recorderVersion}</p>
+                    <input 
+                        type="text" 
+                        name="version" 
+                        placeholder={textContent[language].recorderVersion}
+                        value={formData.version} 
+                        onChange={handleChange} 
+                        className="w-full p-2 border border-gray-300 rounded" 
                     />
                     <div className="flex justify-end space-x-4">
                         <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 bg-gray-300 rounded">

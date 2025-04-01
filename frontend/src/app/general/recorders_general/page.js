@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "../../../components/navbars/Navbar_general";
 import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
-import AddRecorderForm from "./Components/AddRecorderForm";
-import EditRecorderForm from "./Components/EditRecorderForm";
-import DeleteRecorderModal from "./Components/DeleteRecorderModal";
+import AddRecorderForm from "../../../components/recorders/AddRecorderForm";
+import EditRecorderForm from "../../../components/recorders/EditRecorderForm";
+import DeleteRecorderModal from "../../../components/recorders/DeleteRecorderModal";
 
 export default function RecordersGeneral() {
     const [language, setLanguage] = useState("en");
@@ -21,13 +21,13 @@ export default function RecordersGeneral() {
         en: {
             title: "Recorders",
             description: "Here you can explore different recorders available in BIRDeep.",
-            tableHeaders: ["ID", "ID Location", "ID Microphone", "ID Processor", "Installation Date", "Modify", "Delete"],
+            tableHeaders: ["ID", "ID Location", "ID Microphone", "ID Processor", "Installation Date", "Version", "Modify", "Delete"],
             add: "Add Recorder",
         },
         es: {
             title: "Grabadoras",
             description: "Aquí puedes explorar las diferentes grabadoras disponibles en BIRDeep.",
-            tableHeaders: ["ID", "ID Ubicación", "ID Micrófono", "ID Procesador", "Fecha de Instalación", "Modificar", "Eliminar"],
+            tableHeaders: ["ID", "ID Ubicación", "ID Micrófono", "ID Procesador", "Fecha de Instalación", "Version", "Modificar", "Eliminar"],
             add: "Añadir Grabadora",
         },
     };
@@ -109,6 +109,9 @@ export default function RecordersGeneral() {
                                 </td>
                                 <td className="px-4 py-2">
                                     {recorder.installation_date}
+                                </td>
+                                <td className="px-4 py-2">
+                                    {recorder.version}
                                 </td>
 
                                 {isAdmin && (

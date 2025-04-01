@@ -9,6 +9,7 @@ class Recorders(db.Model):
     id_processor_recorder = db.Column(db.Integer, db.ForeignKey('processors.id_processor'))
     status = db.Column(db.DateTime)
     recorder_name = db.Column(db.String(30))
+    version = db.Column(db.String(30))
     installation_date = db.Column(db.DateTime)
 
     def __init__(self):
@@ -18,3 +19,4 @@ class Recorders(db.Model):
         self.status = None
         self.recorder_name = None
         self.installation_date = None
+        self.version = None
