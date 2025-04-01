@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import LoginForm from "../Login";
 
 export default function LoginModal({ isOpen, onClose, language, onLoginSuccess }) {
-    const handleLogin = () => {
-        onLoginSuccess();
+    const handleLogin = (isAdmin) => {
+        // Actualiza el estado de login y admin
+        onLoginSuccess(isAdmin); 
         onClose();
     };
 
