@@ -17,11 +17,37 @@ export default function ProcessorsGeneral() {
     });
 
     const [editFormData, setEditFormData] = useState(null);
-
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const toggleLanguage = () => {
         setLanguage((prev) => (prev === "en" ? "es" : "en"));
     };
+
+    useEffect(() => {
+        const updateAdminStatus = () => {
+            const userRole = localStorage.getItem("is_admin");
+            const isUserAdmin = userRole === "true";
+            setIsAdmin(isUserAdmin);
+
+            // Si no es admin, mostrar mensaje de acceso denegado y redirigir
+            if (!isUserAdmin) {
+                alert("You do not have access to this page.");
+                window.location.href = "/"; // Redirige al home
+            }
+        };
+    
+        updateAdminStatus(); // Ejecutar al inicio
+    
+        const handleAuthChange = () => {
+            updateAdminStatus(); // Actualizar estado cuando cambie la autenticación
+        };
+    
+        window.addEventListener("authChange", handleAuthChange);
+    
+        return () => {
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, []);
 
     // Obtener lista de procesadores y grabadoras
     useEffect(() => {
