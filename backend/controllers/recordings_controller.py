@@ -6,6 +6,7 @@ from models import Recordings, Recorders
 from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db, get_values_from_db_paginacion
 from flasgger import swag_from
 from models.database import db
+from sqlalchemy import and_
 
 # Obtener la ruta absoluta de los archivos de documentación Swagger
 BASE_SWAGGER_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../swagger'))
@@ -68,6 +69,67 @@ def query_recordings_paginacion():
 
     return jsonify(response), 200
 
+
+def query_recordings_paginacion_con_filtros():
+    """
+    Query recordings with filters and pagination
+    """
+    page = int(request.args.get('page', 1))
+    per_page = int(request.args.get('per_page', 10))
+    offset = (page - 1) * per_page
+    limit = per_page
+
+    # Filtros opcionales
+    hora_inicio = request.args.get("hora_inicio")
+    hora_fin = request.args.get("hora_fin")
+    fecha_inicio = request.args.get("fecha_inicio")
+    fecha_fin = request.args.get("fecha_fin")
+    id_location = request.args.get("id_location")
+
+    query = db.session.query(Recordings)
+
+    # Aplicar filtros
+    filters = []
+
+    if fecha_inicio:
+        filters.append(Recordings.time_record >= f"{fecha_inicio} 00:00:00")
+    if fecha_fin:
+        filters.append(Recordings.time_record <= f"{fecha_fin} 23:59:59")
+    if hora_inicio:
+        filters.append(db.func.time(Recordings.time_record) >= hora_inicio)
+    if hora_fin:
+        filters.append(db.func.time(Recordings.time_record) <= hora_fin)
+    if id_location:
+        filters.append(Recordings.device == id_location)
+
+    if filters:
+        query = query.filter(and_(*filters))
+
+    total_count = query.count()
+
+    results = query.order_by(Recordings.time_record.desc()).offset(offset).limit(limit).all()
+
+    # Serializar resultados
+    data = []
+    for recording in results:
+        data.append({
+            "id_record": recording.id_record,
+            "id_recorder_recordings": recording.id_recorder_recordings,
+            "time_record": recording.time_record,
+            "filetype_record": recording.filetype_record,
+            "bitrate_record": recording.bitrate_record,
+            "sample_rate_record": recording.sample_rate_record,
+            "gain_record": recording.gain_record,
+            "duration_record": recording.duration_record,
+            "uri": f"http://localhost:8080/static{recording.uri}",
+            "device": recording.device,
+            "filename": recording.filename
+        })
+
+    return jsonify({
+        "results": data,
+        "total": total_count
+    }), 200
 
 
 @swag_from(get_swagger_path('recordings.yml'))

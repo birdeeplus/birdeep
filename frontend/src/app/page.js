@@ -36,8 +36,8 @@ export default function Home() {
       {/* Imagen de fondo */}
       <div className="absolute inset-0 -z-10">
         <Image
-          src="/photos/Halcon.png"
-          alt="Halcón volando"
+          src="/photos/fondo.png"
+          alt="Fondo Pajaros"
           layout="fill"
           objectFit="cover"
           quality={100}
@@ -45,7 +45,7 @@ export default function Home() {
       </div>
 
       {/* Contenido principal */}
-      <div className="container mx-auto flex items-center justify-start h-full px-6 sm:px-10 lg:px-20">
+      <div className="container mx-auto flex items-center justify-start h-full px-4 sm:px-10 lg:px-20">
         <div className="w-full max-w-xs">
           <h1 className="NeueHaasDisplayMediu text-2xl sm:text-3xl font-medium text-[#375B38]">
             {textContent[language].title}
