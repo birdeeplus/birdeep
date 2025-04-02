@@ -15,10 +15,37 @@ export default function MicrophonesTable() {
     const [showEditForm, setShowEditForm] = useState(false);
     const [editFormData, setEditFormData] = useState(null);
     const [recorders, setRecorders] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const toggleLanguage = () => {
         setLanguage((prev) => (prev === "en" ? "es" : "en"));
     };
+
+    useEffect(() => {
+        const updateAdminStatus = () => {
+            const userRole = localStorage.getItem("is_admin");
+            const isUserAdmin = userRole === "true";
+            setIsAdmin(isUserAdmin);
+
+            // Si no es admin, mostrar mensaje de acceso denegado y redirigir
+            if (!isUserAdmin) {
+                alert("You do not have access to this page.");
+                window.location.href = "/"; // Redirige al home
+            }
+        };
+    
+        updateAdminStatus(); // Ejecutar al inicio
+    
+        const handleAuthChange = () => {
+            updateAdminStatus(); // Actualizar estado cuando cambie la autenticación
+        };
+    
+        window.addEventListener("authChange", handleAuthChange);
+    
+        return () => {
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, []);
 
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/microphones")
@@ -105,7 +132,6 @@ export default function MicrophonesTable() {
         }));
     };
     
-
     const handleEdit = (microphone) => {
         setEditFormData(microphone);
         setShowEditForm(true);
@@ -147,8 +173,6 @@ export default function MicrophonesTable() {
             console.error("Error updating microphone:", error);
         }
     };
-    
-    
 
     //Función para eliminar micrófono
     const handleDelete = async (id_microphone) => {
@@ -395,8 +419,6 @@ export default function MicrophonesTable() {
                     </div>
                 </div>
             )}
-
-
 
         </div>
     );
