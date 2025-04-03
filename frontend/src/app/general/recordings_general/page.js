@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import AudioPlayer from "../../../components/AudioPlayer";
 import RecordingDetailsModal from "../../../components/RecordingDetailsModal";
-import Navbar from "../../../components/navbars/Navbar_general";
+import Navbar from "../../../components/navbars/Navbar_busqueda";
 
 function RecordingsGeneral() {
   const [language, setLanguage] = useState("en");
@@ -29,6 +29,9 @@ function RecordingsGeneral() {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [aplicarFiltros, setAplicarFiltros] = useState(false);
 
+  const searchParams = useSearchParams();
+  const filename = searchParams.get("filename") || "";
+
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "es" : "en"));
   };
@@ -46,6 +49,10 @@ function RecordingsGeneral() {
       if (fechaInicio) params.append("fecha_inicio", fechaInicio);
       if (fechaFin) params.append("fecha_fin", fechaFin);
       if (selectedLocation) params.append("id_location", selectedLocation);
+    }
+
+    if (filename) {
+      params.append("filename", filename);
     }
 
     const endpoint = aplicarFiltros
@@ -71,6 +78,7 @@ function RecordingsGeneral() {
     fechaInicio,
     fechaFin,
     selectedLocation,
+    filename,
   ]);
 
 

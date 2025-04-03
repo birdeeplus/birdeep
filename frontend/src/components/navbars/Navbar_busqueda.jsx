@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import "../../app/styles/fonts.css";
@@ -14,7 +15,17 @@ export default function Navbar({ toggleLanguage, language }) {
     const [logoutOpen, setLogoutOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const router = useRouter();
 
+    const handleSearch = () => {
+        if (searchTerm.trim() !== "") {
+            router.push(`/general/recordings_general?filename=${encodeURIComponent(searchTerm)}`);
+        }
+        else if(searchTerm.trim() === ""){
+            router.push('/general/recordings_general');
+        }
+    };
     useEffect(() => {
         const token = localStorage.getItem("token");
         const adminStatus = localStorage.getItem("is_admin") === "true";
@@ -23,6 +34,7 @@ export default function Navbar({ toggleLanguage, language }) {
             setIsAdmin(adminStatus);
         }
     }, []);
+
 
     return (
         <nav className="w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50">
@@ -45,6 +57,9 @@ export default function Navbar({ toggleLanguage, language }) {
                     type="text"
                     placeholder={language === "en" ? "Search..." : "Buscar..."}
                     className="w-2/3 py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:border-black"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
             </div>
 

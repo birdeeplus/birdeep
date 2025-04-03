@@ -7,6 +7,16 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
     const [microphones, setMicrophones] = useState([]);
     const [processors, setProcessors] = useState([]);
     const [formData, setFormData] = useState({
+        id_recorder: "",
+        recorder_name: "",
+        id_location_recorder: "",
+        id_microphone_recorder: "",
+        id_processor_recorder: "",
+        installation_date: "",
+        status: "",
+        version: "",
+    });
+    const [initialData, setInitialData] = useState({
         id_recorder: selectedModifyRecorder.id_recorder,
         recorder_name : selectedModifyRecorder.recorder_name || "",
         id_location_recorder: selectedModifyRecorder.id_location_recorder || "",
@@ -51,16 +61,18 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
         };   
         if (selectedModifyRecorder) {
 
-            setFormData({
+            const initial = {
                 id_recorder: selectedModifyRecorder.id_recorder,
-                recorder_name : selectedModifyRecorder.recorder_name || "",
+                recorder_name: selectedModifyRecorder.recorder_name || "",
                 id_location_recorder: selectedModifyRecorder.id_location_recorder || "",
                 id_microphone_recorder: selectedModifyRecorder.id_microphone_recorder || "",
                 id_processor_recorder: selectedModifyRecorder.id_processor_recorder || "",
                 installation_date: convertDate(selectedModifyRecorder.installation_date) || "",
-                status: convertDate(selectedModifyRecorder.status) || "",
-                version : selectedModifyRecorder.version || "",
-            });
+                status: selectedModifyRecorder.status ? convertDate(selectedModifyRecorder.status) : "",
+                version: selectedModifyRecorder.version || "",
+            };
+            setInitialData(initial);
+            setFormData(initial);
         }
         fetch("http://localhost:8080/api/v1/locations")
             .then((response) => response.json())
@@ -85,6 +97,10 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (JSON.stringify(formData) === JSON.stringify(initialData)) {
+            setSelectedModifyRecorder(null);
+            return;
+        }
         if (formData.version === ''){
             formData.version = null;
         }

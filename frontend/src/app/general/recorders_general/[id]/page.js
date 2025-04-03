@@ -125,7 +125,7 @@ export default function RecorderDetails() {
                 
                 {/* Titulo */}
                 <h1 className="Montserrat text-[#375B38] text-2xl mt-24 sm:text-3xl font-bold mb-8">
-                    {textContent[language].title}
+                    {textContent[language].title} {id}
                 </h1>
                 {/* Filtros */}
                 <div className="grid grid-cols-12 gap-x-24 gap-y-3 mb-5 text-sm text-[#375B38] Montserrat items-center">

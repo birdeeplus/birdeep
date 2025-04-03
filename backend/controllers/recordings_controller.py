@@ -85,7 +85,9 @@ def query_recordings_paginacion_con_filtros():
     fecha_inicio = request.args.get("fecha_inicio")
     fecha_fin = request.args.get("fecha_fin")
     id_location = request.args.get("id_location")
-
+    filename = request.args.get("filename") 
+    
+    print(filename)
     query = db.session.query(Recordings)
 
     # Aplicar filtros
@@ -101,6 +103,8 @@ def query_recordings_paginacion_con_filtros():
         filters.append(db.func.time(Recordings.time_record) <= hora_fin)
     if id_location:
         filters.append(Recordings.device == id_location)
+    if filename:
+        filters.append(Recordings.filename.ilike(f"%{filename}%"))
 
     if filters:
         query = query.filter(and_(*filters))
@@ -130,7 +134,6 @@ def query_recordings_paginacion_con_filtros():
         "results": data,
         "total": total_count
     }), 200
-
 
 @swag_from(get_swagger_path('recordings.yml'))
 def update_recording(id_record):

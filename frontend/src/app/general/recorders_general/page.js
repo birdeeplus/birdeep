@@ -11,6 +11,9 @@ export default function RecordersGeneral() {
     const [language, setLanguage] = useState("en");
     const [isAdmin, setIsAdmin] = useState(false);
     const [recorders, setRecorders] = useState([]);
+    const [locations, setLocations] = useState([]);
+    const [microphones, setMicrophones] = useState([]);
+    const [processors, setProcessors] = useState([]);
     const [selectedModifyRecorder, setSelectedModifyRecorder] = useState(null);
     const [selectedDeleteRecorder, setSelectedDeleteRecorder] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
@@ -21,13 +24,13 @@ export default function RecordersGeneral() {
         en: {
             title: "Recorders",
             description: "Here you can explore different recorders available in BIRDeep.",
-            tableHeaders: ["ID", "ID Location", "ID Microphone", "ID Processor", "Installation Date", "Version", "Modify", "Delete"],
+            tableHeaders: ["ID", "Nombre", "Location", "Microphone Model", "Processor Model", "Installation Date", "Version", "Modify", "Delete"],
             add: "Add Recorder",
         },
         es: {
             title: "Grabadoras",
             description: "Aquí puedes explorar las diferentes grabadoras disponibles en BIRDeep.",
-            tableHeaders: ["ID", "ID Ubicación", "ID Micrófono", "ID Procesador", "Fecha de Instalación", "Version", "Modificar", "Eliminar"],
+            tableHeaders: ["ID", "Name", "Ubicación", "Modelo del Micrófono", "Modelo del Procesador", "Fecha de Instalación", "Version", "Modificar", "Eliminar"],
             add: "Añadir Grabadora",
         },
     };
@@ -37,6 +40,18 @@ export default function RecordersGeneral() {
             .then((response) => response.json())
             .then((data) => setRecorders(data))
             .catch((error) => console.error("Error fetching recorders:", error));
+        fetch("http://localhost:8080/api/v1/locations")
+            .then((response) => response.json())
+            .then((data) => setLocations(data))
+            .catch((error) => console.error("Error fetching locatios:", error));
+        fetch("http://localhost:8080/api/v1/microphones")
+            .then((response) => response.json())
+            .then((data) => setMicrophones(data))
+            .catch((error) => console.error("Error fetching microphones:", error));
+        fetch("http://localhost:8080/api/v1/processors")
+            .then((response) => response.json())
+            .then((data) => setProcessors(data))
+            .catch((error) => console.error("Error fetching processors:", error));
         const userIsAdmin = localStorage.getItem("is_admin") === "true";
         setIsAdmin(userIsAdmin);
     }, []);
@@ -98,14 +113,17 @@ export default function RecordersGeneral() {
                                 <td className="px-4 py-2 rounded-l-lg">
                                     {recorder.id_recorder}
                                 </td>
-                                <td className="px-4 py-2">
-                                    {recorder.id_location_recorder}
+                                <td className="px-4 py-2 rounded-l-lg">
+                                    {recorder.recorder_name}
                                 </td>
                                 <td className="px-4 py-2">
-                                    {recorder.id_microphone_recorder}
+                                    {locations.find(loc => loc.id_location === recorder.id_location_recorder)?.name_location}
                                 </td>
                                 <td className="px-4 py-2">
-                                    {recorder.id_processor_recorder}
+                                    {microphones.find(mic => mic.id_microphone === recorder.id_microphone_recorder)?.model_microphone}
+                                </td>
+                                <td className="px-4 py-2">
+                                    {processors.find(proc => proc.id_processor === recorder.id_processor_recorder)?.model_processor}
                                 </td>
                                 <td className="px-4 py-2">
                                     {recorder.installation_date}
