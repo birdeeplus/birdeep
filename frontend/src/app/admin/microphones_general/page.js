@@ -4,7 +4,7 @@ import Navbar from "../../../components/navbars/Navbar_general";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AddMicrophonePopup from "../../../components/microphones/AddMicrophonePopup";
 import EditMicrophonePopup from "../../../components/microphones/EditMicrophonePopup";
-import MicrophonesList from "../../../components/microphones/MicrophonesList";  // Importa el nuevo componente
+import MicrophonesList from "../../../components/microphones/MicrophonesList";
 
 export default function MicrophonesTable() {
     const [language, setLanguage] = useState("en");
@@ -19,7 +19,6 @@ export default function MicrophonesTable() {
     const [editFormData, setEditFormData] = useState(null);
     const [recorders, setRecorders] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
-
 
     const toggleLanguage = () => {
         setLanguage((prev) => (prev === "en" ? "es" : "en"));
@@ -84,10 +83,7 @@ export default function MicrophonesTable() {
                 const savedMicrophone = await response.json();
     
                 // Actualiza el estado para incluir el nuevo micrófono en la lista
-                setMicrophones((prev) => [
-                    ...prev,
-                    savedMicrophone
-                ]);
+                setMicrophones((prev) => [...prev, savedMicrophone]);
     
                 // Cierra el formulario y limpia los datos
                 setShowForm(false);
@@ -134,12 +130,14 @@ export default function MicrophonesTable() {
             );
 
             if (response.ok) {
-                fetch("http://localhost:8080/api/v1/microphones-recorders")
-                    .then((response) => response.json())
-                    .then((data) => setMicrophones(data))
-                    .catch((error) =>
-                        console.error("Error fetching microphones:", error)
-                    );
+                // Actualiza la lista de micrófonos con el micrófono editado
+                setMicrophones((prev) =>
+                    prev.map((microphone) =>
+                        microphone.id_microphone === editFormData.id_microphone
+                            ? editFormData  // Reemplaza el micrófono editado
+                            : microphone
+                    )
+                );
 
                 setShowEditForm(false);
                 setEditFormData(null);
@@ -161,7 +159,11 @@ export default function MicrophonesTable() {
 
                 if (response.ok) {
                     alert("Micrófono eliminado correctamente");
-                    setMicrophones(microphones.filter(mic => mic.id_microphone !== id_microphone));
+
+                    // Actualiza la lista de micrófonos después de la eliminación
+                    setMicrophones((prev) =>
+                        prev.filter((microphone) => microphone.id_microphone !== id_microphone)
+                    );
                 } else {
                     alert("Error al eliminar el micrófono");
                 }
@@ -197,8 +199,6 @@ export default function MicrophonesTable() {
                     handleEdit={handleEdit}
                 />
             </div>
-
-            {/* Llamada al componente AddMicrophonePopup */}
             {showForm && (
                 <AddMicrophonePopup
                     showForm={showForm}
@@ -210,7 +210,6 @@ export default function MicrophonesTable() {
                     handleSubmit={handleSubmit}
                 />
             )}
-
             {showEditForm && (
                 <EditMicrophonePopup
                     showEditForm={showEditForm}

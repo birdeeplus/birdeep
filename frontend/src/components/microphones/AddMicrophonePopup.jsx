@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 
 const AddMicrophonePopup = ({ showForm, setShowForm, language, recorders, handleChange, formData, handleSubmit }) => {
+    // Manejador de cambios para el id_recorder
+    const handleRecorderChange = (e) => {
+        const value = e.target.value === "" ? null : e.target.value; // Si es una cadena vacía, lo convertimos en null
+        handleChange({ target: { name: "id_recorder", value } });
+    };
+
     return (
         <>
             {showForm && (
@@ -36,12 +42,12 @@ const AddMicrophonePopup = ({ showForm, setShowForm, language, recorders, handle
                                 <label>Recorder ID:</label>
                                 <select
                                     name="id_recorder"
-                                    value={formData.id_recorder !== null ? String(formData.id_recorder) : ""}
-                                    onChange={handleChange}
+                                    value={formData.id_recorder === null ? "" : formData.id_recorder} // Si id_recorder es null, usamos "" para la opción "Not assigned"
+                                    onChange={handleRecorderChange} // Usamos el manejador para el cambio
                                     className="border w-full p-2"
                                 >
                                     <option value="">-</option>
-                                    <option value="later">{language === "en" ? "Choose later" : "Escoger más tarde"}</option>
+                                    <option value="">{language === "en" ? "Not assigned" : "No asignado"}</option>
                                     {recorders.map((recorder) => (
                                         <option key={recorder.id_recorder} value={String(recorder.id_recorder)}>
                                             {recorder.id_recorder}

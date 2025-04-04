@@ -31,11 +31,18 @@ def insert_new_microphone():
         if 'model_microphone' not in data:
             return jsonify({"error": "model_microphone is required"}), 400
 
+        # Si id_recorder es null, no asignarlo
+        id_recorder = data.get('id_recorder', None)
+        
         # Crear una nueva instancia de Microphones
         new_microphone = Microphones(
             model_microphone=data['model_microphone'],
             comment_microphone=data.get('comment_microphone')  # Este campo es opcional
         )
+
+        # Si id_recorder no es null, asociarlo con el micrófono
+        if id_recorder is not None:
+            new_microphone.id_recorder = id_recorder
 
         # Agregar el nuevo micrófono a la base de datos
         db.session.add(new_microphone)
@@ -45,7 +52,8 @@ def insert_new_microphone():
         return jsonify({
             "id_microphone": new_microphone.id_microphone,
             "model_microphone": new_microphone.model_microphone,
-            "comment_microphone": new_microphone.comment_microphone
+            "comment_microphone": new_microphone.comment_microphone,
+            "id_recorder": new_microphone.id_recorder  # Incluimos id_recorder en la respuesta
         }), 201
 
     except Exception as e:
@@ -53,11 +61,6 @@ def insert_new_microphone():
         db.session.rollback()
         return jsonify({"error": "Internal server error"}), 500
 
-
-    except Exception as e:
-        print(f"Error inserting microphone: {e}")
-        db.session.rollback()
-        return jsonify({"error": "Internal server error"}), 500
 
 
 @swag_from(get_swagger_path('microphones.yml'))

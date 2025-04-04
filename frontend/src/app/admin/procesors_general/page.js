@@ -67,8 +67,6 @@ export default function ProcessorsGeneral() {
             console.error("Error fetching recorders:", error);
         }
     };
-
-    // Añadir nuevo procesador
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -218,7 +216,7 @@ export default function ProcessorsGeneral() {
                     editFormData={editFormData}
                     setEditFormData={setEditFormData}
                     setShowEditForm={setShowEditForm}
-                    handleUpdate={fetchProcessors} // Asegúrate de que fetchProcessors haga la actualización correcta
+                    handleUpdate={handleUpdate}
                     recorders={recorders}
                     language={language}
                 />
