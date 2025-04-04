@@ -6,6 +6,9 @@ from models import Recorders, Microphones, Recordings
 from models.database import db
 from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
 from flasgger import swag_from
+from pprint import pprint
+from flask import jsonify
+
 
 # Obtener la ruta absoluta de los archivos de documentación Swagger
 BASE_SWAGGER_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../swagger'))
@@ -20,16 +23,73 @@ def insert_new_microphone():
     """
     Insert a new microphone into the database
     """
-    response = insert_values_in_db(request, Microphones)
-    return jsonify(response), 200
+    try:
+        # Extraer datos de la solicitud JSON
+        data = request.get_json()
+
+        # Validar los datos entrantes
+        if 'model_microphone' not in data:
+            return jsonify({"error": "model_microphone is required"}), 400
+
+        # Crear una nueva instancia de Microphones
+        new_microphone = Microphones(
+            model_microphone=data['model_microphone'],
+            comment_microphone=data.get('comment_microphone')  # Este campo es opcional
+        )
+
+        # Agregar el nuevo micrófono a la base de datos
+        db.session.add(new_microphone)
+        db.session.commit()
+
+        # Devolver una respuesta con los datos del nuevo micrófono
+        return jsonify({
+            "id_microphone": new_microphone.id_microphone,
+            "model_microphone": new_microphone.model_microphone,
+            "comment_microphone": new_microphone.comment_microphone
+        }), 201
+
+    except Exception as e:
+        print(f"Error inserting microphone: {e}")
+        db.session.rollback()
+        return jsonify({"error": "Internal server error"}), 500
+
+
+    except Exception as e:
+        print(f"Error inserting microphone: {e}")
+        db.session.rollback()
+        return jsonify({"error": "Internal server error"}), 500
+
 
 @swag_from(get_swagger_path('microphones.yml'))
 def query_microphones():
     """
     Query microphones from the database
     """
-    response = get_values_from_db(request, Microphones)
-    return jsonify(response), 200
+    response = (
+        db.session.query(
+            Microphones.id_microphone,
+            Microphones.model_microphone,
+            Microphones.comment_microphone,
+            Recorders.id_recorder  # Agregamos el id_recorder
+        )
+        .join(Recorders, Recorders.id_microphone_recorder == Microphones.id_microphone)
+        .all()
+    )
+
+    # Convertimos los resultados en una lista de diccionarios
+    data = [
+        {
+            "id_microphone": mic.id_microphone,
+            "model_microphone": mic.model_microphone,
+            "comment_microphone": mic.comment_microphone,
+            "id_recorder": mic.id_recorder,  # Ahora incluimos el id_recorder
+        }
+        for mic in response
+    ]
+
+    return jsonify(data), 200
+
+
 
 @swag_from(get_swagger_path('microphones.yml'))
 def update_microphone(id_microphone):

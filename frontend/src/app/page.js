@@ -1,13 +1,13 @@
-// src/app/page.jsx
-
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Importa useRouter
 import Image from "next/image";
 import Navbar from "../components/navbars/Navbar_general";
 import "../app/styles/fonts.css";
 
 export default function Home() {
   const [language, setLanguage] = useState("es");
+  const router = useRouter(); // Instancia de useRouter
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "es" : "en"));
@@ -24,7 +24,7 @@ export default function Home() {
       title: "BIRDEEP+",
       description:
         "¡Explora y descarga audios de las aves de Doñana! Conéctate con la naturaleza y disfruta de su belleza ahora mismo.",
-      button: "descubrir",
+      button: "Descubrir",
     },
   };
 
@@ -55,8 +55,11 @@ export default function Home() {
             {textContent[language].description}
           </p>
 
-          {/* Botón con diseño compacto */}
-          <button className="mt-5 px-3 py-1 border-2 border-[#375B38] text-[#375B38] rounded-full flex items-center group transition-all duration-300 ease-in-out hover:bg-[#375B38] hover:text-white Montserrat text-sm sm:text-base font-semibold">
+          {/* Botón con redirección */}
+          <button
+            onClick={() => router.push("/general/locations_general")}
+            className="mt-5 px-3 py-1 border-2 border-[#375B38] text-[#375B38] rounded-full flex items-center group transition-all duration-300 ease-in-out hover:bg-[#375B38] hover:text-white Montserrat text-sm sm:text-base font-semibold"
+          >
             <span className="mr-2">{textContent[language].button}</span>
             <span className="text-lg sm:text-xl leading-none">›</span>
           </button>

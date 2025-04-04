@@ -26,10 +26,32 @@ def insert_new_processor():
 @swag_from(get_swagger_path('processors.yml'))
 def query_processors():
     """
-    Query processors from the database
+    Query processors from the database, including their associated recorder ID.
     """
-    response = get_values_from_db(request, Processors)
-    return jsonify(response), 200
+    response = (
+        db.session.query(
+            Processors.id_processor,
+            Processors.model_processor,
+            Processors.comment_processor,
+            Recorders.id_recorder  # Agregamos el id_recorder
+        )
+        .join(Recorders, Recorders.id_processor_recorder == Processors.id_processor)
+        .all()
+    )
+
+    # Convertimos los resultados en una lista de diccionarios
+    data = [
+        {
+            "id_processor": proc.id_processor,
+            "model_processor": proc.model_processor,
+            "comment_processor": proc.comment_processor,
+            "id_recorder": proc.id_recorder,  # Ahora incluimos el id_recorder
+        }
+        for proc in response
+    ]
+
+    return jsonify(data), 200
+
 
 @swag_from(get_swagger_path('processors.yml'))
 def update_processor(id_processor):
