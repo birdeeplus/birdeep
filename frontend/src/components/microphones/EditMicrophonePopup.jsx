@@ -7,6 +7,7 @@ const EditMicrophonePopup = ({
     formData,
     handleChange,
     handleSubmit,
+    recorders,
 }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -47,9 +48,11 @@ const EditMicrophonePopup = ({
                             onChange={handleChange}
                             className="border w-full p-2"
                         >
-                            <option value="">{language === "en" ? "Not assigned" : "No asignado"}</option>
-                            {/* Aquí puedes mapear los IDs de grabadores si tienes la lista */}
-                            {/* <option value="1">1</option> */}
+                            {recorders.map((recorder) => (
+                                <option key={recorder.id_recorder} value={recorder.id_recorder}>
+                                    {recorder.id_recorder}
+                                </option>
+                            ))}
                         </select>
                     </div>
 

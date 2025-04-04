@@ -216,7 +216,7 @@ export default function MicrophonesTable() {
                     showEditForm={showEditForm}
                     setShowEditForm={setShowEditForm}
                     language={language}
-                    formData={editFormData} // Form data para edición
+                    formData={editFormData} 
                     handleChange={(e) => {
                         const { name, value } = e.target;
                         setEditFormData((prevData) => ({
@@ -224,7 +224,8 @@ export default function MicrophonesTable() {
                             [name]: value,
                         }));
                     }}
-                    handleSubmit={handleUpdate} // Función para manejar la actualización
+                    handleSubmit={handleUpdate} 
+                    recorders={recorders} 
                 />
             )}
         </div>
