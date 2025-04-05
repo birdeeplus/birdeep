@@ -101,10 +101,22 @@ def query_recordings_paginacion_con_filtros():
         filters.append(db.func.time(Recordings.time_record) >= hora_inicio)
     if hora_fin:
         filters.append(db.func.time(Recordings.time_record) <= hora_fin)
-    if id_location:
-        filters.append(Recordings.device == id_location)
     if filename:
         filters.append(Recordings.filename.ilike(f"%{filename}%"))
+    if id_location:
+        recorder_ids = db.session.query(Recorders.id_recorder).filter(
+            Recorders.id_location_recorder == id_location
+        ).all()
+
+        # Extraer solo los IDs (vienen como lista de tuplas)
+        recorder_ids = [r[0] for r in recorder_ids]
+
+        if not recorder_ids:
+            # Si no hay grabadoras en esa localización, devolver vacío
+            return jsonify({"results": [], "total": 0}), 200
+
+        filters.append(Recordings.id_recorder_recordings.in_(recorder_ids))
+
 
     if filters:
         query = query.filter(and_(*filters))
