@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"; // Importa useRouter
 import Image from "next/image";
 import Navbar from "../components/navbars/Navbar_general";
 import "../app/styles/fonts.css";
+import Footer from "../components/footer/Footer";
 
 export default function Home() {
   const [language, setLanguage] = useState("es");
@@ -65,6 +66,8 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

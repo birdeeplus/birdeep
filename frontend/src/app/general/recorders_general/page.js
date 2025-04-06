@@ -6,6 +6,9 @@ import { FaTrash, FaEdit, FaPlus } from "react-icons/fa";
 import AddRecorderForm from "../../../components/recorders/AddRecorderForm";
 import EditRecorderForm from "../../../components/recorders/EditRecorderForm";
 import DeleteRecorderModal from "../../../components/recorders/DeleteRecorderModal";
+import RecorderInfoModal from "../../../components/recorders/RecorderDetailsModal";
+import Image from "next/image";
+
 
 export default function RecordersGeneral() {
     const [language, setLanguage] = useState("en");
@@ -18,6 +21,10 @@ export default function RecordersGeneral() {
     const [selectedDeleteRecorder, setSelectedDeleteRecorder] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedInfoRecorder, setSelectedInfoRecorder] = useState(null);
+    const [selectedLocation, setSelectedLocation] = useState("");
+    const [allRecorders, setAllRecorders] = useState([]);
+
     const router = useRouter();
 
     const textContent = {
@@ -25,20 +32,23 @@ export default function RecordersGeneral() {
             title: "Recorders",
             description: "Here you can explore different recorders available in BIRDeep.",
             tableHeaders: ["ID", "Nombre", "Location", "Microphone Model", "Processor Model", "Installation Date", "Version", "Modify", "Delete"],
-            add: "Add Recorder",
+            add: "add",
         },
         es: {
             title: "Grabadoras",
             description: "Aquí puedes explorar las diferentes grabadoras disponibles en BIRDeep.",
             tableHeaders: ["ID", "Name", "Ubicación", "Modelo del Micrófono", "Modelo del Procesador", "Fecha de Instalación", "Version", "Modificar", "Eliminar"],
-            add: "Añadir Grabadora",
+            add: "añadir",
         },
     };
 
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/recorders")
             .then((response) => response.json())
-            .then((data) => setRecorders(data))
+            .then((data) => {
+                setRecorders(data);
+                setAllRecorders(data);
+            })
             .catch((error) => console.error("Error fetching recorders:", error));
         fetch("http://localhost:8080/api/v1/locations")
             .then((response) => response.json())
@@ -77,91 +87,146 @@ export default function RecordersGeneral() {
     };
 
     return (
-        <div className="relative w-full h-screen">
+        <div className="relative w-full h-screen bg-[#F8F8F8]">
             <Navbar toggleLanguage={() => setLanguage(language === "en" ? "es" : "en")} language={language} />
             <br />
             <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-80 pb-36 mt-20">
-                <h1 className="text-[#375B38] text-4xl font-bold">{textContent[language].title}</h1>
-                <p className="text-[#375B38] mt-4 text-lg max-w-md">{textContent[language].description}</p>
+                <div className="w-full flex flex-col gap-4">
+                    <div className="flex justify-between items-center w-full mt-3">
+                        <h1 className="text-[#375B38] text-4xl font-montserrat font-bold">
+                            {textContent[language].title}
+                        </h1>
 
-                {isAdmin && (
-                    <button
-                        onClick={() => setIsAdding(true)}
-                        className="mt-4 px-4 py-2 bg-[#375B38] text-white rounded-full flex items-center"
-                    >
-                        <FaPlus className="mr-2" /> {textContent[language].add}
-                    </button>
-                )}
-
-                <table className="text-[#375B38] w-full mt-8 rounded-lg overflow-hidden">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            {textContent[language].tableHeaders.map((header, index) => (
-                                <th key={index} className="px-4 py-2">
-                                    {header}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {recorders.map((recorder) => (
-                            <tr
-                                key={recorder.id_recorder}
-                                className="text-center cursor-pointer hover:bg-gray-100"
-                                onClick={() => router.push(`/general/recorders_general/${recorder.id_recorder}`)}
+                        {isAdmin && (
+                            <button
+                                onClick={() => setIsAdding(true)}
+                                className="border-2 border-[#375B38] text-[#375B38] px-4 py-1 rounded-full flex items-center gap-2 hover:bg-[#375B38] hover:text-white transition"
                             >
-                                <td className="px-4 py-2 rounded-l-lg">
-                                    {recorder.id_recorder}
-                                </td>
-                                <td className="px-4 py-2 rounded-l-lg">
-                                    {recorder.recorder_name}
-                                </td>
-                                <td className="px-4 py-2">
-                                    {locations.find(loc => loc.id_location === recorder.id_location_recorder)?.name_location}
-                                </td>
-                                <td className="px-4 py-2">
-                                    {microphones.find(mic => mic.id_microphone === recorder.id_microphone_recorder)?.model_microphone}
-                                </td>
-                                <td className="px-4 py-2">
-                                    {processors.find(proc => proc.id_processor === recorder.id_processor_recorder)?.model_processor}
-                                </td>
-                                <td className="px-4 py-2">
-                                    {recorder.installation_date}
-                                </td>
-                                <td className="px-4 py-2">
-                                    {recorder.version}
-                                </td>
+                                {textContent[language].add}
+                                <FaPlus className="text-xs" />
+                            </button>
+                        )}
+                    </div>
 
-                                {isAdmin && (
-                                    <>
-                                        <td className="px-4 py-2">
+                    {/* Filtro de localizaciones + botones en la misma fila */}
+                    <div className="flex items-center gap-4 mt-6 flex-wrap">
+                        {/* Icono con tooltip */}
+                        <div className="relative group flex flex-col items-center">
+                            <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
+                            <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                                {language === "es" ? "Ubicación" : "Location"}
+                            </div>
+                        </div>
+
+                        <select
+                            value={selectedLocation}
+                            onChange={(e) => setSelectedLocation(e.target.value)}
+                            className="bg-white rounded px-3 py-1 w-full max-w-xs border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+                        >
+                            <option value="">{language === "es" ? "localizaciones" : "locations"}</option>
+                            {locations.map((location) => (
+                                <option key={location.id_location} value={location.id_location}>
+                                    {location.name_location}
+                                </option>
+                            ))}
+                        </select>
+
+                        <button
+                            onClick={() => {
+                                if (selectedLocation) {
+                                    const filtered = allRecorders.filter(r => r.id_location_recorder === parseInt(selectedLocation));
+                                    setRecorders(filtered);
+                                }
+                            }}
+                            className="px-4 py-1 bg-[#375B38] text-white rounded hover:bg-[#2c482d] text-sm"
+                        >
+                            {language === "es" ? "Aplicar filtro" : "Apply filter"}
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                setSelectedLocation("");
+                                setRecorders(allRecorders);
+                            }}
+                            className="px-4 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 text-sm"
+                        >
+                            {language === "es" ? "Quitar filtro" : "Clear filter"}
+                        </button>
+                    </div>
+                </div>
+
+
+                <div className="flex flex-col gap-2 mt-6 w-full">
+
+                    <p className="italic text-sm text-gray-500 mb-3">
+                        {language === "es" ? "todas las grabadoras" : "all recorders"}
+                    </p>
+
+                    {recorders.map((recorder) => {
+                        const location = locations.find(loc => loc.id_location === recorder.id_location_recorder)?.name_location;
+                        const mic = microphones.find(m => m.id_microphone === recorder.id_microphone_recorder)?.model_microphone;
+                        const proc = processors.find(p => p.id_processor === recorder.id_processor_recorder)?.model_processor;
+
+                        return (
+                            <div
+                                key={recorder.id_recorder}
+                                className="flex justify-between items-centerrounded-xl px-4 py-2 hover:bg-white transition w-full"
+                            >
+                                <button
+                                    onClick={() => router.push(`/general/recorders_general/${recorder.id_recorder}`)}
+                                    className="flex items-center gap-2 font-medium px-4 py-2 rounded-xl transition-all bg-white text-[#375B38] hover:bg-[#375B38] hover:text-white"
+                                >
+                                    grabadora #{recorder.recorder_name}
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+
+
+
+                                <div className="flex items-center gap-6 text-[#375B38]">
+                                    {isAdmin && (
+                                        <>
                                             <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setSelectedModifyRecorder(recorder);
-                                                }}
-                                                className="text-black-500 hover:text-black-700"
+                                                onClick={() => setSelectedModifyRecorder(recorder)}
+                                                className="hover:text-blue-600"
+                                                title="Modificar"
                                             >
                                                 <FaEdit />
                                             </button>
-                                        </td>
-                                        <td className="px-4 py-2 rounded-r-lg">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDeleteClick(recorder);
-                                                }}
-                                                className="text-black-500 hover:text-black-700"
-                                            >
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </>
-                                )}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+
+                                            <Image
+                                                src="/iconos/eliminar.png"
+                                                alt="Eliminar"
+                                                width={20}
+                                                height={20}
+                                                className="cursor-pointer hover:opacity-70"
+                                                onClick={() => handleDeleteClick(recorder)}
+                                                title="Eliminar"
+                                            />
+
+                                        </>
+                                    )}
+                                    <button
+                                        onClick={() =>
+                                            setSelectedInfoRecorder({
+                                                recorder,
+                                                location: locations.find(loc => loc.id_location === recorder.id_location_recorder),
+                                                microphone: microphones.find(m => m.id_microphone === recorder.id_microphone_recorder),
+                                                processor: processors.find(p => p.id_processor === recorder.id_processor_recorder),
+                                            })
+                                        }
+                                        title="Información"
+                                    >
+                                        <Image src="/iconos/info.png" alt="info" width={16} height={16} />
+                                    </button>
+                                </div>
+                            </div>
+
+                        );
+                    })}
+                </div>
+
             </div>
 
             {isAdding && (
@@ -189,6 +254,17 @@ export default function RecordersGeneral() {
                     onClose={() => setIsDeleteModalOpen(false)}
                     onConfirm={handleDeleteConfirm}
                     recorderName={selectedDeleteRecorder?.id_recorder || ""}
+                />
+            )}
+
+            {selectedInfoRecorder && (
+                <RecorderInfoModal
+                    recorder={selectedInfoRecorder.recorder}
+                    location={selectedInfoRecorder.location}
+                    microphone={selectedInfoRecorder.microphone}
+                    processor={selectedInfoRecorder.processor}
+                    language={language}
+                    onClose={() => setSelectedInfoRecorder(null)}
                 />
             )}
         </div>

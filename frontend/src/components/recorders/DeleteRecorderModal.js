@@ -14,7 +14,7 @@ export default function DeleteConfirmationModal({ isOpen, onClose, onConfirm, re
           &times;
         </button>
         <p className="text-center text-lg font-semibold mb-4">
-          Are you sure you want to delete "{recorderName}"?
+          Are you sure you want to delete &quot;{recorderName}&quot;?
         </p>
         <div className="flex justify-center gap-4">
           <button
