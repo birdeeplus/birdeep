@@ -49,6 +49,8 @@ function RecordingsGeneral() {
       if (fechaInicio) params.append("fecha_inicio", fechaInicio);
       if (fechaFin) params.append("fecha_fin", fechaFin);
       if (selectedLocation) params.append("id_location", selectedLocation);
+      console.log("Localización seleccionada:", selectedLocation);
+
     }
 
     if (filename) {
