@@ -4,81 +4,93 @@ import os
 from flask import request, jsonify
 from models import Processors, Recorders, Recordings
 from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
-from flasgger import swag_from
 from models.database import db
 
-# Obtener la ruta absoluta de los archivos de documentación Swagger
-BASE_SWAGGER_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../swagger'))
-
-def get_swagger_path(filename):
-    """Devuelve la ruta completa del archivo Swagger si existe, de lo contrario, devuelve None"""
-    filepath = os.path.join(BASE_SWAGGER_PATH, filename)
-    return filepath if os.path.exists(filepath) else None
-
-@swag_from(get_swagger_path('processors.yml'))
 def insert_new_processor():
     """
-    Insert a new processor into the database
+    Insert a new processor into the database.
+
+    This function receives a POST request with data for a new processor.
+    It calls a utility function to insert the processor data into the database and returns a response.
     """
+
+    # Insert the new processor into the database using the insert_values_in_db function
     response = insert_values_in_db(request, Processors)
+
+    # Return a JSON response with the result of the insertion
     return jsonify(response), 200
 
-@swag_from(get_swagger_path('processors.yml'))
 def query_processors():
     """
     Query processors from the database, including their associated recorder ID.
+
+    This function queries the database for processors and joins the Recorders table to get the recorder ID.
+    It returns the processor data along with the recorder ID in a JSON response.
     """
+
     response = (
         db.session.query(
             Processors.id_processor,
             Processors.model_processor,
             Processors.comment_processor,
-            Recorders.id_recorder  # Agregamos el id_recorder
+            Recorders.id_recorder  # Include the recorder ID
         )
         .join(Recorders, Recorders.id_processor_recorder == Processors.id_processor)
         .all()
     )
 
-    # Convertimos los resultados en una lista de diccionarios
+    # Convert the query results into a list of dictionaries
     data = [
         {
             "id_processor": proc.id_processor,
             "model_processor": proc.model_processor,
             "comment_processor": proc.comment_processor,
-            "id_recorder": proc.id_recorder,  # Ahora incluimos el id_recorder
+            "id_recorder": proc.id_recorder,  # Include the recorder ID
         }
         for proc in response
     ]
 
+    # Return the data in JSON format
     return jsonify(data), 200
 
-
-@swag_from(get_swagger_path('processors.yml'))
 def update_processor(id_processor):
     """
-    Update a processor entry in the database
+    Update a processor entry in the database.
+
+    This function receives a PUT request with updated data for a processor.
+    It calls a utility function to update the processor's details in the database and returns a response.
     """
+
+    # Update the processor using the update_values_in_db function
     response = update_values_in_db(request, id_processor, Processors)
+
+    # Return a JSON response with the result of the update
     return jsonify(response), 200
 
-@swag_from(get_swagger_path('processors.yml'))
 def delete_processor(id_processor):
     """
     Delete a processor entry from the database.
+
+    This function deletes a processor, its associated recorders, and the recordings related to those recorders.
+    It ensures that all related data is cleaned up before deleting the processor.
     """
 
-    # Eliminar las grabaciones asociadas a los recorders que dependen del processor
+    # Get all recorders associated with the processor
     recorders = db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).all()
 
+    # Delete all recordings associated with the recorders
     for recorder in recorders:
         db.session.query(Recordings).filter_by(id_recorder_recordings=recorder.id_recorder).delete()
 
-    # Ahora eliminamos los recorders asociados al processor
+    # Now delete the recorders associated with the processor
     db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).delete()
 
-    # Finalmente, eliminamos el processor
+    # Finally, delete the processor itself
     response = delete_values_in_db(id_processor, Processors)
     
+    # Commit the transaction to apply changes to the database
     db.session.commit()
+
+    # Return a JSON response with the result of the deletion
     return jsonify(response), 200
 

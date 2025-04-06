@@ -4,32 +4,36 @@ import os
 from flask import request, jsonify, current_app
 from flask_jwt_extended import create_access_token
 from utils.autentication import jwt_token_creation  
-from flasgger import swag_from
 
-# Obtener la ruta absoluta de los archivos de documentación Swagger
-BASE_SWAGGER_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../swagger'))
-
-def get_swagger_path(filename):
-    """Devuelve la ruta completa del archivo Swagger si existe, de lo contrario, devuelve None"""
-    filepath = os.path.join(BASE_SWAGGER_PATH, filename)
-    return filepath if os.path.exists(filepath) else None
-
-@swag_from(get_swagger_path('login.yml'))
 def login():
     """
     User login endpoint - Generates JWT Token
+    
+    This endpoint accepts a POST request with user credentials (username and password).
+    It validates the credentials and, if they are correct, generates a JWT token that can be 
+    used for future authenticated requests. The endpoint also checks if the user is an admin 
+    based on the username and includes this information in the response.
+    
+    Returns:
+        JSON response containing the generated JWT token and admin status.
     """
+
+    # Retrieve the valid username and password from the application's config
     valid_user = current_app.config['JWT_USER']
     valid_password = current_app.config['JWT_PASSWORD']
     
+    # Call a helper function to create a JWT token, passing the request, valid user, and password
     token = jwt_token_creation(request, valid_user, valid_password)
     
+    # Check if the token creation was successful
     if token['code'] == 200:
-        # Aquí estamos agregando la lógica para verificar si el usuario es admin.
-        # En este caso, lo estamos configurando estáticamente (puedes cambiar esto según tu lógica).
-        is_admin = True if valid_user == "BirdeepAdmin" else False  # Cambiar según tu lógica
         
-        # Responder con el token y la información sobre el rol (si es admin o no)
+        # Logic to check if the user is an admin
+        # This is currently set statically based on the username, but can be modified as needed
+        is_admin = True if valid_user == "BirdeepAdmin" else False 
+        
+        # Return the JWT token along with the admin status in the response
         return jsonify(access_token=token['token'], is_admin=is_admin), 200
     else:
+        # If the token creation failed, return the error message and code from the token
         return jsonify(message=token['message']), token['code']
