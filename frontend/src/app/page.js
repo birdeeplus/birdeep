@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Importa useRouter
 import Image from "next/image";
 import Navbar from "../components/navbars/Navbar_general";
@@ -11,8 +11,10 @@ export default function Home() {
   const router = useRouter(); // Instancia de useRouter
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "es" : "en"));
-  };
+    const newLang = language === "en" ? "es" : "en";
+    setLanguage(newLang);
+    localStorage.setItem("language", newLang);
+  };  
 
   const textContent = {
     en: {
@@ -28,6 +30,11 @@ export default function Home() {
       button: "Descubrir",
     },
   };
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language") || "es";
+    setLanguage(savedLanguage);
+  }, []);
 
   return (
     <div className="relative w-full h-screen">

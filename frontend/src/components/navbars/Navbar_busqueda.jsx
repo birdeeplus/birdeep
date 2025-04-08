@@ -52,16 +52,32 @@ export default function Navbar({ toggleLanguage, language }) {
             </div>
 
             {/* Barra de búsqueda */}
-            <div className="flex-grow mx-10">
-                <input
-                    type="text"
-                    placeholder={language === "en" ? "Search..." : "Buscar..."}
-                    className="w-2/3 py-2 px-4 border border-gray-300 rounded-full focus:outline-none focus:border-black"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                />
+            <div className="flex-grow mx-10 flex">
+                <div className="relative w-2/3">
+                    <input
+                        type="text"
+                        placeholder={language === "en" ? "Search..." : "Buscar..."}
+                        className="w-full py-2 px-4 pr-10 border border-gray-300 rounded-full focus:outline-none focus:border-black"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    />
+                    {searchTerm && (
+                        <button
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black"
+                            onClick={() => {
+                                setSearchTerm("");
+                                router.push('/general/recordings_general');
+                            }}
+                            aria-label="Clear search"
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
             </div>
+
+
 
             {/* Controles de Usuario */}
             <div className="flex items-center gap-4 pr-6">

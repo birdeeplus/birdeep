@@ -16,12 +16,18 @@ export default function LocationDetails() {
     const router = useRouter();
 
     const toggleLanguage = () => {
-        setLanguage((prev) => (prev === "en" ? "es" : "en"));  
+        const newLang = language === "en" ? "es" : "en";
+        setLanguage(newLang);
+        localStorage.setItem("language", newLang);
     };
+      
 
     useEffect(() => {
         if (!id) return;
     
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
+
         // Cargar la información de la ubicación
         fetch(`http://localhost:8080/api/v1/locations/${id}`)
             .then((response) => response.json())

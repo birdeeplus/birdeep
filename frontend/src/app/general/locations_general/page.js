@@ -21,8 +21,11 @@ export default function LocationsGeneral() {
     const router = useRouter();
 
     const toggleLanguage = () => {
-        setLanguage((prev) => (prev === "en" ? "es" : "en"));
+        const newLang = language === "en" ? "es" : "en";
+        setLanguage(newLang);
+        localStorage.setItem("language", newLang);
     };
+      
 
     const fetchLocations = () => {
         fetch("http://localhost:8080/api/v1/locations")
@@ -37,6 +40,9 @@ export default function LocationsGeneral() {
     };
 
     useEffect(() => {
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
+
         const updateAdminStatus = () => {
             const userRole = localStorage.getItem("is_admin");
             setIsAdmin(userRole === "true");

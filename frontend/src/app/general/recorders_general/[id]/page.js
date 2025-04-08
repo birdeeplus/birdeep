@@ -25,10 +25,16 @@ export default function RecorderDetails() {
 
 
     const toggleLanguage = () => {
-        setLanguage((prev) => (prev === "en" ? "es" : "en"));
+        const newLang = language === "en" ? "es" : "en";
+        setLanguage(newLang);
+        localStorage.setItem("language", newLang);
     };
+      
 
     useEffect(() => {
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
+        
         if (id) {
             fetch(`http://localhost:8080/api/v1/recordings_paginacion?page=${currentPage}&per_page=${perPage}&id_recorder_recordings=${id}`)
                 .then((response) => response.json())

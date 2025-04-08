@@ -42,7 +42,17 @@ export default function RecordersGeneral() {
         },
     };
 
+    const toggleLanguage = () => {
+        const newLang = language === "en" ? "es" : "en";
+        setLanguage(newLang);
+        localStorage.setItem("language", newLang);
+    };
+      
+
     useEffect(() => {
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
+
         fetch("http://localhost:8080/api/v1/recorders")
             .then((response) => response.json())
             .then((data) => {
@@ -88,7 +98,7 @@ export default function RecordersGeneral() {
 
     return (
         <div className="relative w-full h-screen bg-[#F8F8F8]">
-            <Navbar toggleLanguage={() => setLanguage(language === "en" ? "es" : "en")} language={language} />
+            <Navbar toggleLanguage={toggleLanguage} language={language} />
             <br />
             <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-80 pb-36 mt-20">
                 <div className="w-full flex flex-col gap-4">
@@ -176,7 +186,7 @@ export default function RecordersGeneral() {
                                     onClick={() => router.push(`/general/recorders_general/${recorder.id_recorder}`)}
                                     className="flex items-center gap-2 font-medium px-4 py-2 rounded-xl transition-all bg-white text-[#375B38] hover:bg-[#375B38] hover:text-white"
                                 >
-                                    grabadora #{recorder.recorder_name}
+                                    {language === "es" ? "grabadora" : "recorder"} #{recorder.recorder_name}
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
@@ -190,7 +200,7 @@ export default function RecordersGeneral() {
                                             <button
                                                 onClick={() => setSelectedModifyRecorder(recorder)}
                                                 className="hover:text-blue-600"
-                                                title="Modificar"
+                                                title={language === "es" ? "Modificar" : "Edit"}
                                             >
                                                 <FaEdit />
                                             </button>
@@ -202,7 +212,7 @@ export default function RecordersGeneral() {
                                                 height={20}
                                                 className="cursor-pointer hover:opacity-70"
                                                 onClick={() => handleDeleteClick(recorder)}
-                                                title="Eliminar"
+                                                title={language === "es" ? "Eliminar" : "Delete"}
                                             />
 
                                         </>
@@ -216,7 +226,7 @@ export default function RecordersGeneral() {
                                                 processor: processors.find(p => p.id_processor === recorder.id_processor_recorder),
                                             })
                                         }
-                                        title="Información"
+                                        title={language === "es" ? "Información" : "Information"}
                                     >
                                         <Image src="/iconos/info.png" alt="info" width={16} height={16} />
                                     </button>

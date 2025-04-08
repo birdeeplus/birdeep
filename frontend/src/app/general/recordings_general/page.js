@@ -33,11 +33,18 @@ function RecordingsGeneral() {
   const filename = searchParams.get("filename") || "";
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "es" : "en"));
+    const newLang = language === "en" ? "es" : "en";
+    setLanguage(newLang);
+    localStorage.setItem("language", newLang);
   };
+  
 
   useEffect(() => {
     setLoading(true);
+      
+    const savedLanguage = localStorage.getItem("language") || "es";
+    setLanguage(savedLanguage);
+
     const params = new URLSearchParams({
       page: currentPage,
       per_page: perPage,

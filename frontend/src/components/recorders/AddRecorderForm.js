@@ -76,6 +76,12 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
         if (formData.status === ''){
             formData.status = null;
         }
+        if (formData.id_microphone_recorder=== ''){
+            formData.id_microphone_recorder = null;
+        }
+        if (formData.id_processor_recorder === ''){
+            formData.id_processor_recorder = null;
+        }
         try {
             const response = await fetch("http://localhost:8080/api/v1/recorders", {
                 method: "POST",
@@ -132,8 +138,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                         name="id_microphone_recorder" 
                         value={formData.id_microphone_recorder} 
                         onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                        required>
+                        className="w-full p-2 border border-gray-300 rounded">
                         <option value="">{textContent[language].selectMicrophone}</option>
                         {microphones.map((mic) => (
                             <option key={mic.id_microphone} value={mic.id_microphone}>{mic.id_microphone}</option>
@@ -143,8 +148,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                         name="id_processor_recorder" 
                         value={formData.id_processor_recorder} 
                         onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                        required>
+                        className="w-full p-2 border border-gray-300 rounded">
                         <option value="">{textContent[language].selectProcessor}</option>
                         {processors.map((proc) => (
                             <option key={proc.id_processor} value={proc.id_processor}>{proc.id_processor}</option>

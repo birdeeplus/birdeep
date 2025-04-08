@@ -21,10 +21,16 @@ export default function MicrophonesTable() {
     const [isAdmin, setIsAdmin] = useState(false);
 
     const toggleLanguage = () => {
-        setLanguage((prev) => (prev === "en" ? "es" : "en"));
-    };
+        const newLang = language === "en" ? "es" : "en";
+        setLanguage(newLang);
+        localStorage.setItem("language", newLang);
+      };
+      
 
     useEffect(() => {
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
+
         const updateAdminStatus = () => {
             const userRole = localStorage.getItem("is_admin");
             const isUserAdmin = userRole === "true";

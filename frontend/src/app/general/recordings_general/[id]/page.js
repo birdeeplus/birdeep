@@ -13,11 +13,17 @@ export default function RecordingDetails() {
     const router = useRouter();
 
     const toggleLanguage = () => {
-      setLanguage((prev) => (prev === "en" ? "es" : "en"));  // Cambiar el idioma
+        const newLang = language === "en" ? "es" : "en";
+        setLanguage(newLang);
+        localStorage.setItem("language", newLang);
     };
+      
 
     useEffect(() => {
         if (!id) return;
+        
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
         
         // Fetch recording details
         fetch(`http://localhost:8080/api/v1/recordings/${id}`)
