@@ -7,7 +7,7 @@ microphones_bp = Blueprint('microphones', __name__)
 
 @microphones_bp.route('/api/v1/microphones', methods=['POST'])
 @swag_from({
-    'tags': ['Operations related to microphones in the BIRDeep database'],
+    'tags': ['Microphones operations'],
     'operationId': 'insert_new_microphone',
     'summary': 'Insert a new microphone',
     'description': 'Adds a new microphone to the database including association with a recorder.',
@@ -75,7 +75,7 @@ def insert_new_microphone_route():
 
 @microphones_bp.route('/api/v1/microphones', methods=['GET'])
 @swag_from({
-    'tags': ['Operations related to microphones in the BIRDeep database'],
+    'tags': ['Microphones operations'],
     'operationId': 'query_microphones',
     'summary': 'Get all microphones',
     'description': 'Fetches all microphones in the database, including associated recorders.',
@@ -111,7 +111,7 @@ def query_microphones_route():
 
 @microphones_bp.route('/api/v1/microphones/<int:id_microphone>', methods=['PUT'])
 @swag_from({
-    'tags': ['Operations related to microphones in the BIRDeep database'],
+    'tags': ['Microphones operations'],
     'operationId': 'update_microphone',
     'summary': 'Update a microphone by ID',
     'description': 'Updates the details of an existing microphone by its ID.',
@@ -185,7 +185,7 @@ def update_microphone_route(id_microphone):
 
 @microphones_bp.route('/api/v1/microphones/<int:id_microphone>', methods=['DELETE'])
 @swag_from({
-    'tags': ['Operations related to microphones in the BIRDeep database'],
+    'tags': ['Microphones operations'],
     'operationId': 'delete_microphone',
     'summary': 'Delete a microphone by ID',
     'description': 'Deletes a microphone from the database.',

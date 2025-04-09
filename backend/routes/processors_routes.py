@@ -7,7 +7,7 @@ processors_bp = Blueprint('processors', __name__)
 
 @processors_bp.route('/api/v1/processors', methods=['POST'])
 @swag_from({
-    'tags': ['Operations related to processors in the BIRDeep database'],
+    'tags': ['Processors operations'],
     'operationId': 'insert_new_processor',
     'summary': 'Insert a new processor',
     'description': 'Adds a new processor to the database.',
@@ -75,7 +75,7 @@ def insert_new_processor_route():
 
 @processors_bp.route('/api/v1/processors', methods=['GET'])
 @swag_from({
-    'tags': ['Operations related to processors in the BIRDeep database'],
+    'tags': ['Processors operations'],
     'operationId': 'query_processors',
     'summary': 'Get all processors',
     'description': 'Fetches all processors in the database, including associated recorders.',
@@ -111,7 +111,7 @@ def query_processors_route():
 
 @processors_bp.route('/api/v1/processors/<int:id_processor>', methods=['PUT'])
 @swag_from({
-    'tags': ['Operations related to processors in the BIRDeep database'],
+    'tags': ['Processors operations'],
     'operationId': 'update_processor',
     'summary': 'Update a processor by ID',
     'description': 'Updates the details of an existing processor by its ID.',
@@ -185,7 +185,7 @@ def update_processor_route(id_processor):
 
 @processors_bp.route('/api/v1/processors/<int:id_processor>', methods=['DELETE'])
 @swag_from({
-    'tags': ['Operations related to processors in the BIRDeep database'],
+    'tags': ['Processors operations'],
     'operationId': 'delete_processor',
     'summary': 'Delete a processor by ID',
     'description': 'Deletes a processor from the database.',

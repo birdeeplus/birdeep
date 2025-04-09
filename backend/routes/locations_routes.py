@@ -7,7 +7,7 @@ locations_bp = Blueprint('locations', __name__)
 
 @locations_bp.route('/api/v1/locations', methods=['POST'])
 @swag_from({
-    'tags': ['Operations related to locations in the BIRDeep database'],
+    'tags': ['Locations operations'],
     'operationId': 'insert_new_location',
     'summary': 'Insert a new location',
     'description': 'Adds a new location to the database.',
@@ -82,7 +82,7 @@ def insert_new_location_route():
 
 @locations_bp.route('/api/v1/locations', methods=['GET'])
 @swag_from({
-    'tags': ['Operations related to locations in the BIRDeep database'],
+    'tags': ['Locations operations'],
     'operationId': 'query_locations',
     'summary': 'Get all locations',
     'description': 'Fetches all locations from the database.',
@@ -119,7 +119,7 @@ def query_locations_route():
 
 @locations_bp.route('/api/v1/locations/<int:id_location>', methods=['PUT'])
 @swag_from({
-    'tags': ['Operations related to locations in the BIRDeep database'],
+    'tags': ['Locations operations'],
     'operationId': 'update_location',
     'summary': 'Update a location by ID',
     'description': 'Updates the details of an existing location by its ID.',
@@ -195,7 +195,7 @@ def update_location_route(id_location):
 
 @locations_bp.route('/api/v1/locations/<int:id_location>', methods=['DELETE'])
 @swag_from({
-    'tags': ['Operations related to locations in the BIRDeep database'],
+    'tags': ['Locations operations'],
     'operationId': 'delete_location',
     'summary': 'Delete a location by ID',
     'description': 'Deletes a location from the database.',
@@ -243,7 +243,7 @@ def delete_location_route(id_location):
 
 @locations_bp.route('/api/v1/locations/<int:id_location>', methods=['GET'])
 @swag_from({
-    'tags': ['Operations related to locations in the BIRDeep database'],
+    'tags': ['Locations operations'],
     'operationId': 'get_location_by_id',
     'summary': 'Get location by ID',
     'description': 'Fetches a specific location by its ID.',
@@ -286,7 +286,7 @@ def get_location_by_id_route(id_location):
 
 @locations_bp.route('/api/v1/locations/<int:id_location>/recorders', methods=['GET'])
 @swag_from({
-    'tags': ['Operations related to locations in the BIRDeep database'],
+    'tags': ['Locations operations'],
     'operationId': 'get_recorders_by_location',
     'summary': 'Get recorders by location',
     'description': 'Fetches all recorders associated with a specific location.',
