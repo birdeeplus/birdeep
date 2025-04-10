@@ -21,13 +21,13 @@ export default function Home() {
       title: "BIRDEEP+",
       description:
         "Explore and download bird sounds from Doñana! Connect with nature and enjoy its beauty now.",
-      button: "Discover",
+      button: "discover",
     },
     es: {
       title: "BIRDEEP+",
       description:
         "¡Explora y descarga audios de las aves de Doñana! Conéctate con la naturaleza y disfruta de su belleza ahora mismo.",
-      button: "Descubrir",
+      button: "descubrir",
     },
   };
 

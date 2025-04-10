@@ -63,9 +63,7 @@ export default function LoginForm({ language, onLoginSuccess }) {
                         className="w-full p-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500"
                     />
                 </div>
-
-                <p className="text-xs text-gray-500 mb-4 cursor-pointer hover:text-gray-700">{loginFormOptions[language].forgot}</p>
-
+                
                 {error && <p className="text-red-500 text-xs text-center mb-3">{error}</p>}
 
                 <button

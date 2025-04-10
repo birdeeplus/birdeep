@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import Navbar from "../../../components/navbars/Navbar_general";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import Image from "next/image";
 import AddMicrophonePopup from "../../../components/microphones/AddMicrophonePopup";
 import EditMicrophonePopup from "../../../components/microphones/EditMicrophonePopup";
-import MicrophonesList from "../../../components/microphones/MicrophonesList";
+import MicrophoneInfoModal from "../../../components/microphones/MicrophoneInfoModal";
 
 export default function MicrophonesTable() {
     const [language, setLanguage] = useState("en");
@@ -18,26 +19,26 @@ export default function MicrophonesTable() {
     const [showEditForm, setShowEditForm] = useState(false);
     const [editFormData, setEditFormData] = useState(null);
     const [recorders, setRecorders] = useState([]);
+    const [selectedInfo, setSelectedInfo] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
     const toggleLanguage = () => {
         const newLang = language === "en" ? "es" : "en";
         setLanguage(newLang);
         localStorage.setItem("language", newLang);
-      };
-      
+    };
 
     useEffect(() => {
         const savedLanguage = localStorage.getItem("language") || "es";
         setLanguage(savedLanguage);
-
+    
         const updateAdminStatus = () => {
             const userRole = localStorage.getItem("is_admin");
             const isUserAdmin = userRole === "true";
             setIsAdmin(isUserAdmin);
-
+    
             if (!isUserAdmin) {
-                alert("You do not have access to this page.");
+                alert(language === "es" ? "No tienes acceso a esta página." : "You do not have access to this page.");
                 window.location.href = "/";
             }
         };
@@ -49,190 +50,157 @@ export default function MicrophonesTable() {
         };
     
         window.addEventListener("authChange", handleAuthChange);
-    
         return () => {
             window.removeEventListener("authChange", handleAuthChange);
         };
-    }, []);
+    }, [language]);
+    
 
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/microphones")
-            .then((response) => response.json())
-            .then((data) => setMicrophones(data))
-            .catch((error) => console.error("Error fetching microphones:", error));
+            .then((res) => res.json())
+            .then(setMicrophones);
 
-        fetch("http://localhost:8080/api/v1/recorders") // Ruta para obtener IDs de grabadores
-            .then((response) => response.json())
-            .then((data) => setRecorders(data))
-            .catch((error) => console.error("Error fetching recorders:", error));
+        fetch("http://localhost:8080/api/v1/recorders")
+            .then((res) => res.json())
+            .then(setRecorders);
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        const newMicrophone = {
-            model_microphone: formData.model_microphone,
-            comment_microphone: formData.comment_microphone,
-            id_recorder: formData.id_recorder !== "" ? Number(formData.id_recorder) : null
-        };
-    
-        try {
-            const response = await fetch("http://localhost:8080/api/v1/microphones", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(newMicrophone)
-            });
-    
-            if (response.ok) {
-                const savedMicrophone = await response.json();
-    
-                // Actualiza el estado para incluir el nuevo micrófono en la lista
-                setMicrophones((prev) => [...prev, savedMicrophone]);
-    
-                // Cierra el formulario y limpia los datos
-                setShowForm(false);
-                setFormData({
-                    model_microphone: "AudioMoth",  // o el valor por defecto que prefieras
-                    comment_microphone: "",
-                    id_recorder: ""
-                });
-            } else {
-                console.error("Error adding microphone:", response.statusText);
-                alert("Error adding microphone");
-            }
-        } catch (error) {
-            console.error("Error adding microphone:", error);
-        }
-    };
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value === "later" ? "later" : (name === "id_recorder" ? (value ? Number(value) : null) : value)
-        }));
-    };
-
-    const handleEdit = (microphone) => {
-        setEditFormData(microphone);
+    const handleEdit = (mic) => {
+        setEditFormData(mic);
         setShowEditForm(true);
     };
 
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-
-        try {
-            const response = await fetch(
-                `http://localhost:8080/api/v1/microphones/${editFormData.id_microphone}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(editFormData),
-                }
-            );
-
-            if (response.ok) {
-                // Actualiza la lista de micrófonos con el micrófono editado
-                setMicrophones((prev) =>
-                    prev.map((microphone) =>
-                        microphone.id_microphone === editFormData.id_microphone
-                            ? editFormData  // Reemplaza el micrófono editado
-                            : microphone
-                    )
-                );
-
-                setShowEditForm(false);
-                setEditFormData(null);
-            } else {
-                console.error("Error updating microphone:", response.statusText);
-                alert("Error updating microphone");
-            }
-        } catch (error) {
-            console.error("Error updating microphone:", error);
-        }
-    };
-
-    const handleDelete = async (id_microphone) => {
-        if (confirm("¿Estás seguro de que deseas eliminar este micrófono?")) {
-            try {
-                const response = await fetch(`http://localhost:8080/api/v1/microphones/${id_microphone}`, {
-                    method: "DELETE",
-                });
-
-                if (response.ok) {
-                    alert("Micrófono eliminado correctamente");
-
-                    // Actualiza la lista de micrófonos después de la eliminación
-                    setMicrophones((prev) =>
-                        prev.filter((microphone) => microphone.id_microphone !== id_microphone)
-                    );
-                } else {
-                    alert("Error al eliminar el micrófono");
-                }
-            } catch (error) {
-                console.error("Error deleting microphone:", error);
-                alert("Error al eliminar el micrófono");
-            }
-        }
+    const handleDelete = async (id) => {
+        if (!confirm("¿Seguro que deseas eliminar este micrófono?")) return;
+        await fetch(`http://localhost:8080/api/v1/microphones/${id}`, { method: "DELETE" });
+        setMicrophones(prev => prev.filter(m => m.id_microphone !== id));
     };
 
     return (
-        <div className="w-full h-screen">
+        <div className="relative w-full h-screen bg-[#F8F8F8]">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
+            <br />
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20 pb-36">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-[#375B38] text-4xl font-bold">
+                        {language === "en" ? "Microphones" : "Micrófonos"}
+                    </h1>
 
-            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-full pb-36">
-                <h2 className="Montserrat text-[#375B38] text-2xl mt-24 sm:text-3xl font-bold mb-8">
-                    {language === "en" ? "Microphones List" : "Lista de Micrófonos"}
-                </h2>
-                <div className="flex justify-end mb-4">
-                    <button
-                        style={{ backgroundColor: '#375B38' }}
-                        className="text-white px-3 py-1 rounded hover:opacity-80"
-                        onClick={() => setShowForm(true)}
-                    >
-                        + {language === "en" ? "Add Microphone" : "Añadir Micrófono"}
-                    </button>
+                    {isAdmin && (
+                        <button
+                            onClick={() => setShowForm(true)}
+                            className="border-2 border-[#375B38] text-[#375B38] px-4 py-1 rounded-full flex items-center gap-2 hover:bg-[#375B38] hover:text-white transition"
+                        >
+                            {language === "en" ? "add" : "añadir"}
+                            <span className="text-lg">+</span>
+                        </button>
+                    )}
                 </div>
 
-                <MicrophonesList
-                    microphones={microphones}
-                    language={language}
-                    handleDelete={handleDelete}
-                    handleEdit={handleEdit}
-                />
+                <p className="italic text-sm text-gray-500 mt-10 mb-4">
+                    {language === "en" ? "all microphones" : "todos los micrófonos"}
+                </p>
+
+                <div className="flex flex-col gap-2 w-full">
+                    {microphones.map((mic) => (
+                        <div
+                            key={mic.id_microphone}
+                            className="flex justify-between items-center px-4 py-2 rounded-xl transition hover:bg-white"
+                        >
+                            <button
+                                onClick={() => setSelectedInfo(mic)}
+                                className="flex items-center gap-2 font-medium px-6 py-2 rounded-xl transition-all bg-white text-[#375B38] hover:bg-[#375B38] hover:text-white"
+                            >
+                                {language === "en" ? "microphone" : "micrófono"} #{mic.id_microphone}
+                            </button>
+
+
+                            <div className="flex items-center gap-4 text-[#375B38]">
+                                {isAdmin && (
+                                    <>
+                                        <button
+                                            onClick={() => handleEdit(mic)}
+                                            className="hover:text-blue-600"
+                                            title="Modificar"
+                                        >
+                                            <FaEdit />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(mic.id_microphone)}
+                                            className="hover:opacity-70"
+                                            title="Eliminar"
+                                        >
+                                            <Image src="/iconos/eliminar.png" alt="Eliminar" width={18} height={18} />
+                                        </button>
+                                    </>
+                                )}
+                                <button onClick={() => setSelectedInfo(mic)} title="Información">
+                                    <Image src="/iconos/info.png" alt="info" width={16} height={16} />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {showForm && (
+                    <AddMicrophonePopup
+                        showForm={showForm}
+                        setShowForm={setShowForm}
+                        language={language}
+                        recorders={recorders}
+                        formData={formData}
+                        handleChange={(e) =>
+                            setFormData({ ...formData, [e.target.name]: e.target.value })
+                        }
+                        handleSubmit={async (e) => {
+                            e.preventDefault();
+                            const newMic = { ...formData, id_recorder: Number(formData.id_recorder) };
+                            const res = await fetch("http://localhost:8080/api/v1/microphones", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(newMic),
+                            });
+                            const saved = await res.json();
+                            setMicrophones(prev => [...prev, saved]);
+                            setShowForm(false);
+                            setFormData({ model_microphone: "AudioMoth", comment_microphone: "", id_recorder: "" });
+                        }}
+                    />
+                )}
+
+                {showEditForm && (
+                    <EditMicrophonePopup
+                        showEditForm={showEditForm}
+                        setShowEditForm={setShowEditForm}
+                        language={language}
+                        formData={editFormData}
+                        handleChange={(e) => setEditFormData({ ...editFormData, [e.target.name]: e.target.value })}
+                        handleSubmit={async (e) => {
+                            e.preventDefault();
+                            await fetch(`http://localhost:8080/api/v1/microphones/${editFormData.id_microphone}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(editFormData),
+                            });
+                            setMicrophones(prev =>
+                                prev.map(m => m.id_microphone === editFormData.id_microphone ? editFormData : m)
+                            );
+                            setShowEditForm(false);
+                            setEditFormData(null);
+                        }}
+                        recorders={recorders}
+                    />
+                )}
+
+                {selectedInfo && (
+                    <MicrophoneInfoModal
+                        microphone={selectedInfo}
+                        onClose={() => setSelectedInfo(null)}
+                        language={language}
+                    />
+                )}
             </div>
-            {showForm && (
-                <AddMicrophonePopup
-                    showForm={showForm}
-                    setShowForm={setShowForm}
-                    language={language}
-                    recorders={recorders}
-                    formData={formData}
-                    handleChange={handleChange}
-                    handleSubmit={handleSubmit}
-                />
-            )}
-            {showEditForm && (
-                <EditMicrophonePopup
-                    showEditForm={showEditForm}
-                    setShowEditForm={setShowEditForm}
-                    language={language}
-                    formData={editFormData} 
-                    handleChange={(e) => {
-                        const { name, value } = e.target;
-                        setEditFormData((prevData) => ({
-                            ...prevData,
-                            [name]: value,
-                        }));
-                    }}
-                    handleSubmit={handleUpdate} 
-                    recorders={recorders} 
-                />
-            )}
         </div>
     );
 }
