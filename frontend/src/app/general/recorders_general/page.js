@@ -102,7 +102,7 @@ export default function RecordersGeneral() {
             <br />
             <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-80 pb-36 mt-20">
                 <div className="w-full flex flex-col gap-4">
-                    <div className="flex justify-between items-center w-full mt-3">
+                    <div className="flex justify-between items-center w-full">
                         <h1 className="text-[#375B38] text-4xl font-montserrat font-bold">
                             {textContent[language].title}
                         </h1>
