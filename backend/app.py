@@ -16,6 +16,14 @@ from models import db
 from routes import register_routes
 from utils import register_error_handlers
 
+
+
+from sqlalchemy import text
+
+
+
+
+
 # Función para crear la plantilla de Swagger
 def create_swagger_template():
     return {
@@ -70,6 +78,14 @@ app = create_app(environment)
 @app.route("/")
 def home():
     return jsonify({"message": "Bienvenido al backend"}), 200
+
+# para saber versión base de datos y su usa mysql o mariadb: http://localhost:8080/db-version (si solo pone database version=mysql, si pone mariadb version=mariadb)
+@app.route("/db-version")
+def db_version():
+    with db.engine.connect() as connection:
+        version_result = connection.execute(text("SELECT VERSION();"))
+        version = version_result.scalar()  # Obtiene solo el string de versión
+    return jsonify({"database_version": version})
 
 # Iniciar servidor
 if __name__ == '__main__':
