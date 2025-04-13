@@ -35,7 +35,7 @@ def query_processors():
             Processors.comment_processor,
             Recorders.id_recorder  # Include the recorder ID
         )
-        .join(Recorders, Recorders.id_processor_recorder == Processors.id_processor)
+        .outerjoin(Recorders, Recorders.id_processor_recorder == Processors.id_processor)
         .all()
     )
 

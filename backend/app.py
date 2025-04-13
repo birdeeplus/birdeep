@@ -20,10 +20,6 @@ from utils import register_error_handlers
 
 from sqlalchemy import text
 
-
-
-
-
 # Función para crear la plantilla de Swagger
 def create_swagger_template():
     return {

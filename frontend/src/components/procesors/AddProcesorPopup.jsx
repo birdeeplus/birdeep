@@ -1,6 +1,18 @@
-export default function AddProcessorPopup({ showForm, setShowForm, language, formData, handleChange, handleSubmit, recorders }) {
-    return (
-      showForm && (
+import React from 'react';
+
+const AddProcessorPopup = ({ showForm, setShowForm, language, recorders, handleChange, formData, handleSubmit }) => {
+  // Manejador de cambios para el id_recorder
+  const handleRecorderChange = (e) => {
+    const value = e.target.value === "" ? null : e.target.value;
+    handleChange({ target: { name: "id_recorder", value } });
+  };
+
+  // Filtrar grabadoras para eliminar duplicados por id_recorder
+  const uniqueRecorders = [...new Map(recorders.map(item => [item.id_recorder, item])).values()];
+
+  return (
+    <>
+      {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-lg w-96">
             <h2 className="text-xl font-bold mb-4">
@@ -21,7 +33,7 @@ export default function AddProcessorPopup({ showForm, setShowForm, language, for
                   <option value="Other">{language === "en" ? "Other" : "Otro"}</option>
                 </select>
               </div>
-  
+
               <div className="mb-2">
                 <label className="block mb-1">
                   {language === "en" ? "Comment:" : "Comentario:"}
@@ -35,26 +47,26 @@ export default function AddProcessorPopup({ showForm, setShowForm, language, for
                   placeholder={language === "en" ? "Add comment" : "Añadir comentario"}
                 />
               </div>
-  
+
               <div className="mb-2">
                 <label className="block mb-1">
                   {language === "en" ? "Recorder ID:" : "ID Grabadora:"}
                 </label>
                 <select
                   name="id_recorder"
-                  value={formData.id_recorder !== null ? String(formData.id_recorder) : ""}
-                  onChange={handleChange}
+                  value={formData.id_recorder === null ? "" : formData.id_recorder}
+                  onChange={handleRecorderChange}
                   className="border w-full p-2 rounded"
                 >
-                  <option value="">-</option>
-                  {recorders.map((recorder) => (
+                  <option value="">{language === "en" ? "Not assigned" : "No asignado"}</option>
+                  {uniqueRecorders.map((recorder) => (
                     <option key={recorder.id_recorder} value={String(recorder.id_recorder)}>
                       {recorder.id_recorder}
                     </option>
                   ))}
                 </select>
               </div>
-  
+
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
@@ -73,7 +85,9 @@ export default function AddProcessorPopup({ showForm, setShowForm, language, for
             </form>
           </div>
         </div>
-      )
-    );
-  }
-  
+      )}
+    </>
+  );
+};
+
+export default AddProcessorPopup;
