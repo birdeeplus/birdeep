@@ -20,15 +20,14 @@ export default function LocationDetails() {
         setLanguage(newLang);
         localStorage.setItem("language", newLang);
     };
-      
 
     useEffect(() => {
         if (!id) return;
-    
+
         const savedLanguage = localStorage.getItem("language") || "es";
         setLanguage(savedLanguage);
 
-        // Cargar la información de la ubicación
+        // Obtener detalles de la ubicación
         fetch(`http://localhost:8080/api/v1/locations/${id}`)
             .then((response) => response.json())
             .then((data) => {
@@ -37,41 +36,29 @@ export default function LocationDetails() {
             })
             .catch((error) => console.error("Error fetching location details:", error));
     
-        // Cargar grabadoras asociadas a la ubicación
+        // Obtener grabadoras asociadas
         fetch(`http://localhost:8080/api/v1/locations/${id}/recorders`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.message) {
-                    setRecorders([]);
+                    setRecorders([]); // No hay grabadoras
                 } else {
-                    setRecorders(data);
+                    setRecorders(data); // Sí hay grabadoras
                 }
             })
             .catch((error) => console.error("Error fetching recorders:", error));
     
-        // Función para actualizar el estado de admin
         const updateAdminStatus = () => {
             setIsAdmin(localStorage.getItem("is_admin") === "true");
         };
     
-        updateAdminStatus(); // Ejecutar al cargar la página
-    
-        // Escuchar cambios en la autenticación
-        const handleAuthChange = () => {
-            updateAdminStatus();
-        };
-    
-        window.addEventListener("authChange", handleAuthChange);
-    
-        return () => {
-            window.removeEventListener("authChange", handleAuthChange);
-        };
-    }, [id]);
-    
+        updateAdminStatus();
 
-    if (!location) {
-        return <p className="text-center mt-10">Loading...</p>;
-    }
+        window.addEventListener("authChange", updateAdminStatus);
+        return () => window.removeEventListener("authChange", updateAdminStatus);
+    }, [id]);
+
+    if (!location) return <p className="text-center mt-10">Loading...</p>;
 
     const handleDelete = async () => {
         if (!id) return;
@@ -95,9 +82,7 @@ export default function LocationDetails() {
         }
     };
 
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing);
-    };
+    const handleEditToggle = () => setIsEditing(!isEditing);
 
     const handleChange = (e) => {
         setFormData({
@@ -205,7 +190,6 @@ export default function LocationDetails() {
                         </button>
                     </div>
                 </form>
-
                 )}
 
                 <button 
@@ -225,6 +209,25 @@ export default function LocationDetails() {
                         </button>
                     </div>
                 )}
+
+                {/* Sección de grabadoras */}
+                <div className="mt-6">
+                    <h2 className="text-xl font-bold">{currentTextContent.recorders}</h2>
+                    {recorders.length === 0 ? (
+                        <p>{currentTextContent.noRecorders}</p>
+                    ) : (
+                        <ul className="mt-4">
+                            {recorders.map((recorder) => (
+                                <li key={recorder.id_recorder} className="mb-4 bg-white p-4 shadow rounded-lg">
+                                    <p><strong>ID:</strong> {recorder.id_recorder}</p>
+                                    <p><strong>Nombre:</strong> {recorder.recorder_name}</p>
+                                    <p><strong>Fecha Instalación:</strong> {recorder.installation_date}</p>
+                                    <p><strong>Status:</strong> {recorder.status}</p>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </div>
         </div>
     );
