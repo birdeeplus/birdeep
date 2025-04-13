@@ -7,8 +7,9 @@ export default function LogoutConfirmation({ isOpen, onClose, language, onLogout
     const router = useRouter();
 
     const handleLogout = () => {
-        onLogoutConfirm();
-        router.push("/");  // Redirige al home tras confirmar
+        onLogoutConfirm();  // Confirma el logout
+        onClose();          // Cierra el modal inmediatamente
+        router.push("/");   // Redirige al home tras confirmar
     };
 
     return (

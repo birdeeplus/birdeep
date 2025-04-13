@@ -38,7 +38,6 @@ export default function Navbar({ toggleLanguage, language, background = "transpa
         }
     }, []);
     
-
     const handleLoginSuccess = (adminStatus) => {
         setIsLoggedIn(true);
         setIsAdmin(adminStatus);
