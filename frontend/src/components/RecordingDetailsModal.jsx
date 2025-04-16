@@ -12,58 +12,79 @@ export default function RecordingDetailsModal({ id, onClose, language }) {
       .catch((err) => console.error("Error fetching recording:", err));
   }, [id]);
 
-  const text = {
-    en: {
-      title: "Recording Details",
-      recorderId: "Recorder ID",
-      timeRecord: "Time",
-      fileType: "File Type",
-      bitrate: "Bitrate",
-      sampleRate: "Sample Rate",
-      gain: "Gain",
-      duration: "Duration",
-      uri: "URI",
-      device: "Device",
-      close: "Close",
-    },
+  const labels = {
     es: {
-      title: "Detalles de la grabación",
-      recorderId: "ID del grabador",
-      timeRecord: "Hora",
-      fileType: "Tipo de archivo",
-      bitrate: "Tasa de bits",
-      sampleRate: "Frecuencia de muestreo",
-      gain: "Ganancia",
-      duration: "Duración",
-      uri: "URI",
-      device: "Dispositivo",
-      close: "Cerrar",
+      title: "Metadatos grabación",
+      id_record: "id de grabación",
+      id_recorder_recordings: "id grabadora asociada",
+      time_record: "fecha y hora de grabación",
+      filetype_record: "tipo de archivo",
+      bitrate_record: "tasa de bits (kbps)",
+      sample_rate_record: "frecuencia de muestreo (hz)",
+      gain_record: "ganancia",
+      duration_record: "duración (segundos)",
+      uri: "ruta de almacenamiento",
+      device: "dispositivo",
+      filename: "nombre del archivo"
     },
+    en: {
+      title: "Recording metadata",
+      id_record: "recording id",
+      id_recorder_recordings: "linked recorder id",
+      time_record: "recording date and time",
+      filetype_record: "file type",
+      bitrate_record: "bitrate (kbps)",
+      sample_rate_record: "sample rate (hz)",
+      gain_record: "gain",
+      duration_record: "duration (seconds)",
+      uri: "storage path",
+      device: "device",
+      filename: "filename"
+    }
   };
 
   if (!recording) return null;
+  const l = labels[language];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
-      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl">
-        <h2 className="text-xl font-semibold mb-4">{text[language].title}</h2>
-        <div className="space-y-2 text-sm text-gray-700">
-          <p><strong>{text[language].recorderId}:</strong> {recording.id_recorder_recordings}</p>
-          <p><strong>{text[language].timeRecord}:</strong> {recording.time_record}</p>
-          <p><strong>{text[language].fileType}:</strong> {recording.filetype_record}</p>
-          <p><strong>{text[language].bitrate}:</strong> {recording.bitrate_record}</p>
-          <p><strong>{text[language].sampleRate}:</strong> {recording.sample_rate_record}</p>
-          <p><strong>{text[language].gain}:</strong> {recording.gain_record}</p>
-          <p><strong>{text[language].duration}:</strong> {recording.duration_record}</p>
-          <p><strong>{text[language].uri}:</strong> {recording.uri}</p>
-          <p><strong>{text[language].device}:</strong> {recording.device}</p>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-xl shadow-lg w-full max-w-[39rem] px-8 py-10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Título */}
+        <h2 className="text-center text-[#375B38] text-sm sm:text-base mb-12">
+          {l.title}
+        </h2>
+
+        {/* Contenido */}
+        <div className="flex justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-20 gap-y-8 text-sm">
+            {[
+              "id_record",
+              "id_recorder_recordings",
+              "time_record",
+              "filetype_record",
+              "bitrate_record",
+              "sample_rate_record",
+              "gain_record",
+              "duration_record",
+              "uri",
+              "device",
+              "filename"
+            ].map((key) => (
+              <div key={key} className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{l[key]}</label>
+                <span className="text-sm text-[#778184]/50 break-all">
+                  {recording[key] !== null && recording[key] !== "" ? recording[key] : "-"}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-        <button
-          onClick={onClose}
-          className="mt-6 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
-        >
-          {text[language].close}
-        </button>
       </div>
     </div>
   );

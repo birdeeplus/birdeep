@@ -8,6 +8,7 @@ from utils.crud_operations import insert_values_in_db, get_values_from_db, updat
 from pprint import pprint
 from flask import jsonify
 
+
 def insert_new_microphone():
     """
     Insert a new microphone into the database
@@ -63,13 +64,7 @@ def insert_new_microphone():
 
 def query_microphones():
     """
-    Query microphones from the database
-    
-    This endpoint fetches all microphones from the database, including their associated recorder ID.
-    It performs a join operation to retrieve microphone and recorder data together.
-    
-    Returns:
-        JSON response containing the list of microphones with their details.
+    Fetch all microphones, including their associated recorder ID (if any).
     """
 
     response = (
@@ -77,19 +72,18 @@ def query_microphones():
             Microphones.id_microphone,
             Microphones.model_microphone,
             Microphones.comment_microphone,
-            Recorders.id_recorder  # Include the recorder ID in the response
+            Recorders.id_recorder
         )
-        .join(Recorders, Recorders.id_microphone_recorder == Microphones.id_microphone)
-        .all() # Fetch all results
+        .outerjoin(Recorders, Recorders.id_microphone_recorder == Microphones.id_microphone)
+        .all()
     )
 
-    # Convert the results into a list of dictionaries for the response
     data = [
         {
             "id_microphone": mic.id_microphone,
             "model_microphone": mic.model_microphone,
             "comment_microphone": mic.comment_microphone,
-            "id_recorder": mic.id_recorder,  # Include recorder ID
+            "id_recorder": mic.id_recorder  # Puede ser None
         }
         for mic in response
     ]

@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Navbar from "../../../components/navbars/Navbar_general";
-import AddLocationButton from "../../../components/AddLocationButton";
+import AddLocationButton from "../../../components/localizaciones/AddLocationButton";
 
 const blackIcon = new L.Icon({
     iconUrl: "/iconos/map-marker-black.png",
@@ -69,13 +69,14 @@ export default function LocationsGeneral() {
             <Navbar toggleLanguage={toggleLanguage} language={language} />
 
             {/* Botón de añadir localización si es admin */}
-            {isAdmin && <AddLocationButton onAddLocation={fetchLocations} />}
+            {isAdmin && <AddLocationButton onAddLocation={fetchLocations} language={language} />}
 
             {/* Contenedor del mapa */}
             <div className="relative w-full h-full pt-[90px]">
                 <MapContainer
                     center={[36.990000, -6.440000]} // Doñana como centro del mapa
                     zoom={12}
+                    minZoom={5}  
                     className="absolute top-0 left-0 w-full h-full z-0"
                 >
                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
