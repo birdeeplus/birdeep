@@ -97,10 +97,10 @@ export default function RecordersGeneral() {
     };
 
     return (
-        <div className="relative w-full h-screen bg-[#F8F8F8]">
+        <div className="relative w-full min-h-screen bg-[#F8F8F8]">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
             <br />
-            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-80 pb-36 mt-20">
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start min-h-screen pb-24 mt-20">
                 <div className="w-full flex flex-col gap-4">
                     <div className="flex justify-between items-center w-full">
                         <h1 className="text-[#375B38] text-4xl font-montserrat font-bold">
@@ -261,6 +261,7 @@ export default function RecordersGeneral() {
                     onClose={() => setIsDeleteModalOpen(false)}
                     onConfirm={handleDeleteConfirm}
                     recorderName={selectedDeleteRecorder?.id_recorder || ""}
+                    language={language}
                 />
             )}
 
