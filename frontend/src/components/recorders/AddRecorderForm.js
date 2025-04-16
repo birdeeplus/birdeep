@@ -1,197 +1,225 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import moment from "moment";
 
 export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, language }) {
-    const [locations, setLocations] = useState([]);
-    const [microphones, setMicrophones] = useState([]);
-    const [processors, setProcessors] = useState([]);
-    const lastRecorder = recorders[recorders.length - 1];
-    const nextId = lastRecorder.id_recorder + 1;
-    const [formData, setFormData] = useState({
-        id_recorder: nextId,
-        recorder_name: "",
-        id_location_recorder: "",
-        id_microphone_recorder: "",
-        id_processor_recorder: "", 
-        installation_date: "",
-        status: "",
-        version: ""
+  const [locations, setLocations] = useState([]);
+  const [microphones, setMicrophones] = useState([]);
+  const [processors, setProcessors] = useState([]);
+  const lastRecorder = recorders[recorders.length - 1];
+  const nextId = lastRecorder.id_recorder + 1;
+
+  const [formData, setFormData] = useState({
+    id_recorder: nextId,
+    recorder_name: "",
+    id_location_recorder: "",
+    id_microphone_recorder: "",
+    id_processor_recorder: "",
+    installation_date: "",
+    status: "",
+    version: ""
+  });
+
+  const textContent = {
+    en: {
+      save: "save",
+      cancel: "cancel",
+      title: "Add recorder",
+      name: "name",
+      location: "location",
+      microphone: "microphone",
+      processor: "processor",
+      installDate: "installation date",
+      status: "status",
+      version: "recorder version",
+      placeholder: "write here",
+      select: "select"
+    },
+    es: {
+      save: "guardar",
+      cancel: "cancelar",
+      title: "Añadir grabadora",
+      name: "nombre",
+      location: "localización",
+      microphone: "micrófono",
+      processor: "procesador",
+      installDate: "fecha de instalación",
+      status: "estado",
+      version: "versión de la grabadora",
+      placeholder: "escribe aquí",
+      select: "seleccionar"
+    }
+  };
+
+  const t = textContent[language];
+
+  useEffect(() => {
+    Promise.all([
+      fetch("http://localhost:8080/api/v1/locations").then(res => res.json()),
+      fetch("http://localhost:8080/api/v1/microphones").then(res => res.json()),
+      fetch("http://localhost:8080/api/v1/processors").then(res => res.json())
+    ])
+      .then(([loc, mic, proc]) => {
+        setLocations(loc);
+        setMicrophones(mic.filter(m => m.id_recorder === null));
+        setProcessors(proc.filter(p => p.id_recorder === null));
+      });
+  }, []);
+
+  const handleChange = (e) => {
+    if (e.target.name === "recorder_name" && !/^\d*$/.test(e.target.value)) return;
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const dataToSend = {
+      ...formData,
+      version: formData.version || null,
+      status: formData.status || null,
+      id_microphone_recorder: formData.id_microphone_recorder || null,
+      id_processor_recorder: formData.id_processor_recorder || null
+    };
+
+    const response = await fetch("http://localhost:8080/api/v1/recorders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dataToSend)
     });
 
-    const textContent = {
-        en: {
-            save: "Save",
-            cancel: "Cancel",
-            add: "Add Recorder",
-            selectLocation: "Select location",
-            selectMicrophone: "Select microphone",
-            selectProcessor: "Select processor",
-            recorderName: "Recorder name",
-            recorderVersion: "Recorder version",
-            installationDate: "Installation date",
-            status: "Status",
-        },
-        es: {
-            save: "Guardar",
-            cancel: "Cancelar",
-            add: "Añadir Grabadora",
-            selectLocation: "Seleccionar localización",
-            selectMicrophone: "Seleccionar micrófono",
-            selectProcessor: "Seleccionar procesador",
-            recorderName: "Nombre de la grabadora",
-            recorderVersion: "Versión de la grabadora",
-            installationDate: "Fecha de instalación",
-            status: "Estado",
-        },
-    };
+    if (response.ok) {
+      const result = await response.json();
+      setRecorders([...recorders, result.recorder]);
+      setIsAdding(false);
+    }
+  };
 
-    useEffect(() => {
-        Promise.all([
-            fetch("http://localhost:8080/api/v1/locations").then(res => res.json()),
-            fetch("http://localhost:8080/api/v1/microphones").then(res => res.json()),
-            fetch("http://localhost:8080/api/v1/processors").then(res => res.json())
-        ])
-        .then(([locationsData, microphonesData, processorsData]) => {
-            setLocations(locationsData);
-    
-            // Filtrar los que no están asignados a ninguna grabadora
-            const availableMicrophones = microphonesData.filter(m => m.id_recorder === null);
-            const availableProcessors = processorsData.filter(p => p.id_recorder === null);
-    
-            setMicrophones(availableMicrophones);
-            setProcessors(availableProcessors);
-        })
-        .catch((error) => console.error("Error fetching data:", error));
-    }, []);
-    
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-2">
+      <div className="bg-[#F9F9F9] rounded-2xl shadow-lg w-full max-w-3xl px-8 py-8">
+        <h2 className="text-center text-[#375B38] text-l mb-10 montserrat">
+          {t.title}
+        </h2>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-6 text-sm">
+            {/* Columna izquierda */}
+            <div className="flex flex-col gap-10">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.name}</label>
+                <input
+                  type="text"
+                  name="recorder_name"
+                  value={formData.recorder_name}
+                  onChange={handleChange}
+                  placeholder={t.placeholder}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1 placeholder-[#77818480]"
+                  required
+                />
+              </div>
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.microphone}</label>
+                <select
+                  name="id_microphone_recorder"
+                  value={formData.id_microphone_recorder}
+                  onChange={handleChange}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
+                >
+                  <option value="">{t.select}</option>
+                  {microphones.map((m) => (
+                    <option key={m.id_microphone} value={m.id_microphone}>{m.id_microphone}</option>
+                  ))}
+                </select>
+              </div>
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formData.version === ''){
-            formData.version = null;
-        }
-        if (formData.status === ''){
-            formData.status = null;
-        }
-        if (formData.id_microphone_recorder=== ''){
-            formData.id_microphone_recorder = null;
-        }
-        if (formData.id_processor_recorder === ''){
-            formData.id_processor_recorder = null;
-        }
-        try {
-            const response = await fetch("http://localhost:8080/api/v1/recorders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
-            if (response.ok) {
-                const newRecorder = await response.json();
-                // Cambiar el formato de la fecha
-                const formattedRecorder = {
-                    ...newRecorder.recorder,
-                    installation_date: new Date(newRecorder.recorder.installation_date).toUTCString(),
-                    status: new Date(newRecorder.recorder.status).toUTCString(),
-                };
-                setRecorders([...recorders, formattedRecorder]);
-                setIsAdding(false);
-            } else {
-                console.error("Error adding recorder");
-            }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-        }
-    };
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.installDate}</label>
+                <input
+                  type="date"
+                  name="installation_date"
+                  value={formData.installation_date}
+                  onChange={handleChange}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
+                  required
+                />
+              </div>
 
-    return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-                <div className="flex justify-between">
-                    <h2 className="text-2xl font-bold">{textContent[language].add}</h2>
-                </div>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                    <p>{textContent[language].recorderName}</p>
-                    <input 
-                        type="text" 
-                        name="recorder_name" 
-                        placeholder={textContent[language].recorderName}
-                        value={formData.recorder_name} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                        required
-                    />
-                    <select
-                        name="id_location_recorder" 
-                        value={formData.id_location_recorder} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded"
-                        required>
-                        <option value="">{textContent[language].selectLocation}</option>
-                        {locations.map((loc) => (
-                            <option key={loc.id_location} value={loc.id_location}>{loc.name_location}</option>
-                        ))}
-                    </select> 
-                    <select 
-                        name="id_microphone_recorder" 
-                        value={formData.id_microphone_recorder} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded">
-                        <option value="">{textContent[language].selectMicrophone}</option>
-                        {microphones.map((mic) => (
-                            <option key={mic.id_microphone} value={mic.id_microphone}>{mic.id_microphone}</option>
-                        ))}   
-                    </select>
-                    <select 
-                        name="id_processor_recorder" 
-                        value={formData.id_processor_recorder} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded">
-                        <option value="">{textContent[language].selectProcessor}</option>
-                        {processors.map((proc) => (
-                            <option key={proc.id_processor} value={proc.id_processor}>{proc.id_processor}</option>
-                        ))}
-                    </select>
-                    <p>{textContent[language].installationDate}</p>
-                    <input 
-                        type="date" 
-                        name="installation_date" 
-                        value={formData.installation_date} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                        required
-                    />
-                    <p>{textContent[language].status}</p>
-                    <input 
-                        type="date" 
-                        name="status" 
-                        value={formData.status} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                    />
-                    <p>{textContent[language].recorderVersion}</p>
-                    <input 
-                        type="text" 
-                        name="version" 
-                        placeholder={textContent[language].recorderVersion}
-                        value={formData.version} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                    />
-                    <div className="flex justify-end space-x-4">
-                        <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 bg-gray-300 rounded">
-                            {textContent[language].cancel}
-                        </button>
-                        <button type="submit" className="px-4 py-2 bg-black text-white rounded">
-                            {textContent[language].save}
-                        </button>
-                    </div>
-                </form>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.version}</label>
+                <input
+                  type="text"
+                  name="version"
+                  value={formData.version}
+                  onChange={handleChange}
+                  placeholder={t.placeholder}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1 placeholder-[#77818480]"
+                />
+              </div>
             </div>
-        </div>
-    );
+
+            {/* Columna derecha */}
+            <div className="flex flex-col gap-10">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.location}</label>
+                <select
+                  name="id_location_recorder"
+                  value={formData.id_location_recorder}
+                  onChange={handleChange}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
+                  required
+                >
+                  <option value="">{t.select}</option>
+                  {locations.map((l) => (
+                    <option key={l.id_location} value={l.id_location}>{l.name_location}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.processor}</label>
+                <select
+                  name="id_processor_recorder"
+                  value={formData.id_processor_recorder}
+                  onChange={handleChange}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
+                >
+                  <option value="">{t.select}</option>
+                  {processors.map((p) => (
+                    <option key={p.id_processor} value={p.id_processor}>{p.id_processor}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-[#778184]">{t.status}</label>
+                <input
+                  type="date"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Botones */}
+          <div className="flex justify-center gap-6 mt-10">
+            <button
+              type="button"
+              onClick={() => setIsAdding(false)}
+              className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] hover:bg-[#375B38] hover:text-white transition"
+            >
+              {t.cancel}
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] hover:bg-[#375B38] hover:text-white transition"
+            >
+              {t.save}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
