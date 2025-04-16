@@ -173,9 +173,6 @@ export default function RecordersGeneral() {
                     </p>
 
                     {recorders.map((recorder) => {
-                        const location = locations.find(loc => loc.id_location === recorder.id_location_recorder)?.name_location;
-                        const mic = microphones.find(m => m.id_microphone === recorder.id_microphone_recorder)?.model_microphone;
-                        const proc = processors.find(p => p.id_processor === recorder.id_processor_recorder)?.model_processor;
 
                         return (
                             <div

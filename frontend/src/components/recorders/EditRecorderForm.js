@@ -35,7 +35,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             selectMicrophone: "Select microphone",
             selectProcessor: "Select processor",
             recorderName: "Recorder name",
-            recorderVersion: "Recorder versoin",
+            recorderVersion: "Recorder version",
             installationDate: "Installation date",
             status: "Status",
         },
