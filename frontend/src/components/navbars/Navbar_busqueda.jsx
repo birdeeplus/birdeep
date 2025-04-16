@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import "../../app/styles/fonts.css";
@@ -18,13 +18,19 @@ export default function Navbar({ toggleLanguage, language }) {
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
 
+    const pathname = usePathname();  // Obtener el pathname dentro del componente
+    const searchParams = useSearchParams();  // Obtener los parámetros de búsqueda
     const handleSearch = () => {
+        const query = new URLSearchParams(searchParams.toString());
+
         if (searchTerm.trim() !== "") {
-            router.push(`/general/recordings_general?filename=${encodeURIComponent(searchTerm)}`);
+            query.set('filename', searchTerm);
+        } else {
+            query.delete('filename');
         }
-        else if (searchTerm.trim() === "") {
-            router.push('/general/recordings_general');
-        }
+
+        // Mantener en la misma página y aplicar el filtro
+        router.push(`${pathname}?${query.toString()}`);
     };
 
     useEffect(() => {
@@ -101,7 +107,10 @@ export default function Navbar({ toggleLanguage, language }) {
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black"
                             onClick={() => {
                                 setSearchTerm("");
-                                router.push('/general/recordings_general');
+                                // Eliminar el parámetro filename de la URL actual
+                                const query = new URLSearchParams(searchParams.toString());
+                                query.delete('filename');
+                                router.push(`${pathname}?${query.toString()}`);
                             }}
                             aria-label="Clear search"
                         >

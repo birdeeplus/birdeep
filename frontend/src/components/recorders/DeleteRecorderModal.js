@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-export default function DeleteConfirmationModal({ isOpen, onClose, onConfirm, recorderName }) {
+export default function DeleteRecorderModal({ isOpen, onClose, onConfirm, recorderName }) {
   if (!isOpen) return null;
 
   return (

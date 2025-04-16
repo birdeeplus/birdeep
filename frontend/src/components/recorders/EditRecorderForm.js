@@ -74,20 +74,26 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             setInitialData(initial);
             setFormData(initial);
         }
-        fetch("http://localhost:8080/api/v1/locations")
-            .then((response) => response.json())
-            .then((data) => setLocations(data))
-            .catch((error) => console.error("Error fetching locations:", error));
-
-        fetch("http://localhost:8080/api/v1/microphones")
-            .then((response) => response.json())
-            .then((data) => setMicrophones(data))
-            .catch((error) => console.error("Error fetching microphones:", error));
-
-        fetch("http://localhost:8080/api/v1/processors")
-            .then((response) => response.json())
-            .then((data) => setProcessors(data))
-            .catch((error) => console.error("Error fetching processors:", error));
+        Promise.all([
+            fetch("http://localhost:8080/api/v1/locations").then(res => res.json()),
+            fetch("http://localhost:8080/api/v1/microphones").then(res => res.json()),
+            fetch("http://localhost:8080/api/v1/processors").then(res => res.json())
+        ])
+        .then(([locationsData, microphonesData, processorsData]) => {
+            setLocations(locationsData);
+    
+            // Micrófonos disponibles o el ya asignado
+            const availableMicrophones = microphonesData.filter(m =>
+                m.id_recorder === null || m.id_microphone === selectedModifyRecorder.id_microphone_recorder
+            );
+            const availableProcessors = processorsData.filter(p =>
+                p.id_recorder === null || p.id_processor === selectedModifyRecorder.id_processor_recorder
+            );
+    
+            setMicrophones(availableMicrophones);
+            setProcessors(availableProcessors);
+        })
+        .catch((error) => console.error("Error fetching data:", error));
     }, [selectedModifyRecorder]);
 
     const handleChange = (e) => {
@@ -107,6 +113,13 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
         if (formData.status === ''){
             formData.status = null;
         }
+        if (formData.id_processor_recorder === ''){
+            formData.id_processor_recorder = null;
+        }
+        if (formData.id_microphone_recorder === ''){
+            formData.id_microphone_recorder = null;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/api/v1/recorders/${selectedModifyRecorder.id_recorder}`, {
                 method: "PUT",
@@ -152,7 +165,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                         value={formData.id_location_recorder} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded"
-                        required>
+                        >
                         {locations.map((loc) => (
                             <option key={loc.id_location} value={loc.id_location}>{loc.name_location}</option>
                         ))}
@@ -163,22 +176,35 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                         value={formData.id_microphone_recorder} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded" 
-                        required>
-                        {microphones.map((mic) => (
-                            <option key={mic.id_microphone} value={mic.id_microphone}>{mic.id_microphone}</option>
-                        ))}   
+                        >
+                        <option value="">{language === "es" ? "Seleccionar micrófono" : "Select microphone"}</option>
+                        {microphones.length === 0 ? (
+                            <option value="">{language === "es" ? "No hay micrófonos disponibles" : "No available microphones"}</option>
+                        ) : (
+                            microphones.map((mic) => (
+                                <option key={mic.id_microphone} value={mic.id_microphone}>{mic.id_microphone}</option>
+                            ))
+                        )}
                     </select>
                     <p>{textContent[language].selectProcessor}</p>
                     <select 
                         name="id_processor_recorder" 
-                        value={formData.id_processor_recorder} 
+                        value={formData.id_processor_recorder || ""} 
                         onChange={handleChange} 
-                        className="w-full p-2 border border-gray-300 rounded" 
-                        required>
-                        {processors.map((proc) => (
-                            <option key={proc.id_processor} value={proc.id_processor}>{proc.id_processor}</option>
-                        ))}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    >
+                        <option value="">{language === "es" ? "Seleccionar procesador" : "Select processor"}</option>
+                        {processors.length === 0 ? (
+                            <option disabled>{language === "es" ? "No hay procesadores disponibles" : "No available processors"}</option>
+                        ) : (
+                            processors.map((proc) => (
+                                <option key={proc.id_processor} value={proc.id_processor}>
+                                    {proc.id_processor}
+                                </option>
+                            ))
+                        )}
                     </select>
+
                     <p>{textContent[language].installationDate}</p>
                     <input 
                         type="date" 

@@ -47,22 +47,24 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
     };
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/v1/locations")
-            .then((response) => response.json())
-            .then((data) => setLocations(data))
-            .catch((error) => console.error("Error fetching locations:", error));
-
-        fetch("http://localhost:8080/api/v1/microphones")
-            .then((response) => response.json())
-            .then((data) => setMicrophones(data))
-            .catch((error) => console.error("Error fetching microphones:", error));
-
-        fetch("http://localhost:8080/api/v1/processors")
-            .then((response) => response.json())
-            .then((data) => setProcessors(data))
-            .catch((error) => console.error("Error fetching processors:", error));
-            
+        Promise.all([
+            fetch("http://localhost:8080/api/v1/locations").then(res => res.json()),
+            fetch("http://localhost:8080/api/v1/microphones").then(res => res.json()),
+            fetch("http://localhost:8080/api/v1/processors").then(res => res.json())
+        ])
+        .then(([locationsData, microphonesData, processorsData]) => {
+            setLocations(locationsData);
+    
+            // Filtrar los que no están asignados a ninguna grabadora
+            const availableMicrophones = microphonesData.filter(m => m.id_recorder === null);
+            const availableProcessors = processorsData.filter(p => p.id_recorder === null);
+    
+            setMicrophones(availableMicrophones);
+            setProcessors(availableProcessors);
+        })
+        .catch((error) => console.error("Error fetching data:", error));
     }, []);
+    
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -170,7 +172,6 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                         value={formData.status} 
                         onChange={handleChange} 
                         className="w-full p-2 border border-gray-300 rounded" 
-                
                     />
                     <p>{textContent[language].recorderVersion}</p>
                     <input 

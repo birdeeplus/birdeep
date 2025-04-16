@@ -18,6 +18,7 @@ function RecordingsGeneral() {
   const [lastClicked, setLastClicked] = useState(null);
   const [selectedRecordingId, setSelectedRecordingId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const perPage = 5;
   const router = useRouter();
@@ -40,55 +41,95 @@ function RecordingsGeneral() {
   
 
   useEffect(() => {
-    setLoading(true);
-      
-    const savedLanguage = localStorage.getItem("language") || "es";
-    setLanguage(savedLanguage);
+  const fetchData = async () => {
+    setLoading(true);    
+    setErrorMessage("");
+    try {
+      const savedLanguage = localStorage.getItem("language") || "es";
+      setLanguage(savedLanguage);
 
-    const params = new URLSearchParams({
-      page: currentPage,
-      per_page: perPage,
-    });
-
-    if (aplicarFiltros) {
-      if (horaInicio) params.append("hora_inicio", horaInicio);
-      if (horaFin) params.append("hora_fin", horaFin);
-      if (fechaInicio) params.append("fecha_inicio", fechaInicio);
-      if (fechaFin) params.append("fecha_fin", fechaFin);
-      if (selectedLocation) params.append("id_location", selectedLocation);
-      console.log("Localización seleccionada:", selectedLocation);
-
-    }
-
-    if (filename) {
-      params.append("filename", filename);
-    }
-
-    const endpoint = aplicarFiltros
-      ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
-      : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
-
-    fetch(endpoint)
-      .then((res) => res.json())
-      .then((data) => {
-        const results = aplicarFiltros ? data.results : data;
-        setRecordings(results);
-        setHasMore(results.length === perPage);
-        if (results.length === 0 && currentPage > 1) {
-          setCurrentPage(1);
+      // Validaciones de filtros
+      if (aplicarFiltros) {
+        if (horaInicio && horaFin && horaInicio > horaFin) {
+          setErrorMessage(
+            language === "es"
+              ? "La hora de inicio no puede ser mayor que la hora de fin."
+              : "Start time cannot be later than end time."
+          );
+          console.log(errorMessage)
+          setLoading(false);
+          return;
         }
-      })
-      .finally(() => setLoading(false));
-  }, [
-    currentPage,
-    aplicarFiltros,
-    horaInicio,
-    horaFin,
-    fechaInicio,
-    fechaFin,
-    selectedLocation,
-    filename,
-  ]);
+      
+        if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+          setErrorMessage(
+            language === "es"
+              ? "La fecha de inicio no puede ser mayor que la fecha de fin."
+              : "Start date cannot be later than end date."
+          );
+          console.log(errorMessage)
+          setLoading(false);
+          return;
+        }
+      }
+
+      const params = new URLSearchParams({
+        page: currentPage,
+        per_page: perPage,
+      });
+
+      if (aplicarFiltros) {
+        if (horaInicio) params.append("hora_inicio", horaInicio);
+        if (horaFin) params.append("hora_fin", horaFin);
+        if (fechaInicio) params.append("fecha_inicio", fechaInicio);
+        if (fechaFin) params.append("fecha_fin", fechaFin);
+        if (selectedLocation) params.append("id_location", selectedLocation);
+      }
+
+      if (filename) {
+        params.append("filename", filename);
+      }
+
+      const endpoint = aplicarFiltros
+        ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
+        : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
+
+      const response = await fetch(endpoint);
+
+      if (!response.ok) {
+        throw new Error(`Error en la solicitud: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const results = aplicarFiltros ? data.results : data;
+
+      setRecordings(results);
+      setHasMore(results.length === perPage);
+      if (results.length === 0 && currentPage > 1) {
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      console.error("Error al obtener grabaciones:", error);
+      setRecordings([]);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [
+  currentPage,
+  aplicarFiltros,
+  horaInicio,
+  horaFin,
+  fechaInicio,
+  fechaFin,
+  selectedLocation,
+  filename,
+  language,
+]);
+
 
 
   useEffect(() => {
@@ -126,8 +167,22 @@ function RecordingsGeneral() {
   };
 
   const textContent = {
-    en: { title: "Recordings" },
-    es: { title: "Grabaciones" },
+    en: { title: "Recordings",
+          botonDelete: "Clear filters",
+          botonAplicar: "Aply filters",
+          fechas: "Date range",
+          horas: "Time range",
+          ubi: "Location",
+          ubiSelect: "Select a location"
+     },
+    es: { title: "Grabaciones",
+          botonDelete: "Borrar filtros",
+          botonAplicar: "Aplicar filtros",
+          fechas: "Rango de fechas",
+          horas: "Rango de horas",
+          ubi: "Ubicacion",
+          ubiSelect: "Selecciona una ubicación"
+     },
   };
 
   return (
@@ -151,7 +206,7 @@ function RecordingsGeneral() {
             <div className="relative group flex flex-col items-center">
               <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
               <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap montserrat">
-                Rango de horas
+              {textContent[language].horas}
               </div>
             </div>
 
@@ -169,14 +224,13 @@ function RecordingsGeneral() {
             />
           </div>
 
-
           {/* Grupo Fechas */}
           <div className="flex items-center gap-2 col-span-5">
             {/* Icono con tooltip */}
             <div className="relative group flex flex-col items-center">
               <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
               <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                Rango de fechas
+                {textContent[language].fechas}
               </div>
             </div>
 
@@ -201,7 +255,7 @@ function RecordingsGeneral() {
             <div className="relative group flex flex-col items-center">
               <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
               <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                Ubicación
+                {textContent[language].ubi}
               </div>
             </div>
 
@@ -210,7 +264,7 @@ function RecordingsGeneral() {
               onChange={(e) => setSelectedLocation(e.target.value)}
               className="bg-white rounded px-3 py-1 w-full border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             >
-              <option value="">Selecciona una localización</option>
+              <option value="">{textContent[language].ubiSelect}</option>
               {locations.map((location) => (
                 <option key={location.id_location} value={location.id_location}>
                   {location.name_location}
@@ -229,7 +283,7 @@ function RecordingsGeneral() {
             }}
             className="px-4 py-1 bg-[#375B38] text-white rounded hover:bg-[#2c482d]"
           >
-            Aplicar filtros
+            {textContent[language].botonAplicar}
           </button>
 
           <button
@@ -244,9 +298,16 @@ function RecordingsGeneral() {
             }}
             className="px-4 py-1 bg-gray-400 text-white rounded hover:bg-gray-500"
           >
-            Borrar filtros
+            {textContent[language].botonDelete}
           </button>
         </div>
+
+        {errorMessage && (
+          <div className="text-red-600 text-sm mt-2 mb-4 ml-6 font-medium">
+            {errorMessage}
+          </div>
+        )}
+
 
 
         <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
@@ -274,7 +335,7 @@ function RecordingsGeneral() {
 
                 <div className="cursor-pointer">
                   <p className="text-sm font-semibold text-[#375B38]">{recording.filename}</p>
-                  <p className="text-xs text-gray-500">grabadora #{recording.id_recorder_recordings}</p>
+                  <p className="text-xs text-gray-500">{language === "es" ? "grabadora" : "recorder"} #{recording.id_recorder_recordings}</p>
                 </div>
 
               </div>
