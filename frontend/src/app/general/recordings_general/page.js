@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../styles/datepicker-custom.css"; // Ajusta la ruta según dónde pongas el CSS
 import { es, enUS } from "date-fns/locale";
 import AudioPlayer from "../../../components/AudioPlayer";
-import RecordingDetailsModal from "../../../components/RecordingDetailsModal";
+import RecordingDetailsModal from "../../../components/grabaciones/RecordingDetailsModal";
 import Navbar from "../../../components/navbars/Navbar_busqueda";
 
 function RecordingsGeneral() {
