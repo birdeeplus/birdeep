@@ -96,7 +96,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-2">
       <div className="bg-[#F9F9F9] rounded-2xl shadow-lg w-full max-w-3xl px-8 py-8">
-        <h2 className="text-center text-[#375B38] text-l mb-10 montserrat">
+        <h2 className="text-center text-[#375B38] text-l mb-10 Montserrat">
           {t.title}
         </h2>
         <form onSubmit={handleSubmit}>

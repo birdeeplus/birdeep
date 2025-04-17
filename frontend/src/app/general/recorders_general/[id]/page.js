@@ -5,7 +5,7 @@ import { FaPlay, FaEdit, FaPause, FaDownload } from "react-icons/fa";
 import Navbar from "../../../../components/navbars/Navbar_busqueda";
 import AudioPlayer from "@/components/AudioPlayer";
 import Image from "next/image";
-import RecordingDetailsModal from "@/components/RecordingDetailsModal";
+import RecordingDetailsModal from "@/components/grabaciones/RecordingDetailsModal";
 import EditRecorderForm from "../../../../components/recorders/EditRecorderForm";
 import DeleteRecorderModal from "../../../../components/recorders/DeleteRecorderModal";
 
