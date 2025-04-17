@@ -46,32 +46,6 @@
     border-radius: 25%; /* Redondear el hover */
 }
   
-.react-datepicker__navigation--previous,
-.react-datepicker__navigation--next {
-  top: 10px;
-  width: 0;
-  height: 0;
-  padding: 0;
-  overflow: hidden;
-  text-indent: -999em;
-  cursor: pointer;
-  background: none;
-  border-style: solid;
-  position: absolute;
-}
-
-.react-datepicker__navigation--previous {
-  left: 10px;
-  border-width: 7px 10px 7px 0;
-  border-color: transparent #375B38 transparent transparent; /* flecha verde */
-}
-
-.react-datepicker__navigation--next {
-  right: 10px;
-  border-width: 7px 0 7px 10px;
-  border-color: transparent transparent transparent #375B38; /* flecha verde */
-}
-
 /* Hover en las opciones de mes y año */
 .react-datepicker__month-option:hover,
 .react-datepicker__year-option:hover {
