@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "../../styles/datepicker-custom.css"; // Ajusta la ruta según dónde pongas el CSS
+import { es, enUS } from "date-fns/locale";
 import AudioPlayer from "../../../components/AudioPlayer";
 import RecordingDetailsModal from "../../../components/RecordingDetailsModal";
 import Navbar from "../../../components/navbars/Navbar_busqueda";
@@ -180,7 +184,7 @@ function RecordingsGeneral() {
           botonAplicar: "Aplicar filtros",
           fechas: "Rango de fechas",
           horas: "Rango de horas",
-          ubi: "Ubicacion",
+          ubi: "Ubicación",
           ubiSelect: "Selecciona una ubicación"
      },
   };
@@ -234,20 +238,26 @@ function RecordingsGeneral() {
               </div>
             </div>
 
-            <input
-              type="date"
-              value={fechaInicio}
-              onChange={(e) => setFechaInicio(e.target.value)}
+            <DatePicker
+              selected={fechaInicio ? new Date(fechaInicio) : null}
+              onChange={(date) => setFechaInicio(date.toISOString().split("T")[0])}
+              locale={language === "es" ? es : enUS}
+              dateFormat="dd-MM-yyyy"
+              placeholderText={language === "es" ? "Fecha inicio" : "Start date"}
               className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             />
-            <input
-              type="date"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-              className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
-            />
-          </div>
 
+            {/* Fecha Fin */}
+            <DatePicker
+              selected={fechaFin ? new Date(fechaFin) : null}
+              onChange={(date) => setFechaFin(date.toISOString().split("T")[0])}
+              locale={language === "es" ? es : enUS}
+              dateFormat="dd-MM-yyyy"
+              placeholderText={language === "es" ? "Fecha fin" : "End date"}
+              className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+            />
+
+          </div>
 
           {/* Localización */}
           <div className="flex items-center gap-2 col-span-3">
@@ -260,16 +270,16 @@ function RecordingsGeneral() {
             </div>
 
             <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="bg-white rounded px-3 py-1 w-full border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="bg-white rounded px-3 py-1 w-full max-w-xs border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             >
-              <option value="">{textContent[language].ubiSelect}</option>
-              {locations.map((location) => (
-                <option key={location.id_location} value={location.id_location}>
-                  {location.name_location}
-                </option>
-              ))}
+                <option value="">{language === "es" ? "localizaciones" : "locations"}</option>
+                {locations.map((location) => (
+                    <option key={location.id_location} value={location.id_location}>
+                        {location.name_location.replaceAll("_", " ")}
+                    </option>
+                ))}
             </select>
           </div>
         </div>
@@ -311,7 +321,7 @@ function RecordingsGeneral() {
 
 
         <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
-          {language === "es" ? "todas las grabaciones (nº)" : "all recordings (#)"}
+          {language === "es" ? "todas las grabaciones (nº)" : "all recordings (nº)"}
         </p>
 
 

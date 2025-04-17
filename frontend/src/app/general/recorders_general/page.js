@@ -60,18 +60,22 @@ export default function RecordersGeneral() {
                 setAllRecorders(data);
             })
             .catch((error) => console.error("Error fetching recorders:", error));
+
         fetch("http://localhost:8080/api/v1/locations")
             .then((response) => response.json())
             .then((data) => setLocations(data))
             .catch((error) => console.error("Error fetching locatios:", error));
+
         fetch("http://localhost:8080/api/v1/microphones")
             .then((response) => response.json())
             .then((data) => setMicrophones(data))
             .catch((error) => console.error("Error fetching microphones:", error));
+
         fetch("http://localhost:8080/api/v1/processors")
             .then((response) => response.json())
             .then((data) => setProcessors(data))
             .catch((error) => console.error("Error fetching processors:", error));
+
         const userIsAdmin = localStorage.getItem("is_admin") === "true";
         setIsAdmin(userIsAdmin);
     }, []);
@@ -136,7 +140,7 @@ export default function RecordersGeneral() {
                             <option value="">{language === "es" ? "localizaciones" : "locations"}</option>
                             {locations.map((location) => (
                                 <option key={location.id_location} value={location.id_location}>
-                                    {location.name_location}
+                                    {location.name_location.replaceAll("_", " ")}
                                 </option>
                             ))}
                         </select>
@@ -188,7 +192,6 @@ export default function RecordersGeneral() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
-
 
 
                                 <div className="flex items-center gap-6 text-[#375B38]">

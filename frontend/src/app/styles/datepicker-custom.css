@@ -1,0 +1,86 @@
+/* styles/datepicker-custom.css */
+
+/* Estilo del calendario */
+.react-datepicker {
+    font-family: 'Montserrat', sans-serif;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border-radius: 8px; /* Redondear el calendario */
+    background-color: #f1f1f1; /* Color de fondo del calendario */
+}
+  
+/* Cabecera del calendario */
+.react-datepicker__header {
+    background-color: #f1f1f1;
+    color: #375B38;
+    border-bottom: none; /* Eliminar el borde inferior */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+  
+/* Texto del mes actual y los días de la semana */
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+    color: #919191; /* Gris claro */
+    font-weight: bold;
+}
+  
+/* Estilo de los días (números) */
+.react-datepicker__day {
+    color: #919191; /* Gris claro */
+}
+
+/* Días seleccionados */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+    background-color: white !important; /* Verde */
+    color: #375B38 !important;
+    border-radius: 25%; /* Redondear el día seleccionado */
+}
+
+/* Hover en los días */
+.react-datepicker__day:hover {
+    background-color: #cce1cc;
+    color: #375B38;
+    border-radius: 25%; /* Redondear el hover */
+}
+  
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  top: 10px;
+  width: 0;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  text-indent: -999em;
+  cursor: pointer;
+  background: none;
+  border-style: solid;
+  position: absolute;
+}
+
+.react-datepicker__navigation--previous {
+  left: 10px;
+  border-width: 7px 10px 7px 0;
+  border-color: transparent #375B38 transparent transparent; /* flecha verde */
+}
+
+.react-datepicker__navigation--next {
+  right: 10px;
+  border-width: 7px 0 7px 10px;
+  border-color: transparent transparent transparent #375B38; /* flecha verde */
+}
+
+/* Hover en las opciones de mes y año */
+.react-datepicker__month-option:hover,
+.react-datepicker__year-option:hover {
+    background-color: #cce1cc;
+    color: #375B38;
+}
+
+/* Eliminar la flecha del calendario */
+.react-datepicker__triangle {
+display: none;
+}
+  

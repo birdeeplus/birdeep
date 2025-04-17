@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
     "express": "^4.21.2",
     "framer-motion": "^12.4.7",
     "leaflet": "^1.9.4",
@@ -17,6 +18,7 @@
     "react": "^19.0.0",
     "react-audio-spectrogram-player": "^2.0.1",
     "react-bootstrap": "^2.10.9",
+    "react-datepicker": "^8.3.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
     "react-icons": "^5.5.0",
