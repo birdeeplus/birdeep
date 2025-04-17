@@ -34,11 +34,6 @@ export default function LocationsGeneral() {
             .catch((error) => console.error("Error fetching locations:", error));
     };
 
-    const updateAdminStatus = () => {
-        const userRole = localStorage.getItem("is_admin");
-        setIsAdmin(userRole === "true"); // Verifica correctamente el valor de admin
-    };
-
     useEffect(() => {
         const savedLanguage = localStorage.getItem("language") || "es";
         setLanguage(savedLanguage);
@@ -91,8 +86,16 @@ export default function LocationsGeneral() {
                             }}
                         >
                             <Tooltip direction="top" offset={[0, -8]} opacity={1}>
-                                <span className="font-bold">{location.name_location}</span>
+                                <div className="text-sm">
+                                    <div className="font-bold">
+                                        {location.name_location.replaceAll("_", " ")}
+                                    </div>
+                                    <div className="text-gray-700">
+                                        {location.habitat_location.replaceAll("_", " ")}
+                                    </div>
+                                </div>
                             </Tooltip>
+
                         </Marker>
                     ))}
                 </MapContainer>
