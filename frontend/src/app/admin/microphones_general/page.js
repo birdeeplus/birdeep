@@ -5,7 +5,8 @@ import { FaEdit } from "react-icons/fa";
 import Image from "next/image";
 import AddMicrophonePopup from "../../../components/microphones/AddMicrophonePopup";
 import EditMicrophonePopup from "../../../components/microphones/EditMicrophonePopup";
-import MicrophoneInfoModal from "../../../components/microphones/MicrophoneInfoModal";
+import DeleteMicrophoneModal from "../../../components/microphones/DeleteMicrophoneModal";
+
 
 export default function MicrophonesTable() {
     const [language, setLanguage] = useState("en");
@@ -21,6 +22,9 @@ export default function MicrophonesTable() {
     const [recorders, setRecorders] = useState([]);
     const [selectedInfo, setSelectedInfo] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [micToDelete, setMicToDelete] = useState(null);
+
 
     const toggleLanguage = () => {
         const newLang = language === "en" ? "es" : "en";
@@ -31,30 +35,30 @@ export default function MicrophonesTable() {
     useEffect(() => {
         const savedLanguage = localStorage.getItem("language") || "es";
         setLanguage(savedLanguage);
-    
+
         const updateAdminStatus = () => {
             const userRole = localStorage.getItem("is_admin");
             const isUserAdmin = userRole === "true";
             setIsAdmin(isUserAdmin);
-    
+
             if (!isUserAdmin) {
                 alert(language === "es" ? "No tienes acceso a esta página." : "You do not have access to this page.");
                 window.location.href = "/";
             }
         };
-    
+
         updateAdminStatus();
-    
+
         const handleAuthChange = () => {
             updateAdminStatus();
         };
-    
+
         window.addEventListener("authChange", handleAuthChange);
         return () => {
             window.removeEventListener("authChange", handleAuthChange);
         };
     }, [language]);
-    
+
 
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/microphones")
@@ -71,17 +75,26 @@ export default function MicrophonesTable() {
         setShowEditForm(true);
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm("¿Seguro que deseas eliminar este micrófono?")) return;
-        await fetch(`http://localhost:8080/api/v1/microphones/${id}`, { method: "DELETE" });
-        setMicrophones(prev => prev.filter(m => m.id_microphone !== id));
+    const handleDeleteClick = (mic) => {
+        setMicToDelete(mic);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!micToDelete) return;
+        await fetch(`http://localhost:8080/api/v1/microphones/${micToDelete.id_microphone}`, {
+            method: "DELETE"
+        });
+        setMicrophones((prev) => prev.filter((m) => m.id_microphone !== micToDelete.id_microphone));
+        setShowDeleteModal(false);
+        setMicToDelete(null);
     };
 
     return (
-        <div className="relative w-full h-screen bg-[#F8F8F8]">
+        <div className="relative w-full min-h-screen bg-[#F8F8F8]">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
             <br />
-            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20 pb-36">
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-[#375B38] text-4xl font-bold">
                         {language === "en" ? "Microphones" : "Micrófonos"}
@@ -102,40 +115,43 @@ export default function MicrophonesTable() {
                     {language === "en" ? "all microphones" : "todos los micrófonos"}
                 </p>
 
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col gap-2 w-full pb-28">
                     {microphones.map((mic) => (
                         <div
                             key={mic.id_microphone}
                             className="flex justify-between items-center px-4 py-2 rounded-xl transition hover:bg-white"
                         >
                             <button
-                                onClick={() => setSelectedInfo(mic)}
+                                onClick={() => {
+                                    setEditFormData(mic);
+                                    setShowEditForm(true);
+                                }}
                                 className="flex items-center gap-2 font-medium px-6 py-2 rounded-xl transition-all bg-white text-[#375B38] hover:bg-[#375B38] hover:text-white"
                             >
                                 {language === "en" ? "microphone" : "micrófono"} #{mic.id_microphone}
                             </button>
 
-
                             <div className="flex items-center gap-4 text-[#375B38]">
                                 {isAdmin && (
                                     <>
+                                        {/* eliminar el botón de editar */}
                                         <button
-                                            onClick={() => handleEdit(mic)}
-                                            className="hover:text-blue-600"
-                                            title="Modificar"
-                                        >
-                                            <FaEdit />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(mic.id_microphone)}
+                                            onClick={() => handleDeleteClick(mic)}
                                             className="hover:opacity-70"
                                             title="Eliminar"
                                         >
                                             <Image src="/iconos/eliminar.png" alt="Eliminar" width={18} height={18} />
                                         </button>
+
                                     </>
                                 )}
-                                <button onClick={() => setSelectedInfo(mic)} title="Información">
+                                <button
+                                    onClick={() => {
+                                        setEditFormData(mic);
+                                        setShowEditForm(true);
+                                    }}
+                                    title="Información"
+                                >
                                     <Image src="/iconos/info.png" alt="info" width={16} height={16} />
                                 </button>
                             </div>
@@ -175,7 +191,9 @@ export default function MicrophonesTable() {
                         setShowEditForm={setShowEditForm}
                         language={language}
                         formData={editFormData}
-                        handleChange={(e) => setEditFormData({ ...editFormData, [e.target.name]: e.target.value })}
+                        handleChange={(e) =>
+                            setEditFormData({ ...editFormData, [e.target.name]: e.target.value })
+                        }
                         handleSubmit={async (e) => {
                             e.preventDefault();
                             await fetch(`http://localhost:8080/api/v1/microphones/${editFormData.id_microphone}`, {
@@ -183,8 +201,8 @@ export default function MicrophonesTable() {
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(editFormData),
                             });
-                            setMicrophones(prev =>
-                                prev.map(m => m.id_microphone === editFormData.id_microphone ? editFormData : m)
+                            setMicrophones((prev) =>
+                                prev.map((m) => m.id_microphone === editFormData.id_microphone ? editFormData : m)
                             );
                             setShowEditForm(false);
                             setEditFormData(null);
@@ -193,13 +211,15 @@ export default function MicrophonesTable() {
                     />
                 )}
 
-                {selectedInfo && (
-                    <MicrophoneInfoModal
-                        microphone={selectedInfo}
-                        onClose={() => setSelectedInfo(null)}
+                {showDeleteModal && (
+                    <DeleteMicrophoneModal
+                        isOpen={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onConfirm={confirmDelete}
                         language={language}
                     />
                 )}
+
             </div>
         </div>
     );

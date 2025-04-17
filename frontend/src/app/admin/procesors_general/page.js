@@ -1,11 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import Navbar from "../../../components/navbars/Navbar_general";
-import { FaEdit } from "react-icons/fa";
 import Image from "next/image";
 import AddProcessorPopup from "../../../components/procesors/AddProcesorPopup";
 import EditProcessorPopup from "../../../components/procesors/EditProcesorPopup";
-import ProcessorInfoModal from "../../../components/procesors/ProcessorInfoModal";
+import DeleteProcessorModal from "../../../components/procesors/DeleteProcessorModal";
 
 export default function ProcessorsGeneral() {
     const [language, setLanguage] = useState("en");
@@ -19,8 +18,9 @@ export default function ProcessorsGeneral() {
         id_recorder: ""
     });
     const [editFormData, setEditFormData] = useState(null);
-    const [selectedInfo, setSelectedInfo] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [processorToDelete, setProcessorToDelete] = useState(null);
 
     const toggleLanguage = () => {
         const newLang = language === "en" ? "es" : "en";
@@ -57,22 +57,24 @@ export default function ProcessorsGeneral() {
             .then(setRecorders);
     }, []);
 
-    const handleEdit = (processor) => {
-        setEditFormData(processor);
-        setShowEditForm(true);
+    const handleDelete = (processor) => {
+        setProcessorToDelete(processor);
+        setShowDeleteModal(true);
     };
 
-    const handleDelete = async (id) => {
-        if (!confirm("¿Seguro que deseas eliminar este procesador?")) return;
-        await fetch(`http://localhost:8080/api/v1/processors/${id}`, { method: "DELETE" });
-        setProcessors(prev => prev.filter(p => p.id_processor !== id));
+    const confirmDelete = async () => {
+        if (!processorToDelete) return;
+        await fetch(`http://localhost:8080/api/v1/processors/${processorToDelete.id_processor}`, { method: "DELETE" });
+        setProcessors(prev => prev.filter(p => p.id_processor !== processorToDelete.id_processor));
+        setShowDeleteModal(false);
+        setProcessorToDelete(null);
     };
 
     return (
-        <div className="relative w-full h-screen bg-[#F8F8F8]">
+        <div className="relative w-full min-h-screen bg-[#F8F8F8]">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
             <br />
-            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20 pb-36">
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20 pb-28">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-[#375B38] text-4xl font-bold">
                         {language === "en" ? "Processors" : "Procesadores"}
@@ -100,7 +102,10 @@ export default function ProcessorsGeneral() {
                             className="flex justify-between items-center px-4 py-2 rounded-xl transition hover:bg-white"
                         >
                             <button
-                                onClick={() => setSelectedInfo(proc)}
+                                onClick={() => {
+                                    setEditFormData(proc);
+                                    setShowEditForm(true);
+                                }}
                                 className="flex items-center gap-2 font-medium px-6 py-2 rounded-xl transition-all bg-white text-[#375B38] hover:bg-[#375B38] hover:text-white"
                             >
                                 {language === "en" ? "processor" : "procesador"} #{proc.id_processor}
@@ -108,25 +113,19 @@ export default function ProcessorsGeneral() {
 
                             <div className="flex items-center gap-4 text-[#375B38]">
                                 {isAdmin && (
-                                    <>
-                                        <button
-                                            onClick={() => handleEdit(proc)}
-                                            className="hover:text-blue-600"
-                                            title="Modificar"
-                                        >
-                                            <FaEdit />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(proc.id_processor)}
-                                            className="hover:opacity-70"
-                                            title="Eliminar"
-                                        >
-                                            <Image src="/iconos/eliminar.png" alt="Eliminar" width={18} height={18} />
-                                        </button>
-                                    </>
+                                    <button
+                                        onClick={() => handleDelete(proc)}
+                                        className="hover:opacity-70"
+                                        title="Eliminar"
+                                    >
+                                        <Image src="/iconos/eliminar.png" alt="Eliminar" width={18} height={18} />
+                                    </button>
                                 )}
                                 <button
-                                    onClick={() => setSelectedInfo(proc)}
+                                    onClick={() => {
+                                        setEditFormData(proc);
+                                        setShowEditForm(true);
+                                    }}
                                     title="Información"
                                 >
                                     <Image src="/iconos/info.png" alt="info" width={16} height={16} />
@@ -195,14 +194,12 @@ export default function ProcessorsGeneral() {
                     />
                 )}
 
-                {selectedInfo && (
-                    <ProcessorInfoModal
-                        processor={selectedInfo}
-                        onClose={() => setSelectedInfo(null)}
+                {showDeleteModal && (
+                    <DeleteProcessorModal
+                        isOpen={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        onConfirm={confirmDelete}
                         language={language}
-                        recorder={
-                            recorders.find(r => r.id_recorder === selectedInfo.id_recorder) || null
-                        }
                     />
                 )}
             </div>

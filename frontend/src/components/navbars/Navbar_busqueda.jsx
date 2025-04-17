@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import "../../app/styles/fonts.css";
@@ -18,20 +18,26 @@ export default function Navbar({ toggleLanguage, language }) {
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
 
+    const pathname = usePathname();  // Obtener el pathname dentro del componente
+    const searchParams = useSearchParams();  // Obtener los parámetros de búsqueda
     const handleSearch = () => {
+        const query = new URLSearchParams(searchParams.toString());
+
         if (searchTerm.trim() !== "") {
-            router.push(`/general/recordings_general?filename=${encodeURIComponent(searchTerm)}`);
+            query.set('filename', searchTerm);
+        } else {
+            query.delete('filename');
         }
-        else if(searchTerm.trim() === ""){
-            router.push('/general/recordings_general');
-        }
+
+        // Mantener en la misma página y aplicar el filtro
+        router.push(`${pathname}?${query.toString()}`);
     };
 
     useEffect(() => {
         // Recupera los datos del localStorage al cargar la página
         const token = localStorage.getItem("token");
         const adminStatus = localStorage.getItem("is_admin");
-    
+
         // Solo la primera vez que se carga la aplicación, se establece como usuario no autenticado
         if (!localStorage.getItem("isFirstLoad")) {
             localStorage.setItem("isFirstLoad", "true");
@@ -52,26 +58,26 @@ export default function Navbar({ toggleLanguage, language }) {
     const handleLoginSuccess = (adminStatus) => {
         setIsLoggedIn(true);
         setIsAdmin(adminStatus);
-    
+
         localStorage.setItem("token", "your_token_value_here");
         localStorage.setItem("is_admin", adminStatus ? "true" : "false");
-    
+
         window.dispatchEvent(new Event("authChange")); // Emitir evento de cambio
     };
-    
+
     const handleLogout = () => {
         setIsLoggedIn(false);
         setIsAdmin(false);
-    
+
         localStorage.removeItem("token");
         localStorage.removeItem("is_admin");
-    
+
         window.dispatchEvent(new Event("authChange")); // Emitir evento de cambio
     };
 
     return (
         <nav className="w-full flex justify-between items-center py-6 px-6 fixed top-0 z-50">
-            
+
             {/* Menú Hamburguesa + Logo */}
             <div className="flex pl-6 items-center gap-4">
                 {/* Botón Menú Hamburguesa */}
@@ -101,7 +107,10 @@ export default function Navbar({ toggleLanguage, language }) {
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-black"
                             onClick={() => {
                                 setSearchTerm("");
-                                router.push('/general/recordings_general');
+                                // Eliminar el parámetro filename de la URL actual
+                                const query = new URLSearchParams(searchParams.toString());
+                                query.delete('filename');
+                                router.push(`${pathname}?${query.toString()}`);
                             }}
                             aria-label="Clear search"
                         >
@@ -117,13 +126,18 @@ export default function Navbar({ toggleLanguage, language }) {
                 <LanguageToggleButton toggleLanguage={toggleLanguage} language={language} />
 
                 {/* Botón de Usuario */}
-                {isLoggedIn && isAdmin ? (
-                    <span className="text-green-500 font-bold cursor-pointer" onClick={() => setLogoutOpen(true)}>
-                        Admin
-                    </span>
+                {isLoggedIn ? (
+                    <button className="p-1" onClick={() => setLogoutOpen(true)}>
+                        <Image
+                            src={isAdmin ? "/iconos/admin.png" : "/iconos/user.png"}
+                            alt={isAdmin ? "Admin" : "User"}
+                            width={34}
+                            height={34}
+                        />
+                    </button>
                 ) : (
                     <button className="p-1" onClick={() => setLoginOpen(true)}>
-                        <Image src="/iconos/user.png" alt="User" width={32} height={32} />
+                        <Image src="/iconos/user.png" alt="User" width={34} height={34} />
                     </button>
                 )}
             </div>
