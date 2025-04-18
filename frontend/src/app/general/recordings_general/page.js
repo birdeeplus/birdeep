@@ -145,6 +145,7 @@ function RecordingsGeneral() {
 
   const togglePlay = (audioSrc) => {
     if (currentAudio === audioSrc && lastClicked === audioSrc) {
+
       setCurrentAudio(null);
       setIsPlaying(false);
       setLastClicked(null);
@@ -189,6 +190,8 @@ function RecordingsGeneral() {
      },
   };
 
+  const dbHost = process.env.NEXT_PUBLIC_DB_HOST;
+    
   return (
     <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen">
       {/* Navbar */}
@@ -339,7 +342,11 @@ function RecordingsGeneral() {
               className="rounded-xl flex items-center justify-between mb-1 px-4 py-3 Montserrat transition duration-300 hover:bg-white w-full"
             >
               <div className="flex items-center gap-4">
-                <button onClick={() => togglePlay(recording.uri)} className="w-7 h-7">
+                <button onClick={() => {
+                  const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
+                  togglePlay(`http://${dbHost}:8081${cleanUrl}`);
+                }}  className="w-7 h-7">
+
                   <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
                 </button>
 
@@ -415,17 +422,20 @@ function RecordingsGeneral() {
         )}
 
 
-        {currentAudio && (
-          <AudioPlayer
-            src={currentAudio}
-            filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
-            recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
-            onClose={() => {
-              setCurrentAudio(null);
-              setLastClicked(null);
-            }}
-          />
-        )}
+{currentAudio && (
+  <div>
+    <AudioPlayer
+      src={currentAudio}
+      filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
+      recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
+      onClose={() => {
+        setCurrentAudio(null);
+        setLastClicked(null);
+      }}
+    />
+  </div>
+)}
+
 
       </div>
     </div>
