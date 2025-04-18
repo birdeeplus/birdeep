@@ -8,6 +8,9 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flasgger import Swagger
 
+import requests
+from flask import Response
+
 # Importar configuraciones
 from config.config import config
 
@@ -49,7 +52,7 @@ def create_app(environment_fn):
     db.init_app(app_fn)
     Swagger(app_fn, template=create_swagger_template())
     JWTManager(app_fn)
-    CORS(app_fn, resources={r"/*": {"origins": "http://localhost:3000"}})
+    CORS(app_fn, resources={r"/*": {"origins": "*"}})
 
     with app_fn.app_context():
         db.create_all()
@@ -82,6 +85,12 @@ def db_version():
         version_result = connection.execute(text("SELECT VERSION();"))
         version = version_result.scalar()  # Obtiene solo el string de versión
     return jsonify({"database_version": version})
+
+@app.route('/proxy-audio/<int:id>/<path:filename>')
+def proxy_audio(id, filename):
+    external_url = f"http://192.168.1.36:8081/datos_audios_bd/audio_data/{id}/{filename}"
+    r = requests.get(external_url)
+    return Response(r.content, mimetype="audio/wav")
 
 # Iniciar servidor
 if __name__ == '__main__':

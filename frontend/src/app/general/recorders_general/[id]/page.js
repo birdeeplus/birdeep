@@ -471,7 +471,10 @@ export default function RecorderDetails() {
                                         <button onClick={() => setSelectedRecordingId(recording.id_record)} className="w-5 h-5">
                                             <Image src="/iconos/info.png" alt="info" width={18} height={18} />
                                         </button>
-                                        <button onClick={() => downloadRecording(recording.uri, recording.filename)} className="w-5 h-5">
+                                        <button onClick={() => {
+                                            const url_transformada = recording.uri.replace("static/datos_audios_bd/audio_data", "proxy-audio")
+                                            downloadRecording(url_transformada, recording.filename)}
+                                            }className="w-5 h-5">
                                             <Image src="/iconos/download.png" alt="download" width={18} height={18} />
                                         </button>
                                     </div>
