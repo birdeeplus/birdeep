@@ -43,6 +43,7 @@ function RecordingsGeneral() {
     localStorage.setItem("language", newLang);
   };
   
+  const dbHost = process.env.NEXT_PUBLIC_DB_HOST;
 
   useEffect(() => {
   const fetchData = async () => {
@@ -189,8 +190,6 @@ function RecordingsGeneral() {
           ubiSelect: "Selecciona una ubicación"
      },
   };
-
-  const dbHost = process.env.NEXT_PUBLIC_DB_HOST;
     
   return (
     <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen">
@@ -345,7 +344,7 @@ function RecordingsGeneral() {
                 <button onClick={() => {
                   const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
                   togglePlay(`http://${dbHost}:8081${cleanUrl}`);
-                }}  className="w-7 h-7">
+                  }}  className="w-7 h-7">
 
                   <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
                 </button>

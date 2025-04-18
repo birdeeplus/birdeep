@@ -46,7 +46,9 @@ export default function RecorderDetails() {
         setLanguage(newLang);
         localStorage.setItem("language", newLang);
     };
-      
+
+    const dbHost = process.env.NEXT_PUBLIC_DB_HOST;
+
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/locations")
             .then((response) => response.json())
@@ -453,7 +455,11 @@ export default function RecorderDetails() {
                                     className="rounded-xl flex items-center justify-between mb-1 px-4 py-3 Montserrat transition duration-300 hover:bg-white w-full"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <button onClick={() => togglePlay(recording.uri)} className="w-7 h-7">  
+                                        <button onClick={() => {
+                                            const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
+                                            togglePlay(`http://${dbHost}:8081${cleanUrl}`);
+                                            }}  className="w-7 h-7">
+                                        
                                             <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
                                         </button>
                                         <div className="cursor-pointer">
