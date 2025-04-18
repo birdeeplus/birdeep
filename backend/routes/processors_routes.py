@@ -1,4 +1,5 @@
 # /routes/processors_routes.py
+
 from flask import Blueprint
 from controllers.processors_controller import insert_new_processor, query_processors, update_processor, delete_processor
 from flasgger import swag_from

@@ -1,26 +1,30 @@
 "use client";
 import { useState, useEffect } from "react";
 import Navbar from "../../../components/navbars/Navbar_general";
+import { FaEdit } from "react-icons/fa";
 import Image from "next/image";
-import AddProcessorPopup from "../../../components/procesors/AddProcesorPopup";
-import EditProcessorPopup from "../../../components/procesors/EditProcesorPopup";
-import DeleteProcessorModal from "../../../components/procesors/DeleteProcessorModal";
+import AddProcessorPopup from "../../../components/processors/AddProcessorPopup";
+import EditProcessorPopup from "../../../components/processors/EditProcessorPopup";
+import DeleteProcessorModal from "../../../components/processors/DeleteProcessorModal";
 
-export default function ProcessorsGeneral() {
+
+export default function ProcessorsTable() {
     const [language, setLanguage] = useState("en");
     const [processors, setProcessors] = useState([]);
-    const [recorders, setRecorders] = useState([]);
     const [showForm, setShowForm] = useState(false);
-    const [showEditForm, setShowEditForm] = useState(false);
     const [formData, setFormData] = useState({
-        model_processor: "Orange Pi 3",
+        model_processor: "AudioMoth",
         comment_processor: "",
         id_recorder: ""
     });
+    const [showEditForm, setShowEditForm] = useState(false);
     const [editFormData, setEditFormData] = useState(null);
+    const [recorders, setRecorders] = useState([]);
+    const [selectedInfo, setSelectedInfo] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [processorToDelete, setProcessorToDelete] = useState(null);
+    const [procToDelete, setProcToDelete] = useState(null);
+
 
     const toggleLanguage = () => {
         const newLang = language === "en" ? "es" : "en";
@@ -29,23 +33,32 @@ export default function ProcessorsGeneral() {
     };
 
     useEffect(() => {
-        const savedLang = localStorage.getItem("language") || "es";
-        setLanguage(savedLang);
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
 
         const updateAdminStatus = () => {
             const userRole = localStorage.getItem("is_admin");
             const isUserAdmin = userRole === "true";
             setIsAdmin(isUserAdmin);
+
             if (!isUserAdmin) {
-                alert("No tienes acceso a esta página.");
+                alert(language === "es" ? "No tienes acceso a esta página." : "You do not have access to this page.");
                 window.location.href = "/";
             }
         };
 
         updateAdminStatus();
-        window.addEventListener("authChange", updateAdminStatus);
-        return () => window.removeEventListener("authChange", updateAdminStatus);
-    }, []);
+
+        const handleAuthChange = () => {
+            updateAdminStatus();
+        };
+
+        window.addEventListener("authChange", handleAuthChange);
+        return () => {
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, [language]);
+
 
     useEffect(() => {
         fetch("http://localhost:8080/api/v1/processors")
@@ -57,24 +70,31 @@ export default function ProcessorsGeneral() {
             .then(setRecorders);
     }, []);
 
-    const handleDelete = (processor) => {
-        setProcessorToDelete(processor);
+    const handleEdit = (proc) => {
+        setEditFormData(proc);
+        setShowEditForm(true);
+    };
+
+    const handleDeleteClick = (proc) => {
+        setProcToDelete(proc);
         setShowDeleteModal(true);
     };
 
     const confirmDelete = async () => {
-        if (!processorToDelete) return;
-        await fetch(`http://localhost:8080/api/v1/processors/${processorToDelete.id_processor}`, { method: "DELETE" });
-        setProcessors(prev => prev.filter(p => p.id_processor !== processorToDelete.id_processor));
+        if (!procToDelete) return;
+        await fetch(`http://localhost:8080/api/v1/processors/${procToDelete.id_processor}`, {
+            method: "DELETE"
+        });
+        setProcessors((prev) => prev.filter((m) => m.id_processor !== procToDelete.id_processor));
         setShowDeleteModal(false);
-        setProcessorToDelete(null);
+        setProcToDelete(null);
     };
 
     return (
         <div className="relative w-full min-h-screen bg-[#F8F8F8]">
             <Navbar toggleLanguage={toggleLanguage} language={language} />
             <br />
-            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20 pb-28">
+            <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 mt-20">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-[#375B38] text-4xl font-bold">
                         {language === "en" ? "Processors" : "Procesadores"}
@@ -95,7 +115,7 @@ export default function ProcessorsGeneral() {
                     {language === "en" ? "all processors" : "todos los procesadores"}
                 </p>
 
-                <div className="flex flex-col gap-2 w-full">
+                <div className="flex flex-col gap-2 w-full pb-28">
                     {processors.map((proc) => (
                         <div
                             key={proc.id_processor}
@@ -113,13 +133,17 @@ export default function ProcessorsGeneral() {
 
                             <div className="flex items-center gap-4 text-[#375B38]">
                                 {isAdmin && (
-                                    <button
-                                        onClick={() => handleDelete(proc)}
-                                        className="hover:opacity-70"
-                                        title="Eliminar"
-                                    >
-                                        <Image src="/iconos/eliminar.png" alt="Eliminar" width={18} height={18} />
-                                    </button>
+                                    <>
+                                        {/* eliminar el botón de editar */}
+                                        <button
+                                            onClick={() => handleDeleteClick(proc)}
+                                            className="hover:opacity-70"
+                                            title="Eliminar"
+                                        >
+                                            <Image src="/iconos/eliminar.png" alt="Eliminar" width={18} height={18} />
+                                        </button>
+
+                                    </>
                                 )}
                                 <button
                                     onClick={() => {
@@ -139,58 +163,51 @@ export default function ProcessorsGeneral() {
                     <AddProcessorPopup
                         showForm={showForm}
                         setShowForm={setShowForm}
+                        language={language}
+                        recorders={recorders}
                         formData={formData}
                         handleChange={(e) =>
                             setFormData({ ...formData, [e.target.name]: e.target.value })
                         }
                         handleSubmit={async (e) => {
                             e.preventDefault();
-                            const newProc = {
-                                ...formData,
-                                id_recorder: Number(formData.id_recorder)
-                            };
+                            const newProc = { ...formData, id_recorder: Number(formData.id_recorder) };
                             const res = await fetch("http://localhost:8080/api/v1/processors", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify(newProc)
+                                body: JSON.stringify(newProc),
                             });
                             const saved = await res.json();
                             setProcessors(prev => [...prev, saved]);
                             setShowForm(false);
-                            setFormData({
-                                model_processor: "Orange Pi 3",
-                                comment_processor: "",
-                                id_recorder: ""
-                            });
+                            setFormData({ model_processor: "AudioMoth", comment_processor: "", id_recorder: "" });
                         }}
-                        recorders={recorders}
-                        language={language}
                     />
                 )}
 
                 {showEditForm && (
                     <EditProcessorPopup
                         showEditForm={showEditForm}
-                        editFormData={editFormData}
-                        setEditFormData={setEditFormData}
                         setShowEditForm={setShowEditForm}
-                        handleUpdate={async (e) => {
+                        language={language}
+                        formData={editFormData}
+                        handleChange={(e) =>
+                            setEditFormData({ ...editFormData, [e.target.name]: e.target.value })
+                        }
+                        handleSubmit={async (e) => {
                             e.preventDefault();
-                            await fetch(
-                                `http://localhost:8080/api/v1/processors/${editFormData.id_processor}`,
-                                {
-                                    method: "PUT",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify(editFormData)
-                                }
-                            );
-                            setProcessors(prev =>
-                                prev.map(p => p.id_processor === editFormData.id_processor ? editFormData : p)
+                            await fetch(`http://localhost:8080/api/v1/processors/${editFormData.id_processor}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify(editFormData),
+                            });
+                            setProcessors((prev) =>
+                                prev.map((m) => m.id_processor === editFormData.id_processor ? editFormData : m)
                             );
                             setShowEditForm(false);
+                            setEditFormData(null);
                         }}
                         recorders={recorders}
-                        language={language}
                     />
                 )}
 
@@ -202,6 +219,7 @@ export default function ProcessorsGeneral() {
                         language={language}
                     />
                 )}
+
             </div>
         </div>
     );

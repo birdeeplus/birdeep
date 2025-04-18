@@ -1,4 +1,5 @@
 # /routes/microphones_routes.py
+
 from flask import Blueprint
 from controllers.microphones_controller import insert_new_microphone, query_microphones, update_microphone, delete_microphone
 from flasgger import swag_from
