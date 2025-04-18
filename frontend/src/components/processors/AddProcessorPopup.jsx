@@ -1,7 +1,15 @@
 "use client";
 import React from "react";
 
-const AddProcessorPopup = ({ showForm, setShowForm, language, recorders, handleChange, formData, handleSubmit }) => {
+const AddProcessorPopup = ({
+  showForm,
+  setShowForm,
+  language,
+  recorders,
+  handleChange,
+  formData,
+  handleSubmit
+}) => {
   if (!showForm) return null;
 
   const handleOverlayClick = (e) => {
@@ -15,7 +23,9 @@ const AddProcessorPopup = ({ showForm, setShowForm, language, recorders, handleC
     handleChange({ target: { name: "id_recorder", value } });
   };
 
-  const uniqueRecorders = [...new Map(recorders.map(item => [item.id_recorder, item])).values()];
+  const uniqueRecorders = [
+    ...new Map(recorders.map((item) => [item.id_recorder, item])).values()
+  ];
 
   return (
     <div
@@ -28,7 +38,7 @@ const AddProcessorPopup = ({ showForm, setShowForm, language, recorders, handleC
         onClick={(e) => e.stopPropagation()}
       >
         {/* Título */}
-        <h2 className="text-center text-[#375B38]  text-l mb-10 montserrat">
+        <h2 className="text-center text-[#375B38] text-l mb-10 montserrat">
           {language === "en" ? "Add processor" : "Añadir procesador"}
         </h2>
 
@@ -47,7 +57,7 @@ const AddProcessorPopup = ({ showForm, setShowForm, language, recorders, handleC
                   onChange={handleChange}
                   className="bg-white text-[#778184]/50 w-[17rem] h-8 rounded-md px-2 py-1 text-sm appearance-none border-none"
                 >
-                  <option value="Orange Pi 3">Orange Pi 3</option>
+                  <option value="AudioMoth">AudioMoth</option>
                   <option value="Other">{language === "en" ? "other" : "otro"}</option>
                 </select>
               </div>

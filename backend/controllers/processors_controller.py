@@ -2,30 +2,69 @@
 
 import os
 from flask import request, jsonify
-from models import Processors, Recorders, Recordings
-from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
+from models import Recorders, Processors, Recordings
 from models.database import db
+from utils.crud_operations import insert_values_in_db, get_values_from_db, update_values_in_db, delete_values_in_db
+from pprint import pprint
+from flask import jsonify
+
 
 def insert_new_processor():
     """
-    Insert a new processor into the database.
-
-    This function receives a POST request with data for a new processor.
-    It calls a utility function to insert the processor data into the database and returns a response.
+    Insert a new processor into the database
+    
+    This endpoint allows the insertion of a new processor into the database.
+    It expects the processor model to be provided in the request body.
+    If provided, the processor is saved into the database. If an optional recorder ID is provided,
+    the processor is associated with that recorder.
+    
+    Returns:
+        JSON response containing the newly created processor data.
     """
 
-    # Insert the new processor into the database using the insert_values_in_db function
-    response = insert_values_in_db(request, Processors)
+    try:
+        # Extract data from the incoming JSON request
+        data = request.get_json()
 
-    # Return a JSON response with the result of the insertion
-    return jsonify(response), 200
+        # Validate the incoming data to ensure the 'model_processor' is provided
+        if 'model_processor' not in data:
+            return jsonify({"error": "model_processor is required"}), 400
+
+        # If 'id_recorder' is not provided, default it to None
+        id_recorder = data.get('id_recorder', None)
+        
+        # Create a new instance of the Processors model
+        new_processor = Processors(
+            model_processor=data['model_processor'],
+            comment_processor=data.get('comment_processor')  # This field is optional
+        )
+
+        # If an 'id_recorder' is provided, associate it with the new processor
+        if id_recorder is not None:
+            new_processor.id_recorder = id_recorder
+
+        # Add the new processor to the database and commit the transaction
+        db.session.add(new_processor)
+        db.session.commit()
+
+        # Return a response with the details of the newly created processor
+        return jsonify({
+            "id_processor": new_processor.id_processor,
+            "model_processor": new_processor.model_processor,
+            "comment_processor": new_processor.comment_processor,
+            "id_recorder": new_processor.id_recorder  # Include the recorder ID in the response
+        }), 201
+
+    except Exception as e:
+        # If an error occurs, print the exception and roll back the transaction
+        print(f"Error inserting processor: {e}")
+        db.session.rollback()
+        return jsonify({"error": "Internal server error"}), 500
+
 
 def query_processors():
     """
-    Query processors from the database, including their associated recorder ID.
-
-    This function queries the database for processors and joins the Recorders table to get the recorder ID.
-    It returns the processor data along with the recorder ID in a JSON response.
+    Fetch all processors, including their associated recorder ID (if any).
     """
 
     response = (
@@ -33,64 +72,69 @@ def query_processors():
             Processors.id_processor,
             Processors.model_processor,
             Processors.comment_processor,
-            Recorders.id_recorder  # Include the recorder ID
+            Recorders.id_recorder
         )
         .outerjoin(Recorders, Recorders.id_processor_recorder == Processors.id_processor)
         .all()
     )
 
-    # Convert the query results into a list of dictionaries
     data = [
         {
             "id_processor": proc.id_processor,
             "model_processor": proc.model_processor,
             "comment_processor": proc.comment_processor,
-            "id_recorder": proc.id_recorder,  # Include the recorder ID
+            "id_recorder": proc.id_recorder  # Puede ser None
         }
         for proc in response
     ]
 
-    # Return the data in JSON format
     return jsonify(data), 200
+
 
 def update_processor(id_processor):
     """
-    Update a processor entry in the database.
-
-    This function receives a PUT request with updated data for a processor.
-    It calls a utility function to update the processor's details in the database and returns a response.
+    Update a processor entry in the database
+    
+    This endpoint allows updating an existing processor based on its ID.
+    It uses the helper function 'update_values_in_db' to handle the update operation.
+    
+    Args:
+        id_processor (int): The ID of the processor to be updated.
+    
+    Returns:
+        JSON response containing the updated processor data.
     """
 
-    # Update the processor using the update_values_in_db function
     response = update_values_in_db(request, id_processor, Processors)
-
-    # Return a JSON response with the result of the update
     return jsonify(response), 200
 
 def delete_processor(id_processor):
     """
-    Delete a processor entry from the database.
-
-    This function deletes a processor, its associated recorders, and the recordings related to those recorders.
-    It ensures that all related data is cleaned up before deleting the processor.
+    Delete a processor entry from the database
+    
+    This endpoint deletes a processor from the database along with any associated recorders and recordings.
+    It first removes the recordings associated with the recorder, then removes the recorder, and finally deletes the processor.
+    
+    Args:
+        id_processor (int): The ID of the processor to be deleted.
+    
+    Returns:
+        JSON response confirming the deletion.
     """
 
-    # Get all recorders associated with the processor
-    recorders = db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).all()
-
-    # Delete all recordings associated with the recorders
-    for recorder in recorders:
-        db.session.query(Recordings).filter_by(id_recorder_recordings=recorder.id_recorder).delete()
-
-    # Now delete the recorders associated with the processor
-    db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).delete()
-
-    # Finally, delete the processor itself
-    response = delete_values_in_db(id_processor, Processors)
+    # Delete the recordings associated with the recorders that use this processor
+    recorders_to_delete = db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).all()
     
-    # Commit the transaction to apply changes to the database
+    # Delete associated recordings for each recorder
+    for recorder in recorders_to_delete:
+        db.session.query(Recordings).filter_by(id_recorder_recordings=recorder.id_recorder).delete()
+    
+    db.session.commit() # Commit changes after deleting recordings
+
+    # Delete the recorders associated with the processor
+    db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).delete()
     db.session.commit()
 
-    # Return a JSON response with the result of the deletion
+    # Delete the processor itself
+    response = delete_values_in_db(id_processor, Processors)
     return jsonify(response), 200
-

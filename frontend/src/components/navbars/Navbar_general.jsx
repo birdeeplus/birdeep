@@ -108,8 +108,8 @@ export default function Navbar({ toggleLanguage, language, background = "transpa
                     es: { locations: "Ubicaciones", recorders: "Grabadoras", recordings: "Grabaciones" },
                 }}
                 adminMenuOptions={{
-                    en: { microphones: "Microphones", procesors: "Processors" },
-                    es: { microphones: "Micrófonos", procesors: "Procesadores" },
+                    en: { microphones: "Microphones", processors: "Processors" },
+                    es: { microphones: "Micrófonos", processors: "Procesadores" },
                 }}
                 language={language}
                 isLoggedIn={isLoggedIn}

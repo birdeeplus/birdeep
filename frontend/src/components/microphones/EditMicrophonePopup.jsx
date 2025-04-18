@@ -81,10 +81,13 @@ export default function EditMicrophonePopup({
                             <label className="text-xs text-[#375B38]">{labels.id_recorder}</label>
                             <select
                                 name="id_recorder"
-                                value={formData.id_recorder || ""}
+                                value={formData.id_recorder ?? ""} // fallback a string vacía si es null
                                 onChange={handleChange}
                                 className="text-sm text-gray-700 border rounded-md px-3 py-2 pr-10 appearance-none"
                             >
+                                <option value="">
+                                    {language === "es" ? "no asignado" : "not_assigned"}
+                                </option>
                                 {recorders.map((rec) => (
                                     <option key={rec.id_recorder} value={rec.id_recorder}>
                                         {rec.id_recorder}
