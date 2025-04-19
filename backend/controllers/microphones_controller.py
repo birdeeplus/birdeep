@@ -105,8 +105,50 @@ def update_microphone(id_microphone):
         JSON response containing the updated microphone data.
     """
 
-    response = update_values_in_db(request, id_microphone, Microphones)
-    return jsonify(response), 200
+    try:
+        data = request.get_json()
+
+        # 1. Actualizar la tabla de micrófonos
+        microphone = db.session.query(Microphones).filter_by(id_microphone=id_microphone).first()
+
+        if not microphone:
+            return jsonify({"error": "Microphone not found"}), 404
+
+        if 'model_microphone' in data:
+            microphone.model_microphone = data['model_microphone']
+
+        if 'comment_microphone' in data:
+            microphone.comment_microphone = data['comment_microphone']
+
+        # 2. Si se envía un nuevo id_recorder, actualizamos la tabla recorders
+        if 'id_recorder' in data:
+            # Primero, eliminar la asignación anterior (si existe)
+            current_recorder = db.session.query(Recorders).filter_by(id_microphone_recorder=id_microphone).first()
+            if current_recorder:
+                current_recorder.id_microphone_recorder = None
+
+            # Asignar el micrófono al nuevo recorder
+            if data['id_recorder'] is not None and data['id_recorder'] != "":
+                new_recorder = db.session.query(Recorders).filter_by(id_recorder=data['id_recorder']).first()
+                if new_recorder:
+                    new_recorder.id_microphone_recorder = id_microphone
+                else:
+                    return jsonify({"error": "Recorder not found"}), 404
+
+        db.session.commit()
+
+        return jsonify({
+            "id_microphone": microphone.id_microphone,
+            "model_microphone": microphone.model_microphone,
+            "comment_microphone": microphone.comment_microphone,
+            "id_recorder": data.get('id_recorder', None)
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating microphone: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 
 def delete_microphone(id_microphone):
     """

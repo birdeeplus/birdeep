@@ -91,6 +91,7 @@ def query_processors():
     return jsonify(data), 200
 
 
+
 def update_processor(id_processor):
     """
     Update a processor entry in the database
@@ -105,8 +106,50 @@ def update_processor(id_processor):
         JSON response containing the updated processor data.
     """
 
-    response = update_values_in_db(request, id_processor, Processors)
-    return jsonify(response), 200
+    try:
+        data = request.get_json()
+
+        # 1. Actualizar la tabla de micrófonos
+        processor = db.session.query(Processors).filter_by(id_processor=id_processor).first()
+
+        if not processor:
+            return jsonify({"error": "Processor not found"}), 404
+
+        if 'model_processor' in data:
+            processor.model_processor = data['model_processor']
+
+        if 'comment_processor' in data:
+            processor.comment_processor = data['comment_processor']
+
+        # 2. Si se envía un nuevo id_recorder, actualizamos la tabla recorders
+        if 'id_recorder' in data:
+            # Primero, eliminar la asignación anterior (si existe)
+            current_recorder = db.session.query(Recorders).filter_by(id_processor_recorder=id_processor).first()
+            if current_recorder:
+                current_recorder.id_processor_recorder = None
+
+            # Asignar el procesador al nuevo recorder
+            if data['id_recorder'] is not None and data['id_recorder'] != "":
+                new_recorder = db.session.query(Recorders).filter_by(id_recorder=data['id_recorder']).first()
+                if new_recorder:
+                    new_recorder.id_processor_recorder = id_processor
+                else:
+                    return jsonify({"error": "Recorder not found"}), 404
+
+        db.session.commit()
+
+        return jsonify({
+            "id_processor": processor.id_processor,
+            "model_processor": processor.model_processor,
+            "comment_processor": processor.comment_processor,
+            "id_recorder": data.get('id_recorder', None)
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating processor: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+    
 
 def delete_processor(id_processor):
     """

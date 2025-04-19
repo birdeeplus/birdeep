@@ -77,22 +77,31 @@ export default function EditProcessorPopup({
             </div>
 
             {/* id_recorder - editable with icon */}
-            <select
-              name="id_recorder"
-              value={formData.id_recorder || ""}
-              onChange={handleChange}
-              className="text-sm text-gray-700 border rounded-md px-3 py-2 pr-10 appearance-none"
-            >
-              <option value="">
-                {language === "es" ? "no_asignado" : "not_assigned"}
-              </option>
-              {recorders.map((rec) => (
-                <option key={rec.id_recorder} value={rec.id_recorder}>
-                  {rec.id_recorder}
+            <div className="flex flex-col gap-1 relative col-span-1">
+              <label className="text-xs text-[#375B38]">{labels.id_recorder}</label>
+              <select
+                name="id_recorder"
+                value={formData.id_recorder || ""}
+                onChange={handleChange}
+                className="text-sm text-gray-700 border rounded-md px-3 py-2 pr-10 appearance-none"
+              >
+                <option value="">
+                  {language === "es" ? "no_asignado" : "not_assigned"}
                 </option>
-              ))}
-            </select>
-
+                {recorders.map((rec) => (
+                  <option key={rec.id_recorder} value={rec.id_recorder}>
+                    {rec.id_recorder}
+                  </option>
+                ))}
+              </select>
+              <Image
+                  src="/iconos/edit.png"
+                  alt="edit"
+                  width={12}
+                  height={12}
+                  className="absolute right-4 top-8 opacity-60 pointer-events-none"
+              />
+            </div>
           </div>
 
           {/* Buttons */}
