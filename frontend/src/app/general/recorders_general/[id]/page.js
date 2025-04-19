@@ -8,6 +8,8 @@ import Image from "next/image";
 import RecordingDetailsModal from "@/components/grabaciones/RecordingDetailsModal";
 import EditRecorderForm from "../../../../components/recorders/EditRecorderForm";
 import DeleteRecorderModal from "../../../../components/recorders/DeleteRecorderModal";
+import RecorderInfoModal from "../../../../components/recorders/RecorderDetailsModal";
+
 
 export default function RecorderDetails() {
     const { id } = useParams();
@@ -30,6 +32,10 @@ export default function RecorderDetails() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [grabadoraEliminada, setGrabadoraEliminada] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [showRecorderInfo, setShowRecorderInfo] = useState(false);
+    const [microphones, setMicrophones] = useState([]);
+    const [processors, setProcessors] = useState([]);
+
 
     // Filter states
     const [horaInicio, setHoraInicio] = useState("");
@@ -54,11 +60,21 @@ export default function RecorderDetails() {
             .then((response) => response.json())
             .then((data) => setLocations(data))
             .catch((error) => console.error("Error fetching locations:", error));
-        
+
         fetch("http://localhost:8080/api/v1/recorders")
             .then((response) => response.json())
             .then((data) => setRecorders(data))
             .catch((error) => console.error("Error fetching recorders:", error));
+
+        fetch("http://localhost:8080/api/v1/microphones")
+            .then((response) => response.json())
+            .then((data) => setMicrophones(data))
+            .catch((error) => console.error("Error fetching microphones:", error));
+
+        fetch("http://localhost:8080/api/v1/processors")
+            .then((response) => response.json())
+            .then((data) => setProcessors(data))
+            .catch((error) => console.error("Error fetching processors:", error));
 
     }, []);
 
@@ -74,78 +90,78 @@ export default function RecorderDetails() {
 
     useEffect(() => {
         const fetchData = async () => {
-          setLoading(true);
-          setErrorMessage("");
-          const savedLanguage = localStorage.getItem("language") || "es";
-          setLanguage(savedLanguage);
-      
-          if (!id) return;
-      
-          //Validación de filtros
-          if (aplicarFiltros) {
-            if (horaInicio && horaFin && horaInicio > horaFin) {
-              setErrorMessage(
-                language === "es"
-                  ? "La hora de inicio no puede ser mayor que la hora de fin."
-                  : "Start time cannot be later than end time."
-              );
-              setLoading(false);
-              return;
+            setLoading(true);
+            setErrorMessage("");
+            const savedLanguage = localStorage.getItem("language") || "es";
+            setLanguage(savedLanguage);
+
+            if (!id) return;
+
+            //Validación de filtros
+            if (aplicarFiltros) {
+                if (horaInicio && horaFin && horaInicio > horaFin) {
+                    setErrorMessage(
+                        language === "es"
+                            ? "La hora de inicio no puede ser mayor que la hora de fin."
+                            : "Start time cannot be later than end time."
+                    );
+                    setLoading(false);
+                    return;
+                }
+
+                if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+                    setErrorMessage(
+                        language === "es"
+                            ? "La fecha de inicio no puede ser mayor que la fecha de fin."
+                            : "Start date cannot be later than end date."
+                    );
+                    setLoading(false);
+                    return;
+                }
             }
-      
-            if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
-              setErrorMessage(
-                language === "es"
-                  ? "La fecha de inicio no puede ser mayor que la fecha de fin."
-                  : "Start date cannot be later than end date."
-              );
-              setLoading(false);
-              return;
+
+            // Si pasa validaciones, construye y ejecuta el fetch
+            const params = new URLSearchParams({
+                page: currentPage,
+                per_page: perPage,
+                id_recorder_recordings: id
+            });
+
+            if (aplicarFiltros) {
+                if (horaInicio) params.append("hora_inicio", horaInicio);
+                if (horaFin) params.append("hora_fin", horaFin);
+                if (fechaInicio) params.append("fecha_inicio", fechaInicio);
+                if (fechaFin) params.append("fecha_fin", fechaFin);
+                if (selectedLocation) params.append("id_location", selectedLocation);
             }
-          }
-      
-          // Si pasa validaciones, construye y ejecuta el fetch
-          const params = new URLSearchParams({
-            page: currentPage,
-            per_page: perPage,
-            id_recorder_recordings: id
-          });
-      
-          if (aplicarFiltros) {
-            if (horaInicio) params.append("hora_inicio", horaInicio);
-            if (horaFin) params.append("hora_fin", horaFin);
-            if (fechaInicio) params.append("fecha_inicio", fechaInicio);
-            if (fechaFin) params.append("fecha_fin", fechaFin);
-            if (selectedLocation) params.append("id_location", selectedLocation);
-          }
-      
-          if (filename) {
-            params.append("filename", filename);
-          }
-      
-          const endpoint = aplicarFiltros
-            ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
-            : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
-      
-          try {
-            const response = await fetch(endpoint);
-            const data = await response.json();
-            const results = aplicarFiltros ? data.results : data;
-            setRecordings(results);
-            setFilteredRecordings(results);
-            setHasMore(results.length === perPage);
-            if (results.length === 0 && currentPage > 1) {
-              setCurrentPage(1);
+
+            if (filename) {
+                params.append("filename", filename);
             }
-          } catch (error) {
-            console.error("Error fetching recordings:", error);
-          } finally {
-            setLoading(false);
-          }
+
+            const endpoint = aplicarFiltros
+                ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
+                : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
+
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                const results = aplicarFiltros ? data.results : data;
+                setRecordings(results);
+                setFilteredRecordings(results);
+                setHasMore(results.length === perPage);
+                if (results.length === 0 && currentPage > 1) {
+                    setCurrentPage(1);
+                }
+            } catch (error) {
+                console.error("Error fetching recordings:", error);
+            } finally {
+                setLoading(false);
+            }
         };
-      
+
         fetchData();
-      }, [
+    }, [
         currentPage,
         id,
         perPage,
@@ -157,8 +173,8 @@ export default function RecorderDetails() {
         selectedLocation,
         filename,
         language,
-      ]);
-      
+    ]);
+
 
     const togglePlay = (audioSrc) => {
         if (currentAudio === audioSrc && lastClicked === audioSrc) {
@@ -199,7 +215,7 @@ export default function RecorderDetails() {
                 await fetch(`http://localhost:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
                     method: "DELETE",
                 });
-    
+
                 // Eliminar la grabadora de la lista
                 setRecorders(recorders.filter(r => r.id_recorder !== selectedDeleteRecorder.id_recorder));
                 setGrabadoraEliminada(true); // Mostrar el mensaje de "grabadora no existe"
@@ -210,19 +226,19 @@ export default function RecorderDetails() {
         setIsDeleteModalOpen(false);
         setSelectedDeleteRecorder(null);
     };
-    
+
     const isRecorderActive = () => {
         if (!grabadora.status) return false;
-    
+
         const lastStatusDate = new Date(grabadora.status);
         const now = new Date();
-    
+
         const diffInMs = now - lastStatusDate;
         const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    
+
         return diffInDays <= 3;
     };
-    
+
 
     // Traducciones para los textos
     const textContent = {
@@ -261,70 +277,91 @@ export default function RecorderDetails() {
     };
 
     return (
-    <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen">
+        <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen">
             {/* Navbar */}
             <Navbar toggleLanguage={toggleLanguage} language={language} background="f8" />
 
             {/* Contenido principal */}
             <div className="w-full max-w-screen-xl mx-auto sm:px-6 lg:px-8 flex flex-col items-start h-full pb-36">
-                
+
                 {/* Titulo y Estado */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full mb-8">
-                    
-                {grabadoraEliminada ? (
-                    <div className="mt-24 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-                        <p className="text-gray-500 text-lg mt-4">
-                            {language === "es" ? "La grabadora ya no existe." : "This recorder no longer exists."}
-                        </p>
-                    </div>
-                ) : (
-                    grabadora && (
 
+                    {/* Titulo, Estado, Info y Botón Eliminar */}
+                    {grabadoraEliminada ? (
                         <div className="mt-24 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-                            <h1 className="Montserrat text-[#375B38] text-2xl sm:text-3xl font-bold">
-                                {textContent[language].title} {id}
-                                <p className="text-sm mt-1">
-                                <span
-                                    className={`font-semibold ${
-                                    isRecorderActive() ? "text-green-600" : "text-red-600"
-                                    }`}
-                                >
-                                    {isRecorderActive()
-                                    ? language === "es"
-                                        ? "Activa"
-                                        : "Active"
-                                    : language === "es"
-                                    ? "Inactiva"
-                                    : "Inactive"}
-                                </span>
-                                </p>
-                            </h1>
-
-                            <div className="flex items-center gap-3">
-                                <Image
-                                src="/iconos/eliminar.png"
-                                alt="Eliminar"
-                                width={20}
-                                height={20}
-                                className="cursor-pointer hover:opacity-70 transition-opacity duration-200"
-                                onClick={() => handleDeleteClick(grabadora)}
-                                title={language === "es" ? "Eliminar" : "Delete"}
-                                />
-                                <button
-                                onClick={() => setSelectedModifyRecorder(grabadora)}
-                                className="cursor-pointer hover:opacity-70 transition-opacity duration-200"
-                                title={language === "es" ? "Modificar" : "Edit"}
-                                >
-                                <FaEdit size={20} />
-                                </button>
-                            </div>
+                            <p className="text-gray-500 text-lg mt-4">
+                                {language === "es" ? "La grabadora ya no existe." : "This recorder no longer exists."}
+                            </p>
                         </div>
+                    ) : (
+                        grabadora && (
+                            <div className="mt-24 flex flex-col sm:flex-row sm:items-center justify-between w-full gap-6">
 
-                        
-                    )
-                )}
+                                {/* Parte izquierda: Nombre + Info */}
+                                <div className="flex flex-col mt-4">
+                                    <div className="flex items-center gap-2">
+                                        <h1 className="Montserrat text-[#375B38] text-2xl sm:text-3xl font-bold">
+                                            {language === "es" ? "Grabadora" : "Recorder"} {grabadora.recorder_name}
+                                        </h1>
+
+                                        <button
+                                            onClick={() => {
+                                                if (localStorage.getItem("is_admin") === "true") {
+                                                    setSelectedModifyRecorder(grabadora);
+                                                } else {
+                                                    setShowRecorderInfo(true);
+                                                }
+                                            }}
+                                            className="hover:opacity-70 transition-opacity ml-2"
+                                            title={language === "es" ? "Información" : "Information"}
+                                        >
+                                            <Image
+                                                src="/iconos/info.png"
+                                                alt="info"
+                                                width={16}
+                                                height={16}
+                                            />
+                                        </button>
+                                    </div>
+
+                                    {/* Estado activo/inactivo */}
+                                    <p className="text-sm mt-1">
+                                        <span
+                                            className="font-semibold"
+                                            style={{
+                                                color: isRecorderActive()
+                                                    ? "#375B3880" // disponible 
+                                                    : "#ff4d4d",  // inactiva 
+                                            }}
+                                        >
+
+                                            {isRecorderActive()
+                                                ? language === "es" ? "disponible" : "available"
+                                                : language === "es" ? "inactiva" : "inactive"}
+                                        </span>
+                                    </p>
+                                </div>
+
+                                {/* Parte derecha: Botón eliminar (solo admin) */}
+                                {localStorage.getItem("is_admin") === "true" && (
+                                    <button
+                                        onClick={() => {
+                                            setSelectedDeleteRecorder(grabadora);
+                                            setIsDeleteModalOpen(true);
+                                        }}
+                                        className="px-4 py-1 border-2 border-[#375B38] text-[#375B38] rounded-full text-sm font-medium hover:bg-[#375B38] hover:text-white transition"
+                                    >
+                                        {language === "es" ? "eliminar" : "delete"}
+                                    </button>
+                                )}
+
+                            </div>
+                        )
+                    )}
+
                 </div>
-                
+
                 {!grabadoraEliminada && (
                     <div>
                         {/* Filtros */}
@@ -442,7 +479,7 @@ export default function RecorderDetails() {
                         <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
                             {textContent[language].allRecordings}
                         </p>
-                        
+
                         {/* List of recordings or message if none found */}
                         {filteredRecordings.length === 0 && !loading ? (
                             <div className="w-full text-center text-gray-500 italic my-6">
@@ -450,7 +487,7 @@ export default function RecorderDetails() {
                             </div>
                         ) : (
                             filteredRecordings.map((recording) => (
-                                <div 
+                                <div
                                     key={recording.id_record}
                                     className="rounded-xl flex items-center justify-between mb-1 px-4 py-3 Montserrat transition duration-300 hover:bg-white w-full"
                                 >
@@ -458,8 +495,8 @@ export default function RecorderDetails() {
                                         <button onClick={() => {
                                             const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
                                             togglePlay(`http://${dbHost}:8081${cleanUrl}`);
-                                            }}  className="w-7 h-7">
-                                        
+                                        }} className="w-7 h-7">
+
                                             <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
                                         </button>
                                         <div className="cursor-pointer">
@@ -473,8 +510,9 @@ export default function RecorderDetails() {
                                         </button>
                                         <button onClick={() => {
                                             const url_transformada = recording.uri.replace("static/datos_audios_bd/audio_data", "proxy-audio")
-                                            downloadRecording(url_transformada, recording.filename)}
-                                            }className="w-5 h-5">
+                                            downloadRecording(url_transformada, recording.filename)
+                                        }
+                                        } className="w-5 h-5">
                                             <Image src="/iconos/download.png" alt="download" width={18} height={18} />
                                         </button>
                                     </div>
@@ -502,11 +540,10 @@ export default function RecorderDetails() {
                                         <button
                                             key={pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
-                                            className={`w-6 h-6 flex items-center justify-center rounded-full transition ${
-                                                currentPage === pageNum
+                                            className={`w-6 h-6 flex items-center justify-center rounded-full transition ${currentPage === pageNum
                                                 ? "bg-white font-semibold shadow"
                                                 : "hover:underline"
-                                            }`}
+                                                }`}
                                         >
                                             {pageNum}
                                         </button>
@@ -555,7 +592,7 @@ export default function RecorderDetails() {
                         language={language}
                     />
                 )}
-    
+
                 {isDeleteModalOpen && (
                     <DeleteRecorderModal
                         isOpen={isDeleteModalOpen}
@@ -564,6 +601,18 @@ export default function RecorderDetails() {
                         recorderName={selectedDeleteRecorder?.id_recorder || ""}
                     />
                 )}
+
+                {showRecorderInfo && grabadora && (
+                    <RecorderInfoModal
+                        recorder={grabadora}
+                        location={locations.find((loc) => loc.id_location === grabadora.id_location_recorder)}
+                        microphone={microphones.find((mic) => mic.id_microphone === grabadora.id_microphone_recorder)}
+                        processor={processors.find((proc) => proc.id_processor === grabadora.id_processor_recorder)}
+                        onClose={() => setShowRecorderInfo(false)}
+                        language={language}
+                    />
+                )}
+
             </div>
         </div>
     );
