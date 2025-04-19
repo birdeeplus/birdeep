@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function EditProcessorPopup({
@@ -10,6 +11,22 @@ export default function EditProcessorPopup({
   handleSubmit,
   recorders,
 }) {
+  const [processorModels, setProcessorModels] = useState([]);
+
+  useEffect(() => {
+    const fetchProcessorModels = async () => {
+      try {
+        const response = await fetch("/Json/processorModels.json");
+        const data = await response.json();
+        setProcessorModels(data);
+      } catch (error) {
+        console.error("Error loading processor models:", error);
+      }
+    };
+
+    fetchProcessorModels();
+  }, []);
+
   if (!showEditForm) return null;
 
   const labels = {
@@ -45,8 +62,11 @@ export default function EditProcessorPopup({
                 onChange={handleChange}
                 className="text-sm text-gray-700 border rounded-md px-3 py-2 pr-10 appearance-none"
               >
-                <option value="Orange Pi 3">Orange Pi 3</option>
-                <option value="Other">{language === "en" ? "Other" : "Otro"}</option>
+                {processorModels.map((model) => (
+                  <option key={model.value} value={model.value}>
+                    {language === "en" ? model.label_en : model.label_es}
+                  </option>
+                ))}
               </select>
               <Image
                 src="/iconos/edit.png"
@@ -95,11 +115,11 @@ export default function EditProcessorPopup({
                 ))}
               </select>
               <Image
-                  src="/iconos/edit.png"
-                  alt="edit"
-                  width={12}
-                  height={12}
-                  className="absolute right-4 top-8 opacity-60 pointer-events-none"
+                src="/iconos/edit.png"
+                alt="edit"
+                width={12}
+                height={12}
+                className="absolute right-4 top-8 opacity-60 pointer-events-none"
               />
             </div>
           </div>

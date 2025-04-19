@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const AddProcessorPopup = ({
   showForm,
@@ -10,6 +10,22 @@ const AddProcessorPopup = ({
   formData,
   handleSubmit
 }) => {
+  const [processorModels, setProcessorModels] = useState([]);
+
+  useEffect(() => {
+    const fetchProcessorModels = async () => {
+      try {
+        const response = await fetch("/Json/processorModels.json");
+        const data = await response.json();
+        setProcessorModels(data);
+      } catch (error) {
+        console.error("Error loading processor models:", error);
+      }
+    };
+
+    fetchProcessorModels();
+  }, []);
+
   if (!showForm) return null;
 
   const handleOverlayClick = (e) => {
@@ -57,8 +73,11 @@ const AddProcessorPopup = ({
                   onChange={handleChange}
                   className="bg-white text-[#778184]/50 w-[17rem] h-8 rounded-md px-2 py-1 text-sm appearance-none border-none"
                 >
-                  <option value="AudioMoth">AudioMoth</option>
-                  <option value="Other">{language === "en" ? "other" : "otro"}</option>
+                  {processorModels.map((model) => (
+                    <option key={model.value} value={model.value}>
+                      {language === "en" ? model.label_en : model.label_es}
+                    </option>
+                  ))}
                 </select>
               </div>
 
