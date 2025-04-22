@@ -88,7 +88,9 @@ def db_version():
 
 @app.route('/proxy-audio/<int:id>/<path:filename>')
 def proxy_audio(id, filename):
-    external_url = f"http://192.168.1.36:8081/datos_audios_bd/audio_data/{id}/{filename}"
+    db_host = os.getenv("DB_HOST", "localhost") 
+
+    external_url = f"http://{db_host}:8081/datos_audios_bd/audio_data/{id}/{filename}"
     r = requests.get(external_url)
     return Response(r.content, mimetype="audio/wav")
 
