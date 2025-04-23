@@ -55,7 +55,7 @@ function RecordingsGeneral() {
 
       // Validaciones de filtros
       if (aplicarFiltros) {
-        if (horaInicio && horaFin && horaInicio > horaFin) {
+        if((fechaInicio && fechaFin && fechaInicio == fechaFin) && (horaInicio && horaFin && horaInicio > horaFin)){
           setErrorMessage(
             language === "es"
               ? "La hora de inicio no puede ser mayor que la hora de fin."
@@ -244,14 +244,22 @@ function RecordingsGeneral() {
               </div>
             </div>
 
+            {/* Fecha Inicio */}
             <DatePicker
               selected={fechaInicio ? new Date(fechaInicio) : null}
-              onChange={(date) => setFechaInicio(date.toISOString().split("T")[0])}
+              onChange={(date) => {
+                const formattedDate = date.toISOString().split("T")[0];
+                setFechaInicio(formattedDate);
+                if (!fechaFin || fechaFin < formattedDate) {
+                  setFechaFin(formattedDate);
+                }            
+              }}
               locale={language === "es" ? es : enUS}
               dateFormat="dd-MM-yyyy"
               placeholderText={language === "es" ? "Fecha inicio" : "Start date"}
+              maxDate={new Date()}
               className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
-            />
+              />
 
             {/* Fecha Fin */}
             <DatePicker
@@ -260,6 +268,8 @@ function RecordingsGeneral() {
               locale={language === "es" ? es : enUS}
               dateFormat="dd-MM-yyyy"
               placeholderText={language === "es" ? "Fecha fin" : "End date"}
+              minDate={fechaInicio ? new Date(fechaInicio) : null}
+              maxDate={new Date()}
               className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             />
 

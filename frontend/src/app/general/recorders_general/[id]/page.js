@@ -395,25 +395,41 @@ export default function RecorderDetails() {
                             <div className="flex items-center gap-2 col-span-5">
                                 {/* Icono con tooltip */}
                                 <div className="relative group flex flex-col items-center">
-                                    <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
-                                    <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                                        {language === "es" ? "Rango de fechas" : "Date range"}
-                                    </div>
+                                <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
+                                <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                                    {textContent[language].fechas}
+                                </div>
                                 </div>
 
-                                {/* Inputs */}
-                                <input
-                                    type="date"
-                                    value={fechaInicio}
-                                    onChange={(e) => setFechaInicio(e.target.value)}
-                                    className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+                                {/* Fecha Inicio */}
+                                <DatePicker
+                                selected={fechaInicio ? new Date(fechaInicio) : null}
+                                onChange={(date) => {
+                                    const formattedDate = date.toISOString().split("T")[0];
+                                    setFechaInicio(formattedDate);
+                                    if (!fechaFin || fechaFin < formattedDate) {
+                                    setFechaFin(formattedDate);
+                                    }            
+                                }}
+                                locale={language === "es" ? es : enUS}
+                                dateFormat="dd-MM-yyyy"
+                                placeholderText={language === "es" ? "Fecha inicio" : "Start date"}
+                                maxDate={new Date()}
+                                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
                                 />
-                                <input
-                                    type="date"
-                                    value={fechaFin}
-                                    onChange={(e) => setFechaFin(e.target.value)}
-                                    className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+
+                                {/* Fecha Fin */}
+                                <DatePicker
+                                selected={fechaFin ? new Date(fechaFin) : null}
+                                onChange={(date) => setFechaFin(date.toISOString().split("T")[0])}
+                                locale={language === "es" ? es : enUS}
+                                dateFormat="dd-MM-yyyy"
+                                placeholderText={language === "es" ? "Fecha fin" : "End date"}
+                                minDate={fechaInicio ? new Date(fechaInicio) : null}
+                                maxDate={new Date()}
+                                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
                                 />
+
                             </div>
 
                             {/* Localización */}
