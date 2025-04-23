@@ -409,7 +409,9 @@ export default function RecorderDetails() {
                                 <DatePicker
                                 selected={fechaInicio ? new Date(fechaInicio) : null}
                                 onChange={(date) => {
-                                    const formattedDate = date.toISOString().split("T")[0];
+                                    // porque la primera vez que se selecciona la fecha pone 1 dia menos
+                                    const formattedDate = date.toLocaleDateString('sv-SE').split("T")[0];
+                                    console.log("Fecha Inicio:", formattedDate);
                                     setFechaInicio(formattedDate);
                                     if (!fechaFin || fechaFin < formattedDate) {
                                     setFechaFin(formattedDate);
@@ -435,33 +437,6 @@ export default function RecorderDetails() {
                                 />
 
                             </div>
-
-                            {/* Localización */}
-                            <div className="flex items-center gap-2 col-span-3">
-                                {/* Icono con tooltip */}
-                                <div className="relative group flex flex-col items-center">
-                                    <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
-                                    <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                                        {language === "es" ? "Ubicación" : "Location"}
-                                    </div>
-                                </div>
-
-                                {/* Selector */}
-                                <select
-                                    value={selectedLocation}
-                                    onChange={(e) => setSelectedLocation(e.target.value)}
-                                    className="bg-white rounded px-3 py-1 w-full border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
-                                >
-                                    <option value="">
-                                        {language === "es" ? "Selecciona una localización" : "Select a location"}
-                                    </option>
-                                    {locations.map((location) => (
-                                        <option key={location.id_location} value={location.id_location}>
-                                            {location.name_location}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
                         </div>
 
                         {/* Buttons for applying/clearing filters */}
@@ -470,6 +445,7 @@ export default function RecorderDetails() {
                                 onClick={() => {
                                     setCurrentPage(1);
                                     setAplicarFiltros(true);
+                                    setSelectedLocation(grabadora.id_location_recorder);
                                 }}
                                 className="px-4 py-1 bg-[#375B38] text-white rounded hover:bg-[#2c482d]"
                             >
@@ -482,7 +458,7 @@ export default function RecorderDetails() {
                                     setHoraFin("");
                                     setFechaInicio("");
                                     setFechaFin("");
-                                    setSelectedLocation("");
+                                    setSelectedLocation(grabadora.id_location_recorder);
                                     setCurrentPage(1);
                                     setAplicarFiltros(false);
                                 }}

@@ -248,7 +248,7 @@ function RecordingsGeneral() {
             <DatePicker
               selected={fechaInicio ? new Date(fechaInicio) : null}
               onChange={(date) => {
-                const formattedDate = date.toISOString().split("T")[0];
+                const formattedDate = date.toLocaleDateString('sv-SE').split("T")[0];
                 setFechaInicio(formattedDate);
                 if (!fechaFin || fechaFin < formattedDate) {
                   setFechaFin(formattedDate);
