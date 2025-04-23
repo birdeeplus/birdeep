@@ -9,6 +9,10 @@ import RecordingDetailsModal from "@/components/grabaciones/RecordingDetailsModa
 import EditRecorderForm from "../../../../components/recorders/EditRecorderForm";
 import DeleteRecorderModal from "../../../../components/recorders/DeleteRecorderModal";
 import RecorderInfoModal from "../../../../components/recorders/RecorderDetailsModal";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "../../../styles/datepicker-custom.css"; // Ajusta la ruta según dónde pongas el CSS
+import { es, enUS } from "date-fns/locale";
 
 
 export default function RecorderDetails() {
