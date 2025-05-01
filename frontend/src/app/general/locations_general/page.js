@@ -6,6 +6,9 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Navbar from "../../../components/navbars/Navbar_general";
 import AddLocationButton from "../../../components/localizaciones/AddLocationButton";
+import LocationInfoModal from "../../../components/localizaciones/LocationInfoModal";
+import EditLocationModal from "../../../components/localizaciones/EditLocationModal";
+
 
 const blackIcon = new L.Icon({
     iconUrl: "/iconos/map-marker-black.png",
@@ -18,6 +21,9 @@ export default function LocationsGeneral() {
     const [language, setLanguage] = useState("en");
     const [locations, setLocations] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
     const router = useRouter();
 
     const toggleLanguage = () => {
@@ -25,7 +31,7 @@ export default function LocationsGeneral() {
         setLanguage(newLang);
         localStorage.setItem("language", newLang);
     };
-      
+
 
     const fetchLocations = () => {
         fetch("http://localhost:8080/api/v1/locations")
@@ -42,21 +48,21 @@ export default function LocationsGeneral() {
             const userRole = localStorage.getItem("is_admin");
             setIsAdmin(userRole === "true");
         };
-    
+
         updateAdminStatus(); // Ejecutar al inicio
         fetchLocations();
-    
+
         const handleAuthChange = () => {
             updateAdminStatus(); // Actualizar estado cuando cambie la autenticación
         };
-    
+
         window.addEventListener("authChange", handleAuthChange);
-    
+
         return () => {
             window.removeEventListener("authChange", handleAuthChange);
         };
     }, []);
-    
+
 
     return (
         <div className="relative w-full h-screen">
@@ -71,7 +77,7 @@ export default function LocationsGeneral() {
                 <MapContainer
                     center={[36.990000, -6.440000]} // Doñana como centro del mapa
                     zoom={12}
-                    minZoom={5}  
+                    minZoom={5}
                     className="absolute top-0 left-0 w-full h-full z-0"
                 >
                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
@@ -82,7 +88,12 @@ export default function LocationsGeneral() {
                             position={[location.latitude_location, location.longitude_location]}
                             icon={blackIcon}
                             eventHandlers={{
-                                click: () => router.push(`/general/locations_general/${location.id_location}`),
+                                click: () => {
+                                    setSelectedLocation(location);
+                                    if (isAdmin) {
+                                        setShowEditModal(true);
+                                    }
+                                },
                             }}
                         >
                             <Tooltip direction="top" offset={[0, -8]} opacity={1}>
@@ -100,6 +111,28 @@ export default function LocationsGeneral() {
                     ))}
                 </MapContainer>
             </div>
+
+            {selectedLocation && !isAdmin && (
+                <LocationInfoModal
+                    location={selectedLocation}
+                    onClose={() => setSelectedLocation(null)}
+                    language={language}
+                />
+            )}
+
+            {selectedLocation && isAdmin && showEditModal && (
+                <EditLocationModal
+                    location={selectedLocation}
+                    onClose={() => {
+                        setSelectedLocation(null);
+                        setShowEditModal(false);
+                    }}
+                    onSave={fetchLocations}
+                    language={language}
+                />
+
+            )}
+
         </div>
     );
 }
