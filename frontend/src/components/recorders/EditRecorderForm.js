@@ -17,6 +17,10 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
     });
 
     const [initialData, setInitialData] = useState({});
+    const [formErrors, setFormErrors] = useState({});
+    const [duplicateNameError, setDuplicateNameError] = useState("");  // Estado para el error de nombre duplicado
+    const [futureDateError, setFutureDateError] = useState("");  // Estado para el error de fecha futura
+    const [statusFutureDateError, setStatusFutureDateError] = useState(""); // Estado para el error de fecha futura en status
 
     const textContent = {
         en: {
@@ -88,11 +92,44 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             .catch(error => console.error("Error fetching:", error));
     }, [selectedModifyRecorder]);
 
-    const handleChange = (e) => {
+    const handleChange = async (e) => {
         const { name, value } = e.target;
+
+        // Validación de nombre duplicado
         if (name === "recorder_name") {
-            if (value === "" || /^[0-9]+$/.test(value)) {
-                setFormData(prev => ({ ...prev, [name]: value }));
+            setFormData(prev => ({ ...prev, [name]: value }));
+
+            // Verificar si el nombre ingresado ya está en uso
+            if (value && recorders.some(recorder => recorder.recorder_name.toLowerCase() === value.toLowerCase() && recorder.id_recorder !== selectedModifyRecorder?.id_recorder)) {
+                setDuplicateNameError("This recorder name is already taken.");
+            } else {
+                setDuplicateNameError("");
+            }
+        }
+
+        // Validación de fecha futura (instalación)
+        if (name === "installation_date") {
+            setFormData(prev => ({ ...prev, [name]: value }));
+            const selectedDate = new Date(value);
+            const currentDate = new Date();
+
+            if (selectedDate > currentDate) {
+                setFutureDateError("The installation date cannot be in the future.");
+            } else {
+                setFutureDateError("");
+            }
+        }
+
+        // Validación de fecha futura (status)
+        if (name === "status") {
+            setFormData(prev => ({ ...prev, [name]: value }));
+            const selectedDate = new Date(value);
+            const currentDate = new Date();
+
+            if (selectedDate > currentDate) {
+                setStatusFutureDateError("The status date cannot be in the future.");
+            } else {
+                setStatusFutureDateError("");
             }
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
@@ -101,6 +138,13 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Verificar si hay errores de validación antes de proceder
+        if (formErrors.recorder_name || duplicateNameError || futureDateError || statusFutureDateError) {
+            alert("Please fix the errors before submitting");
+            return;
+        }
+
         if (JSON.stringify(formData) === JSON.stringify(initialData)) {
             setSelectedModifyRecorder(null);
             return;
@@ -125,7 +169,6 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             console.error("Error updating:", error);
         }
     };
-
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 p-4 z-50">
@@ -186,7 +229,19 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                                         onChange={handleChange}
                                         className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1 text-sm placeholder-[#77818480]"
                                         placeholder="datos"
+                                        readOnly={field === "id_recorder"}  // Campo solo lectura
                                     />
+                                )}
+                                {/* Mostrar mensaje de error si existe */}
+                                {formErrors[field] && <span className="text-red-500 text-xs">{formErrors[field]}</span>}
+                                {field === "recorder_name" && duplicateNameError && (
+                                    <span className="text-red-500 text-xs">{duplicateNameError}</span>
+                                )}
+                                {field === "installation_date" && futureDateError && (
+                                    <span className="text-red-500 text-xs">{futureDateError}</span>
+                                )}
+                                {field === "status" && statusFutureDateError && (
+                                    <span className="text-red-500 text-xs">{statusFutureDateError}</span>
                                 )}
                             </div>
                         ))}

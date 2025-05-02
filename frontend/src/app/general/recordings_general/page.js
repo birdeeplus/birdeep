@@ -334,11 +334,11 @@ function RecordingsGeneral() {
           </div>
         )}
 
-
-
+        {/*
         <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
           {language === "es" ? "todas las grabaciones (nº)" : "all recordings (nº)"}
         </p>
+        */}
 
 
         {/* Lista de grabaciones o mensaje si no hay */}

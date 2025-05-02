@@ -19,6 +19,12 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
     version: ""
   });
 
+  const [errors, setErrors] = useState({
+    name: "",
+    installationDate: "",
+    statusDate: ""
+  });
+
   const textContent = {
     en: {
       save: "save",
@@ -32,7 +38,9 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
       status: "status",
       version: "recorder version",
       placeholder: "write here",
-      select: "select"
+      select: "select",
+      nameExists: "Recorder name already exists",
+      futureDate: "Date cannot be in the future"
     },
     es: {
       save: "guardar",
@@ -46,7 +54,9 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
       status: "estado",
       version: "versión de la grabadora",
       placeholder: "escribe aquí",
-      select: "seleccionar"
+      select: "seleccionar",
+      nameExists: "El nombre de la grabadora ya existe",
+      futureDate: "La fecha no puede ser en el futuro"
     }
   };
 
@@ -70,8 +80,33 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    let formErrors = {};
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
+    // Validación de nombre de grabadora
+    if (recorders.some((recorder) => recorder.recorder_name === formData.recorder_name)) {
+      formErrors.name = t.nameExists;
+    }
+
+    // Validación de fechas
+    if (formData.installation_date > today) {
+      formErrors.installationDate = t.futureDate;
+    }
+
+    if (formData.status && formData.status > today) {
+      formErrors.statusDate = t.futureDate;
+    }
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     const dataToSend = {
       ...formData,
       version: formData.version || null,
@@ -114,6 +149,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                   className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1 placeholder-[#77818480]"
                   required
                 />
+                {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
               </div>
 
               <div className="flex flex-col gap-1">
@@ -141,6 +177,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                   className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
                   required
                 />
+                {errors.installationDate && <p className="text-red-500 text-xs">{errors.installationDate}</p>}
               </div>
 
               <div className="flex flex-col gap-1">
@@ -198,6 +235,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                   onChange={handleChange}
                   className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1"
                 />
+                {errors.statusDate && <p className="text-red-500 text-xs">{errors.statusDate}</p>}
               </div>
             </div>
           </div>

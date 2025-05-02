@@ -111,9 +111,11 @@ export default function ProcessorsTable() {
                     )}
                 </div>
 
+                {/*
                 <p className="italic text-sm text-gray-500 mt-10 mb-4">
                     {language === "en" ? "all processors" : "todos los procesadores"}
                 </p>
+                */}
 
                 <div className="flex flex-col gap-2 w-full pb-28">
                     {processors.map((proc) => (

@@ -243,6 +243,31 @@ export default function RecorderDetails() {
         return diffInDays <= 3;
     };
 
+    const validarFiltros = () => {
+        if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+            setErrorMessage(language === "es" ? "La fecha de inicio no puede ser posterior a la de fin." : "Start date cannot be after end date.");
+            return false;
+        }
+    
+        if (fechaFin && new Date(fechaFin) > new Date()) {
+            setErrorMessage(language === "es" ? "La fecha de fin no puede ser en el futuro." : "End date cannot be in the future.");
+            return false;
+        }
+    
+        if (
+            fechaInicio === fechaFin &&
+            horaInicio &&
+            horaFin &&
+            horaInicio > horaFin
+        ) {
+            setErrorMessage(language === "es" ? "La hora de inicio no puede ser posterior a la de fin." : "Start time cannot be after end time.");
+            return false;
+        }
+    
+        setErrorMessage(""); // Limpiar mensaje si todo está bien
+        return true;
+    };
+    
 
     // Traducciones para los textos
     const textContent = {
@@ -330,20 +355,19 @@ export default function RecorderDetails() {
                                     </div>
 
                                     {/* Estado activo/inactivo */}
-                                    <p className="text-sm mt-1">
-                                        <span
-                                            className="font-semibold"
-                                            style={{
-                                                color: isRecorderActive()
-                                                    ? "#375B3880" // disponible 
-                                                    : "#ff4d4d",  // inactiva 
-                                            }}
-                                        >
-
-                                            {isRecorderActive()
-                                                ? language === "es" ? "disponible" : "available"
-                                                : language === "es" ? "inactiva" : "inactive"}
+                                    <p className="text-sm mt-1 text-[#375B38]">
+                                        <span className="font-semibold">
+                                            {language === "es" ? "Último estado:" : "Last status:"}{" "}
                                         </span>
+                                        {grabadora.status
+                                            ? new Date(grabadora.status).toLocaleString(language === "es" ? "es-ES" : "en-US", {
+                                                year: "numeric",
+                                                month: "long",
+                                                day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit"
+                                            })
+                                            : language === "es" ? "Sin datos" : "No data"}
                                     </p>
                                 </div>
 
@@ -399,10 +423,10 @@ export default function RecorderDetails() {
                             <div className="flex items-center gap-2 col-span-5">
                                 {/* Icono con tooltip */}
                                 <div className="relative group flex flex-col items-center">
-                                <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
-                                <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                                    {textContent[language].fechas}
-                                </div>
+                                    <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
+                                    <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                                        {language === "es" ? "Rango de fechas" : "Date range"}
+                                    </div>
                                 </div>
 
                                 {/* Fecha Inicio */}
@@ -443,6 +467,7 @@ export default function RecorderDetails() {
                         <div className="col-span-12 flex gap-4 mt-3 mb-4">
                             <button
                                 onClick={() => {
+                                    if (!validarFiltros()) return;
                                     setCurrentPage(1);
                                     setAplicarFiltros(true);
                                     setSelectedLocation(grabadora.id_location_recorder);
@@ -472,9 +497,11 @@ export default function RecorderDetails() {
                             <div className="text-red-500 text-sm mt-2 ml-6">{errorMessage}</div>
                         )}
 
+                        {/*
                         <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
                             {textContent[language].allRecordings}
                         </p>
+                        */}
 
                         {/* List of recordings or message if none found */}
                         {filteredRecordings.length === 0 && !loading ? (

@@ -46,7 +46,14 @@ export default function RecordersGeneral() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem("language") || "es";
     setLanguage(savedLanguage);
-
+  
+    const updateAdminStatus = () => {
+      const userIsAdmin = localStorage.getItem("is_admin") === "true";
+      setIsAdmin(userIsAdmin);
+    };
+  
+    updateAdminStatus(); // Ejecutar al inicio
+  
     Promise.all([
       fetch("http://localhost:8080/api/v1/recorders").then((res) => res.json()),
       fetch("http://localhost:8080/api/v1/locations").then((res) => res.json()),
@@ -61,10 +68,14 @@ export default function RecordersGeneral() {
         setProcessors(processorsData);
       })
       .catch((error) => console.error("Error fetching data:", error));
-
-    const userIsAdmin = localStorage.getItem("is_admin") === "true";
-    setIsAdmin(userIsAdmin);
+  
+    window.addEventListener("authChange", updateAdminStatus);
+  
+    return () => {
+      window.removeEventListener("authChange", updateAdminStatus);
+    };
   }, []);
+  
 
   const handleDeleteClick = (recorder) => {
     setSelectedDeleteRecorder(recorder);
@@ -157,9 +168,12 @@ export default function RecordersGeneral() {
         </div>
 
         <div className="flex flex-col gap-2 mt-6 w-full">
+          
+          {/*
           <p className="italic text-sm text-gray-500 mb-3">
             {language === "es" ? "todas las grabadoras" : "all recorders"}
           </p>
+          */}
 
           {recorders.map((recorder) => (
             <div

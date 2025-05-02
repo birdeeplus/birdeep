@@ -9,6 +9,7 @@ from dateutil import parser
 import pandas as pd
 from io import StringIO
 from datetime import datetime
+from sqlalchemy import and_
 
 # obtiene los valores de la base de datos (en vase a los filtros que se le pasen en el request)
 def get_values_from_db(request, db_object):
@@ -170,28 +171,45 @@ def insert_in_singevent(request, db_object_sing,db_object_diagnostic,db_object_r
 # - Crea un db_object con los valores del request
 # - Agrega el regisreo a la base de datos
 
-def update_values_in_db(request, element_id, db_object, translate_dict=None):
-
-    record = db_object.query.get(element_id)
-
-    if not record:
-        return jsonify({'message': 'record not found in database'}), 404
+def update_values_in_db(request, id_record, Model):
+    record = db.session.query(Model).get(id_record)
+    if record is None:
+        return {"error": "Record not found"}
 
     request_json = request.get_json()
-    keys_request = list(request_json.keys())
 
-    if translate_dict is not None:
-        request_json, keys_request = translate_keys_json(request_json, translate_dict, keys_request)
+    if "id_recorder" in request_json and str(request_json["id_recorder"]) != str(id_record):
+        return {"error": "You cannot modify the ID of the recorder"}
 
-    for key in keys_request:
-        if key in ['status','installation_date','time_record','time_executed','time_event']:
-            setattr(record, key, parser.parse(request_json[key]))
-        else:
-            setattr(record, key, request_json[key])
+    date_fields = ["installation_date"]  # Añade más si los hay
+    now = datetime.utcnow()
+
+    for key in request_json:
+        value = request_json[key]
+
+        # Verificar nombre duplicado (excluyendo el actual)
+        if key == "name_recorder":
+            existing = db.session.query(Model).filter(
+                and_(Model.name_recorder == value, Model.id_recorder != id_record)
+            ).first()
+            if existing:
+                return {"error": "A recorder with that name already exists"}
+
+        # Validación de fechas
+        if key in date_fields and isinstance(value, str):
+            try:
+                parsed_date = parser.parse(value)
+                if parsed_date > now:
+                    return {"error": f"{key} cannot be in the future"}
+                value = parsed_date
+            except Exception as e:
+                return {"error": f"Invalid date format for {key}: {str(e)}"}
+
+        setattr(record, key, value)
 
     db.session.commit()
+    return {"message": "Record updated successfully"}
 
-    return {'message': 'Registro actualizado correctamente', "recorder": request_json}
 
 # Delete
 # - Toma el elemento de la base de datos con el id indicado
