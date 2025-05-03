@@ -189,8 +189,10 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                                         className="bg-white text-[#778184]/50 h-8 rounded-md px-2 py-1 text-sm appearance-none"
                                     >
                                         <option value="">{language === "es" ? "Sin asignar" : "Not assigned"}</option>
-                                        {locations.map(loc => (
-                                            <option key={loc.id_location} value={loc.id_location}>{loc.name_location}</option>
+                                        {locations.map(location => (
+                                            <option key={location.id_location} value={location.id_location}>
+                                            {location.name_location.replaceAll("_", " ")}
+                                          </option>
                                         ))}
                                     </select>
                                 ) : field === "id_microphone_recorder" ? (
