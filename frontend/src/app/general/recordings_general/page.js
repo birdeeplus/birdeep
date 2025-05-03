@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../../styles/datepicker-custom.css"; // Ajusta la ruta según dónde pongas el CSS
+import "../../styles/datepicker-custom.css"; 
+import "../../styles/timepicker-custom.css";
 import { es, enUS } from "date-fns/locale";
 import AudioPlayer from "../../../components/AudioPlayer";
 import RecordingDetailsModal from "../../../components/grabaciones/RecordingDetailsModal";
@@ -135,8 +136,6 @@ function RecordingsGeneral() {
   language,
 ]);
 
-
-
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/locations")
       .then((response) => response.json())
@@ -195,6 +194,29 @@ function RecordingsGeneral() {
      },
   };
     
+  // Generar opciones de hora en bloques de 15 minutos
+  const generateTimeOptions = (startHour = 0, startMinute = 0) => {
+    const options = [];
+    for (let h = startHour; h < 24; h++) {
+        for (let m = 0; m < 60; m += 15) {
+            if (h === startHour && m < startMinute) continue;
+            const hh = h.toString().padStart(2, "0");
+            const mm = m.toString().padStart(2, "0");
+            options.push(`${hh}:${mm}`);
+        }
+    }
+    return options;
+};
+
+const allTimeOptions = generateTimeOptions();
+const filteredEndOptions = horaInicio
+    ? generateTimeOptions(
+        parseInt(horaInicio.split(":")[0]),
+        parseInt(horaInicio.split(":")[1])
+    )
+    : allTimeOptions;
+
+
   return (
     <div id="cliente" className="relative bg-[#F8F8F8]  w-full h-screen">
       {/* Navbar */}
@@ -213,26 +235,46 @@ function RecordingsGeneral() {
           {/* Grupo Horas */}
           <div className="flex items-center gap-2 col-span-4">
             {/* Icono con tooltip */}
-            <div className="relative group flex flex-col items-center">
-              <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer" />
-              <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap montserrat">
-              {textContent[language].horas}
-              </div>
+            <div className="relative group flex flex-col items-center w-4 h-4 shrink-0">
+                <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer w-4 h-4"/>
+                <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                    {language === "es" ? "Rango de horas" : "Hour range"}
+                </div>
             </div>
 
-            <input
-              type="time"
-              value={horaInicio}
-              onChange={(e) => setHoraInicio(e.target.value)}
-              className="bg-white rounded px-3 py-1 min-w-[6rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none text-center"
-            />
-            <input
-              type="time"
-              value={horaFin}
-              onChange={(e) => setHoraFin(e.target.value)}
-              className="bg-white rounded px-3 py-1 min-w-[6rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none text-center"
-            />
-          </div>
+            {/* Hora de inicio */}
+            <select
+                value={horaInicio}
+                onChange={(e) => {
+                    setHoraInicio(e.target.value);
+                    if (horaFin && horaFin <= e.target.value) {
+                        setHoraFin("");
+                    }
+                }}
+                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+            >
+                <option value="">{language === "es" ? "Hora inicio" : "Start time"}</option>
+                {allTimeOptions.map((time) => (
+                    <option key={time} value={time}>
+                        {time}
+                    </option>
+                ))}
+            </select>
+
+            {/* Hora de fin */}
+            <select
+                value={horaFin}
+                onChange={(e) => setHoraFin(e.target.value)}
+                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+            >
+                <option value="">{language === "es" ? "Hora fin" : "End time"}</option>
+                {filteredEndOptions.map((time) => (
+                    <option key={time} value={time}>
+                        {time}
+                    </option>
+                ))}
+            </select>
+        </div>
 
           {/* Grupo Fechas */}
           <div className="flex items-center gap-2 col-span-5">

@@ -88,15 +88,26 @@ export default function RecordersGeneral() {
         await fetch(`http://localhost:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
           method: "DELETE",
         });
-        setRecorders(recorders.filter((r) => r.id_recorder !== selectedDeleteRecorder.id_recorder));
+  
+        const updatedRecorders = recorders.filter(
+          (r) => r.id_recorder !== selectedDeleteRecorder.id_recorder
+        );
+  
+        const updatedAllRecorders = allRecorders.filter(
+          (r) => r.id_recorder !== selectedDeleteRecorder.id_recorder
+        );
+  
+        setRecorders(updatedRecorders);
+        setAllRecorders(updatedAllRecorders);
       } catch (error) {
         console.error("Error deleting recorder:", error);
       }
     }
+  
     setIsDeleteModalOpen(false);
     setSelectedDeleteRecorder(null);
   };
-
+  
   return (
     <div className="relative w-full min-h-screen bg-[#F8F8F8]">
       <Navbar toggleLanguage={toggleLanguage} language={language} />

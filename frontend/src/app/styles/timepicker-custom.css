@@ -1,0 +1,14 @@
+select {
+    font-family: 'Montserrat', sans-serif;
+    background-color: white;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    color: #375B38;
+    padding-right: 2rem; /* espacio para la flecha */
+}
+
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #cce1cc;
+}

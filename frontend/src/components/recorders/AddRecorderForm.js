@@ -206,7 +206,10 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
                 >
                   <option value="">{t.select}</option>
                   {locations.map((l) => (
-                    <option key={l.id_location} value={l.id_location}>{l.name_location}</option>
+                    <option key={l.id_location} value={l.id_location}>
+                    {l.name_location.replaceAll("_", " ")}
+                  </option>
+                    
                   ))}
                 </select>
               </div>
