@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../../styles/datepicker-custom.css"; 
+import "../../styles/datepicker-custom.css";
 import "../../styles/timepicker-custom.css";
 import { es, enUS } from "date-fns/locale";
 import AudioPlayer from "../../../components/AudioPlayer";
@@ -43,98 +43,96 @@ function RecordingsGeneral() {
     setLanguage(newLang);
     localStorage.setItem("language", newLang);
   };
-  
+
   const dbHost = process.env.NEXT_PUBLIC_DB_HOST;
 
   useEffect(() => {
-  const fetchData = async () => {
-    setLoading(true);    
-    setErrorMessage("");
-    try {
-      const savedLanguage = localStorage.getItem("language") || "es";
-      setLanguage(savedLanguage);
+    const fetchData = async () => {
+      setLoading(true);
+      setErrorMessage("");
+      try {
+        const savedLanguage = localStorage.getItem("language") || "es";
+        setLanguage(savedLanguage);
 
-      // Validaciones de filtros
-      if (aplicarFiltros) {
-        if((fechaInicio && fechaFin && fechaInicio == fechaFin) && (horaInicio && horaFin && horaInicio > horaFin)){
-          setErrorMessage(
-            language === "es"
-              ? "La hora de inicio no puede ser mayor que la hora de fin."
-              : "Start time cannot be later than end time."
-          );
-          console.log(errorMessage)
-          setLoading(false);
-          return;
+        // Validaciones de filtros
+        if (aplicarFiltros) {
+          if ((fechaInicio && fechaFin && fechaInicio == fechaFin) && (horaInicio && horaFin && horaInicio > horaFin)) {
+            setErrorMessage(
+              language === "es"
+                ? "La hora de inicio no puede ser mayor que la hora de fin."
+                : "Start time cannot be later than end time."
+            );
+            setLoading(false);
+            return;
+          }
+
+          if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+            setErrorMessage(
+              language === "es"
+                ? "La fecha de inicio no puede ser mayor que la fecha de fin."
+                : "Start date cannot be later than end date."
+            );
+            setLoading(false);
+            return;
+          }
         }
-      
-        if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
-          setErrorMessage(
-            language === "es"
-              ? "La fecha de inicio no puede ser mayor que la fecha de fin."
-              : "Start date cannot be later than end date."
-          );
-          console.log(errorMessage)
-          setLoading(false);
-          return;
+
+        const params = new URLSearchParams({
+          page: currentPage,
+          per_page: perPage,
+        });
+
+        if (aplicarFiltros) {
+          if (horaInicio) params.append("hora_inicio", horaInicio);
+          if (horaFin) params.append("hora_fin", horaFin);
+          if (fechaInicio) params.append("fecha_inicio", fechaInicio);
+          if (fechaFin) params.append("fecha_fin", fechaFin);
+          if (selectedLocation) params.append("id_location", selectedLocation);
         }
+
+        if (filename) {
+          params.append("filename", filename);
+        }
+
+        const endpoint = aplicarFiltros
+          ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
+          : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
+
+        const response = await fetch(endpoint);
+
+        if (!response.ok) {
+          throw new Error(`Error en la solicitud: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const results = aplicarFiltros ? data.results : data;
+
+        setRecordings(results);
+        setHasMore(results.length === perPage);
+        if (results.length === 0 && currentPage > 1) {
+          setCurrentPage(1);
+        }
+      } catch (error) {
+        console.error("Error al obtener grabaciones:", error);
+        setRecordings([]);
+        setHasMore(false);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const params = new URLSearchParams({
-        page: currentPage,
-        per_page: perPage,
-      });
-
-      if (aplicarFiltros) {
-        if (horaInicio) params.append("hora_inicio", horaInicio);
-        if (horaFin) params.append("hora_fin", horaFin);
-        if (fechaInicio) params.append("fecha_inicio", fechaInicio);
-        if (fechaFin) params.append("fecha_fin", fechaFin);
-        if (selectedLocation) params.append("id_location", selectedLocation);
-      }
-
-      if (filename) {
-        params.append("filename", filename);
-      }
-
-      const endpoint = aplicarFiltros
-        ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
-        : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
-
-      const response = await fetch(endpoint);
-
-      if (!response.ok) {
-        throw new Error(`Error en la solicitud: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const results = aplicarFiltros ? data.results : data;
-
-      setRecordings(results);
-      setHasMore(results.length === perPage);
-      if (results.length === 0 && currentPage > 1) {
-        setCurrentPage(1);
-      }
-    } catch (error) {
-      console.error("Error al obtener grabaciones:", error);
-      setRecordings([]);
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, [
-  currentPage,
-  aplicarFiltros,
-  horaInicio,
-  horaFin,
-  fechaInicio,
-  fechaFin,
-  selectedLocation,
-  filename,
-  language,
-]);
+    fetchData();
+  }, [
+    currentPage,
+    aplicarFiltros,
+    horaInicio,
+    horaFin,
+    fechaInicio,
+    fechaFin,
+    selectedLocation,
+    filename,
+    language,
+  ]);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/v1/locations")
@@ -176,43 +174,45 @@ function RecordingsGeneral() {
   };
 
   const textContent = {
-    en: { title: "Recordings",
-          botonDelete: "Clear filters",
-          botonAplicar: "Aply filters",
-          fechas: "Date range",
-          horas: "Time range",
-          ubi: "Location",
-          ubiSelect: "Select a location"
-     },
-    es: { title: "Grabaciones",
-          botonDelete: "Borrar filtros",
-          botonAplicar: "Aplicar filtros",
-          fechas: "Rango de fechas",
-          horas: "Rango de horas",
-          ubi: "Ubicación",
-          ubiSelect: "Selecciona una ubicación"
-     },
+    en: {
+      title: "Recordings",
+      botonDelete: "clear filter",
+      botonAplicar: "apply filter",
+      fechas: "Date range",
+      horas: "Time range",
+      ubi: "Location",
+      ubiSelect: "Select a location"
+    },
+    es: {
+      title: "Grabaciones",
+      botonDelete: "reiniciar filtro",
+      botonAplicar: "aplicar filtro",
+      fechas: "Rango de fechas",
+      horas: "Rango de horas",
+      ubi: "Ubicación",
+      ubiSelect: "Selecciona una ubicación"
+    },
   };
-    
+
   // Generar opciones de hora en bloques de 15 minutos
   const generateTimeOptions = (startHour = 0, startMinute = 0) => {
     const options = [];
     for (let h = startHour; h < 24; h++) {
-        for (let m = 0; m < 60; m += 15) {
-            if (h === startHour && m < startMinute) continue;
-            const hh = h.toString().padStart(2, "0");
-            const mm = m.toString().padStart(2, "0");
-            options.push(`${hh}:${mm}`);
-        }
+      for (let m = 0; m < 60; m += 15) {
+        if (h === startHour && m < startMinute) continue;
+        const hh = h.toString().padStart(2, "0");
+        const mm = m.toString().padStart(2, "0");
+        options.push(`${hh}:${mm}`);
+      }
     }
     return options;
-};
+  };
 
-const allTimeOptions = generateTimeOptions();
-const filteredEndOptions = horaInicio
+  const allTimeOptions = generateTimeOptions();
+  const filteredEndOptions = horaInicio
     ? generateTimeOptions(
-        parseInt(horaInicio.split(":")[0]),
-        parseInt(horaInicio.split(":")[1])
+      parseInt(horaInicio.split(":")[0]),
+      parseInt(horaInicio.split(":")[1])
     )
     : allTimeOptions;
 
@@ -236,45 +236,45 @@ const filteredEndOptions = horaInicio
           <div className="flex items-center gap-2 col-span-4">
             {/* Icono con tooltip */}
             <div className="relative group flex flex-col items-center w-4 h-4 shrink-0">
-                <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer w-4 h-4"/>
-                <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
-                    {language === "es" ? "Rango de horas" : "Hour range"}
-                </div>
+              <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer w-4 h-4" />
+              <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
+                {language === "es" ? "Rango de horas" : "Hour range"}
+              </div>
             </div>
 
             {/* Hora de inicio */}
             <select
-                value={horaInicio}
-                onChange={(e) => {
-                    setHoraInicio(e.target.value);
-                    if (horaFin && horaFin <= e.target.value) {
-                        setHoraFin("");
-                    }
-                }}
-                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+              value={horaInicio}
+              onChange={(e) => {
+                setHoraInicio(e.target.value);
+                if (horaFin && horaFin <= e.target.value) {
+                  setHoraFin("");
+                }
+              }}
+              className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             >
-                <option value="">{language === "es" ? "Hora inicio" : "Start time"}</option>
-                {allTimeOptions.map((time) => (
-                    <option key={time} value={time}>
-                        {time}
-                    </option>
-                ))}
+              <option value="">{language === "es" ? "Hora inicio" : "Start time"}</option>
+              {allTimeOptions.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
             </select>
 
             {/* Hora de fin */}
             <select
-                value={horaFin}
-                onChange={(e) => setHoraFin(e.target.value)}
-                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+              value={horaFin}
+              onChange={(e) => setHoraFin(e.target.value)}
+              className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             >
-                <option value="">{language === "es" ? "Hora fin" : "End time"}</option>
-                {filteredEndOptions.map((time) => (
-                    <option key={time} value={time}>
-                        {time}
-                    </option>
-                ))}
+              <option value="">{language === "es" ? "Hora fin" : "End time"}</option>
+              {filteredEndOptions.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
             </select>
-        </div>
+          </div>
 
           {/* Grupo Fechas */}
           <div className="flex items-center gap-2 col-span-5">
@@ -294,14 +294,14 @@ const filteredEndOptions = horaInicio
                 setFechaInicio(formattedDate);
                 if (!fechaFin || fechaFin < formattedDate) {
                   setFechaFin(formattedDate);
-                }            
+                }
               }}
               locale={language === "es" ? es : enUS}
               dateFormat="dd-MM-yyyy"
               placeholderText={language === "es" ? "Fecha inicio" : "Start date"}
               maxDate={new Date()}
               className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
-              />
+            />
 
             {/* Fecha Fin */}
             <DatePicker
@@ -328,28 +328,28 @@ const filteredEndOptions = horaInicio
             </div>
 
             <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="bg-white rounded px-3 py-1 w-full max-w-xs border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              className="bg-white rounded px-3 py-1 w-full max-w-xs border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
             >
-                <option value="">{language === "es" ? "localizaciones" : "locations"}</option>
-                {locations.map((location) => (
-                    <option key={location.id_location} value={location.id_location}>
-                        {location.name_location.replaceAll("_", " ")}
-                    </option>
-                ))}
+              <option value="">{language === "es" ? "localizaciones" : "locations"}</option>
+              {locations.map((location) => (
+                <option key={location.id_location} value={location.id_location}>
+                  {location.name_location.replaceAll("_", " ")}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
 
-        <div className="col-span-12 flex gap-4 mt-3">
+        <div className="col-span-12 flex gap-4 mt-3 mb-10">
           <button
             onClick={() => {
               setCurrentPage(1);
               setAplicarFiltros(true);
             }}
-            className="px-4 py-1 bg-[#375B38] text-white rounded hover:bg-[#2c482d]"
+            className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] bg-white hover:bg-[#375B38] hover:text-white transition"
           >
             {textContent[language].botonAplicar}
           </button>
@@ -364,7 +364,7 @@ const filteredEndOptions = horaInicio
               setCurrentPage(1);
               setAplicarFiltros(false);
             }}
-            className="px-4 py-1 bg-gray-400 text-white rounded hover:bg-gray-500"
+            className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] bg-white hover:bg-[#375B38] hover:text-white transition"
           >
             {textContent[language].botonDelete}
           </button>
@@ -400,7 +400,7 @@ const filteredEndOptions = horaInicio
                 <button onClick={() => {
                   const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
                   togglePlay(`http://${dbHost}:8081${cleanUrl}`);
-                  }}  className="w-7 h-7">
+                }} className="w-7 h-7">
 
                   <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
                 </button>
@@ -419,8 +419,9 @@ const filteredEndOptions = horaInicio
                 <button onClick={() => {
                   const url_transformada = recording.uri.replace("static/datos_audios_bd/audio_data", "proxy-audio")
 
-                  downloadRecording(url_transformada, recording.filename)} 
-                  } className="w-5 h-5">
+                  downloadRecording(url_transformada, recording.filename)
+                }
+                } className="w-5 h-5">
                   <Image src="/iconos/download.png" alt="download" width={18} height={18} />
                 </button>
               </div>
@@ -481,19 +482,19 @@ const filteredEndOptions = horaInicio
         )}
 
 
-{currentAudio && (
-  <div>
-    <AudioPlayer
-      src={currentAudio}
-      filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
-      recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
-      onClose={() => {
-        setCurrentAudio(null);
-        setLastClicked(null);
-      }}
-    />
-  </div>
-)}
+        {currentAudio && (
+          <div>
+            <AudioPlayer
+              src={currentAudio}
+              filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
+              recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
+              onClose={() => {
+                setCurrentAudio(null);
+                setLastClicked(null);
+              }}
+            />
+          </div>
+        )}
 
 
       </div>

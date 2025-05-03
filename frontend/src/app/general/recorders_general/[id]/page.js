@@ -249,12 +249,12 @@ export default function RecorderDetails() {
             setErrorMessage(language === "es" ? "La fecha de inicio no puede ser posterior a la de fin." : "Start date cannot be after end date.");
             return false;
         }
-    
+
         if (fechaFin && new Date(fechaFin) > new Date()) {
             setErrorMessage(language === "es" ? "La fecha de fin no puede ser en el futuro." : "End date cannot be in the future.");
             return false;
         }
-    
+
         if (
             fechaInicio === fechaFin &&
             horaInicio &&
@@ -264,11 +264,11 @@ export default function RecorderDetails() {
             setErrorMessage(language === "es" ? "La hora de inicio no puede ser posterior a la de fin." : "Start time cannot be after end time.");
             return false;
         }
-    
+
         setErrorMessage(""); // Limpiar mensaje si todo está bien
         return true;
     };
-    
+
 
     // Traducciones para los textos
     const textContent = {
@@ -279,8 +279,8 @@ export default function RecorderDetails() {
             startTime: "Start Time",
             endDate: "End Date",
             endTime: "End Time",
-            filterButton: "Apply Filters",
-            clearFilters: "Clear Filters",
+            filterButton: "apply Filters",
+            clearFilters: "clear Filters",
             noRecordings: "No recordings found with the applied filters.",
             previousPage: "Previous",
             nextPage: "Next",
@@ -295,8 +295,8 @@ export default function RecorderDetails() {
             startTime: "Hora Inicio",
             endDate: "Fecha Fin",
             endTime: "Hora Fin",
-            filterButton: "Aplicar filtros",
-            clearFilters: "Borrar filtros",
+            filterButton: "aplicar filtros",
+            clearFilters: "reiniciar filtros",
             noRecordings: "No se encontraron grabaciones con los filtros aplicados.",
             previousPage: "Anterior",
             nextPage: "Siguiente",
@@ -416,15 +416,15 @@ export default function RecorderDetails() {
                 </div>
 
                 {!grabadoraEliminada && (
-                    <div>
+                    <div className="w-full max-w-screen-xl">
                         {/* Filtros */}
-                        <div className="grid grid-cols-12 gap-x-20 gap-y-3 mb-5 text-sm text-[#375B38] Montserrat items-center">
-                            
+                        <div className="grid grid-cols-12 gap-x-20 gap-y-3 mb-6 text-sm text-[#375B38] Montserrat items-center">
+
                             {/* Grupo Horas */}
                             <div className="flex items-center gap-2 col-span-4">
                                 {/* Icono con tooltip */}
                                 <div className="relative group flex flex-col items-center w-4 h-4 shrink-0">
-                                    <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer w-4 h-4"/>
+                                    <Image src="/iconos/info.png" alt="info" width={16} height={16} className="cursor-pointer w-4 h-4" />
                                     <div className="absolute top-full mt-3 bg-white text-black text-xs rounded-lg shadow-md px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">
                                         {language === "es" ? "Rango de horas" : "Hour range"}
                                     </div>
@@ -477,40 +477,40 @@ export default function RecorderDetails() {
 
                                 {/* Fecha Inicio */}
                                 <DatePicker
-                                selected={fechaInicio ? new Date(fechaInicio) : null}
-                                onChange={(date) => {
-                                    // porque la primera vez que se selecciona la fecha pone 1 dia menos
-                                    const formattedDate = date.toLocaleDateString('sv-SE').split("T")[0];
-                                    console.log("Fecha Inicio:", formattedDate);
-                                    setFechaInicio(formattedDate);
-                                    if (!fechaFin || fechaFin < formattedDate) {
-                                    setFechaFin(formattedDate);
-                                    }            
-                                }}
-                                locale={language === "es" ? es : enUS}
-                                dateFormat="dd-MM-yyyy"
-                                placeholderText={language === "es" ? "Fecha inicio" : "Start date"}
-                                maxDate={new Date()}
-                                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+                                    selected={fechaInicio ? new Date(fechaInicio) : null}
+                                    onChange={(date) => {
+                                        // porque la primera vez que se selecciona la fecha pone 1 dia menos
+                                        const formattedDate = date.toLocaleDateString('sv-SE').split("T")[0];
+                                        console.log("Fecha Inicio:", formattedDate);
+                                        setFechaInicio(formattedDate);
+                                        if (!fechaFin || fechaFin < formattedDate) {
+                                            setFechaFin(formattedDate);
+                                        }
+                                    }}
+                                    locale={language === "es" ? es : enUS}
+                                    dateFormat="dd-MM-yyyy"
+                                    placeholderText={language === "es" ? "Fecha inicio" : "Start date"}
+                                    maxDate={new Date()}
+                                    className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
                                 />
 
                                 {/* Fecha Fin */}
                                 <DatePicker
-                                selected={fechaFin ? new Date(fechaFin) : null}
-                                onChange={(date) => setFechaFin(date.toISOString().split("T")[0])}
-                                locale={language === "es" ? es : enUS}
-                                dateFormat="dd-MM-yyyy"
-                                placeholderText={language === "es" ? "Fecha fin" : "End date"}
-                                minDate={fechaInicio ? new Date(fechaInicio) : null}
-                                maxDate={new Date()}
-                                className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
+                                    selected={fechaFin ? new Date(fechaFin) : null}
+                                    onChange={(date) => setFechaFin(date.toISOString().split("T")[0])}
+                                    locale={language === "es" ? es : enUS}
+                                    dateFormat="dd-MM-yyyy"
+                                    placeholderText={language === "es" ? "Fecha fin" : "End date"}
+                                    minDate={fechaInicio ? new Date(fechaInicio) : null}
+                                    maxDate={new Date()}
+                                    className="bg-white rounded px-3 py-1 w-full max-w-[10rem] border-none focus:outline-none focus:ring-0 text-[#375B38] text-sm appearance-none"
                                 />
 
                             </div>
                         </div>
 
                         {/* Buttons for applying/clearing filters */}
-                        <div className="col-span-12 flex gap-4 mt-3 mb-4">
+                        <div className="col-span-12 flex gap-4 mt-3 mb-10">
                             <button
                                 onClick={() => {
                                     if (!validarFiltros()) return;
@@ -518,7 +518,7 @@ export default function RecorderDetails() {
                                     setAplicarFiltros(true);
                                     setSelectedLocation(grabadora.id_location_recorder);
                                 }}
-                                className="px-4 py-1 bg-[#375B38] text-white rounded hover:bg-[#2c482d]"
+                                className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] hover:bg-[#375B38] hover:text-white transition"
                             >
                                 {textContent[language].filterButton}
                             </button>
@@ -533,21 +533,22 @@ export default function RecorderDetails() {
                                     setCurrentPage(1);
                                     setAplicarFiltros(false);
                                 }}
-                                className="px-4 py-1 bg-gray-400 text-white rounded hover:bg-gray-500"
+                                className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] hover:bg-[#375B38] hover:text-white transition"
                             >
                                 {textContent[language].clearFilters}
                             </button>
                         </div>
+
 
                         {errorMessage && (
                             <div className="text-red-500 text-sm mt-2 ml-6">{errorMessage}</div>
                         )}
 
                         {/*
-                        <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
-                            {textContent[language].allRecordings}
-                        </p>
-                        */}
+                            <p className="italic text-sm text-gray-500 mt-2 mb-4 ml-6">
+                                {textContent[language].allRecordings}
+                            </p>
+                            */}
 
                         {/* List of recordings or message if none found */}
                         {filteredRecordings.length === 0 && !loading ? (
@@ -558,18 +559,24 @@ export default function RecorderDetails() {
                             filteredRecordings.map((recording) => (
                                 <div
                                     key={recording.id_record}
-                                    className="rounded-xl flex items-center justify-between mb-1 px-4 py-3 Montserrat transition duration-300 hover:bg-white w-full"
+                                    className="rounded-xl flex items-center justify-between mb-2 px-4 py-3 Montserrat transition duration-300 hover:bg-white w-full"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <button onClick={() => {
-                                            const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
-                                            togglePlay(`http://${dbHost}:8081${cleanUrl}`);
-                                        }} className="w-7 h-7">
-
+                                        <button
+                                            onClick={() => {
+                                                const cleanUrl = recording.uri.substring(recording.uri.indexOf("/datos_audios_bd"));
+                                                togglePlay(`http://${dbHost}:8081${cleanUrl}`);
+                                            }}
+                                            className="w-7 h-7"
+                                        >
                                             <Image src="/iconos/play.png" alt="Play" width={30} height={30} />
                                         </button>
+
                                         <div className="cursor-pointer">
                                             <p className="text-sm font-semibold text-[#375B38]">{recording.filename}</p>
+                                            <p className="text-xs text-gray-500">
+                                                {language === "es" ? "grabadora" : "recorder"} #{recording.id_recorder_recordings}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -577,15 +584,21 @@ export default function RecorderDetails() {
                                         <button onClick={() => setSelectedRecordingId(recording.id_record)} className="w-5 h-5">
                                             <Image src="/iconos/info.png" alt="info" width={18} height={18} />
                                         </button>
-                                        <button onClick={() => {
-                                            const url_transformada = recording.uri.replace("static/datos_audios_bd/audio_data", "proxy-audio")
-                                            downloadRecording(url_transformada, recording.filename)
-                                        }
-                                        } className="w-5 h-5">
+                                        <button
+                                            onClick={() => {
+                                                const url_transformada = recording.uri.replace(
+                                                    "static/datos_audios_bd/audio_data",
+                                                    "proxy-audio"
+                                                );
+                                                downloadRecording(url_transformada, recording.filename);
+                                            }}
+                                            className="w-5 h-5"
+                                        >
                                             <Image src="/iconos/download.png" alt="download" width={18} height={18} />
                                         </button>
                                     </div>
                                 </div>
+
                             ))
                         )}
 

@@ -46,14 +46,14 @@ export default function RecordersGeneral() {
   useEffect(() => {
     const savedLanguage = localStorage.getItem("language") || "es";
     setLanguage(savedLanguage);
-  
+
     const updateAdminStatus = () => {
       const userIsAdmin = localStorage.getItem("is_admin") === "true";
       setIsAdmin(userIsAdmin);
     };
-  
+
     updateAdminStatus(); // Ejecutar al inicio
-  
+
     Promise.all([
       fetch("http://localhost:8080/api/v1/recorders").then((res) => res.json()),
       fetch("http://localhost:8080/api/v1/locations").then((res) => res.json()),
@@ -68,14 +68,14 @@ export default function RecordersGeneral() {
         setProcessors(processorsData);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  
+
     window.addEventListener("authChange", updateAdminStatus);
-  
+
     return () => {
       window.removeEventListener("authChange", updateAdminStatus);
     };
   }, []);
-  
+
 
   const handleDeleteClick = (recorder) => {
     setSelectedDeleteRecorder(recorder);
@@ -88,26 +88,26 @@ export default function RecordersGeneral() {
         await fetch(`http://localhost:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
           method: "DELETE",
         });
-  
+
         const updatedRecorders = recorders.filter(
           (r) => r.id_recorder !== selectedDeleteRecorder.id_recorder
         );
-  
+
         const updatedAllRecorders = allRecorders.filter(
           (r) => r.id_recorder !== selectedDeleteRecorder.id_recorder
         );
-  
+
         setRecorders(updatedRecorders);
         setAllRecorders(updatedAllRecorders);
       } catch (error) {
         console.error("Error deleting recorder:", error);
       }
     }
-  
+
     setIsDeleteModalOpen(false);
     setSelectedDeleteRecorder(null);
   };
-  
+
   return (
     <div className="relative w-full min-h-screen bg-[#F8F8F8]">
       <Navbar toggleLanguage={toggleLanguage} language={language} />
@@ -161,9 +161,9 @@ export default function RecordersGeneral() {
                   setRecorders(filtered);
                 }
               }}
-              className="px-4 py-1 bg-[#375B38] text-white rounded hover:bg-[#2c482d] text-sm"
+              className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] bg-white hover:bg-[#375B38] hover:text-white transition"
             >
-              {language === "es" ? "Aplicar filtro" : "Apply filter"}
+              {language === "es" ? "aplicar filtro" : "apply filter"}
             </button>
 
             <button
@@ -171,15 +171,16 @@ export default function RecordersGeneral() {
                 setSelectedLocation("");
                 setRecorders(allRecorders);
               }}
-              className="px-4 py-1 bg-gray-400 text-white rounded hover:bg-gray-500 text-sm"
+              className="px-4 py-1.5 text-sm rounded-full border-2 border-[#375B38] text-[#375B38] bg-white hover:bg-[#375B38] hover:text-white transition"
             >
-              {language === "es" ? "Quitar filtro" : "Clear filter"}
+              {language === "es" ? "reiniciar filtro" : "clear filter"}
             </button>
+
           </div>
         </div>
 
         <div className="flex flex-col gap-2 mt-6 w-full">
-          
+
           {/*
           <p className="italic text-sm text-gray-500 mb-3">
             {language === "es" ? "todas las grabadoras" : "all recorders"}
