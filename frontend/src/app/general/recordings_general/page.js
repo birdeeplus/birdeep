@@ -158,7 +158,7 @@ function RecordingsGeneral() {
   // console.log("Descargando grabación:", `http://${dbHost}:8081${cleanUrl}`);
   // togglePlay(`http://${dbHost}:8081${cleanUrl}`);
 
-  
+
   const downloadRecording = (audioUrl, filename) => {
     fetch(audioUrl)
       .then((response) => response.blob())
@@ -487,8 +487,16 @@ function RecordingsGeneral() {
           <div>
             <AudioPlayer
               src={currentAudio}
-              filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
-              recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
+              filename={
+                recordings.find((r) =>
+                  currentAudio?.includes(r.filename)
+                )?.filename || "audio.wav"
+              }
+              recorderId={
+                recordings.find((r) =>
+                  currentAudio?.includes(r.filename)
+                )?.id_recorder_recordings || "—"
+              }
               onClose={() => {
                 setCurrentAudio(null);
                 setLastClicked(null);
