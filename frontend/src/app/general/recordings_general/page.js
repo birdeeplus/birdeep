@@ -158,6 +158,7 @@ function RecordingsGeneral() {
   // console.log("Descargando grabación:", `http://${dbHost}:8081${cleanUrl}`);
   // togglePlay(`http://${dbHost}:8081${cleanUrl}`);
 
+  
   const downloadRecording = (audioUrl, filename) => {
     fetch(audioUrl)
       .then((response) => response.blob())
@@ -417,8 +418,8 @@ function RecordingsGeneral() {
                   <Image src="/iconos/info.png" alt="info" width={18} height={18} />
                 </button>
                 <button onClick={() => {
-                  const url_transformada = recording.uri.replace("static/datos_audios_bd/audio_data", "proxy-audio")
 
+                  const url_transformada = recording.uri.replace("static/datos_audios_bd/audio_data", "proxy-audio")
                   downloadRecording(url_transformada, recording.filename)
                 }
                 } className="w-5 h-5">

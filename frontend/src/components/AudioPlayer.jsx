@@ -77,7 +77,16 @@ export default function AudioPlayer({ src, filename = "grabación", recorderId =
           <p className="text-sm font-semibold">{filename}</p>
           <p className="text-xs text-gray-500">grabadora #{recorderId}</p>
         </div>
-        <button onClick={() => downloadRecording(src, filename)} className="w-5 h-5">
+
+        <button onClick={() => {
+          
+          const url_modificada = src.replace("http://10.4.117.10:8081", "http://localhost:8080/static")
+          const url_transformada = url_modificada.replace("static/datos_audios_bd/audio_data", "proxy-audio")
+          downloadRecording(url_transformada, filename)
+        }
+        } className="w-5 h-5">
+        {/* </button><button onClick={() => downloadRecording(src, filename)} className="w-5 h-5"> */}
+
           <Image src="/iconos/download.png" alt="download" width={18} height={18} />
         </button>
       </div>
