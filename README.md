@@ -67,14 +67,15 @@ EXIT;
 python3 -m http.server 8081
 ```
 
-### Ajustar la conexión a la base de datos
+### Ajustar la conexión a la base de datos (crear 2 .env)
 
 ```python
-# This file contains environment variables for the frontend application.
+# Dentro de la carpeta frontend
 NEXT_PUBLIC_DB_HOST=10.4.117.10                         #cambiar por el ip del servidor de la base de datos
 ```
 
 ```python
+# En la raiz del proyecto
 # Base de datos
 DB_USER=birdeep_user
 DB_PASSWORD=clave
