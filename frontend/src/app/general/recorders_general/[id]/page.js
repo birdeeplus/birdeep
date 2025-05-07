@@ -656,8 +656,14 @@ export default function RecorderDetails() {
                 {currentAudio && (
                     <AudioPlayer
                         src={currentAudio}
-                        filename={recordings.find((r) => r.uri === currentAudio)?.filename || "audio.wav"}
-                        recorderId={recordings.find((r) => r.uri === currentAudio)?.id_recorder_recordings || "—"}
+                        filename={recordings.find((r) =>
+                            currentAudio?.includes(r.filename)
+                          )?.filename || "audio.wav"}
+                          
+                          recorderId={recordings.find((r) =>
+                            currentAudio?.includes(r.filename)
+                          )?.id_recorder_recordings || "—"}
+                          
                         onClose={() => {
                             setCurrentAudio(null);
                             setLastClicked(null);
