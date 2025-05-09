@@ -27,7 +27,7 @@ def jwt_token_creation(request, correct_user, correct_password):
     # Check if the provided credentials match the valid ones
     if username == correct_user and password == correct_password:
         # If credentials are valid, generate a JWT token that expires in 2 hours
-        token = create_access_token(identity=username, expires_delta=timedelta(hours=2))
+        token = create_access_token(identity=username, expires_delta=timedelta(hours=24))
         
         # Return the token along with a success message and HTTP status code 200
         return {'token': token, 'message': 'Created JWT Token', 'code': 200}
