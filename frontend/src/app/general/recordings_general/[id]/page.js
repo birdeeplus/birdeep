@@ -26,7 +26,7 @@ export default function RecordingDetails() {
         setLanguage(savedLanguage);
         
         // Fetch recording details
-        fetch(`http://localhost:8080/api/v1/recordings/${id}`)
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recordings/${id}`)
             .then((response) => response.json())
             .then((data) => setRecording(data))
             .catch((error) => console.error("Error fetching recording details:", error));

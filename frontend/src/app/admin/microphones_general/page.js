@@ -61,11 +61,11 @@ export default function MicrophonesTable() {
 
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/v1/microphones")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones`)
             .then((res) => res.json())
             .then(setMicrophones);
 
-        fetch("http://localhost:8080/api/v1/recorders")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders`)
             .then((res) => res.json())
             .then(setRecorders);
     }, []);
@@ -82,7 +82,7 @@ export default function MicrophonesTable() {
 
     const confirmDelete = async () => {
         if (!micToDelete) return;
-        await fetch(`http://localhost:8080/api/v1/microphones/${micToDelete.id_microphone}`, {
+        await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones/${micToDelete.id_microphone}`, {
             method: "DELETE"
         });
         setMicrophones((prev) => prev.filter((m) => m.id_microphone !== micToDelete.id_microphone));
@@ -174,7 +174,7 @@ export default function MicrophonesTable() {
                         handleSubmit={async (e) => {
                             e.preventDefault();
                             const newMic = { ...formData, id_recorder: Number(formData.id_recorder) };
-                            const res = await fetch("http://localhost:8080/api/v1/microphones", {
+                            const res = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(newMic),
@@ -198,7 +198,7 @@ export default function MicrophonesTable() {
                         }
                         handleSubmit={async (e) => {
                             e.preventDefault();
-                            await fetch(`http://localhost:8080/api/v1/microphones/${editFormData.id_microphone}`, {
+                            await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones/${editFormData.id_microphone}`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(editFormData),

@@ -61,11 +61,11 @@ export default function ProcessorsTable() {
 
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/v1/processors")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors`)
             .then((res) => res.json())
             .then(setProcessors);
 
-        fetch("http://localhost:8080/api/v1/recorders")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders`)
             .then((res) => res.json())
             .then(setRecorders);
     }, []);
@@ -82,7 +82,7 @@ export default function ProcessorsTable() {
 
     const confirmDelete = async () => {
         if (!procToDelete) return;
-        await fetch(`http://localhost:8080/api/v1/processors/${procToDelete.id_processor}`, {
+        await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors/${procToDelete.id_processor}`, {
             method: "DELETE"
         });
         setProcessors((prev) => prev.filter((m) => m.id_processor !== procToDelete.id_processor));
@@ -174,7 +174,7 @@ export default function ProcessorsTable() {
                         handleSubmit={async (e) => {
                             e.preventDefault();
                             const newProc = { ...formData, id_recorder: Number(formData.id_recorder) };
-                            const res = await fetch("http://localhost:8080/api/v1/processors", {
+                            const res = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(newProc),
@@ -198,7 +198,7 @@ export default function ProcessorsTable() {
                         }
                         handleSubmit={async (e) => {
                             e.preventDefault();
-                            await fetch(`http://localhost:8080/api/v1/processors/${editFormData.id_processor}`, {
+                            await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors/${editFormData.id_processor}`, {
                                 method: "PUT",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify(editFormData),

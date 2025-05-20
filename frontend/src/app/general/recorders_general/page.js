@@ -55,10 +55,10 @@ export default function RecordersGeneral() {
     updateAdminStatus(); // Ejecutar al inicio
 
     Promise.all([
-      fetch("http://localhost:8080/api/v1/recorders").then((res) => res.json()),
-      fetch("http://localhost:8080/api/v1/locations").then((res) => res.json()),
-      fetch("http://localhost:8080/api/v1/microphones").then((res) => res.json()),
-      fetch("http://localhost:8080/api/v1/processors").then((res) => res.json()),
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders`).then((res) => res.json()),
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations`).then((res) => res.json()),
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones`).then((res) => res.json()),
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors`).then((res) => res.json()),
     ])
       .then(([recordersData, locationsData, microphonesData, processorsData]) => {
         setRecorders(recordersData);
@@ -85,7 +85,7 @@ export default function RecordersGeneral() {
   const handleDeleteConfirm = async () => {
     if (selectedDeleteRecorder) {
       try {
-        await fetch(`http://localhost:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
+        await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
           method: "DELETE",
         });
 

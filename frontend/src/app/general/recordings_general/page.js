@@ -95,8 +95,8 @@ function RecordingsGeneral() {
         }
 
         const endpoint = aplicarFiltros
-          ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
-          : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
+          ? `http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recordings_filtradas?${params.toString()}`
+          : `http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recordings_paginacion?${params.toString()}`;
 
         const response = await fetch(endpoint);
 
@@ -135,7 +135,7 @@ function RecordingsGeneral() {
   ]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/v1/locations")
+    fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations`)
       .then((response) => response.json())
       .then((data) => setLocations(data))
       .catch((error) => console.error("Error fetching locations:", error));

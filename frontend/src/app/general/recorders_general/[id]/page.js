@@ -61,22 +61,22 @@ export default function RecorderDetails() {
     const dbHost = process.env.NEXT_PUBLIC_DB_HOST;
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/v1/locations")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations`)
             .then((response) => response.json())
             .then((data) => setLocations(data))
             .catch((error) => console.error("Error fetching locations:", error));
 
-        fetch("http://localhost:8080/api/v1/recorders")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders`)
             .then((response) => response.json())
             .then((data) => setRecorders(data))
             .catch((error) => console.error("Error fetching recorders:", error));
 
-        fetch("http://localhost:8080/api/v1/microphones")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones`)
             .then((response) => response.json())
             .then((data) => setMicrophones(data))
             .catch((error) => console.error("Error fetching microphones:", error));
 
-        fetch("http://localhost:8080/api/v1/processors")
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors`)
             .then((response) => response.json())
             .then((data) => setProcessors(data))
             .catch((error) => console.error("Error fetching processors:", error));
@@ -145,8 +145,8 @@ export default function RecorderDetails() {
             }
 
             const endpoint = aplicarFiltros
-                ? `http://localhost:8080/api/v1/recordings_filtradas?${params.toString()}`
-                : `http://localhost:8080/api/v1/recordings_paginacion?${params.toString()}`;
+                ? `http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recordings_filtradas?${params.toString()}`
+                : `http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recordings_paginacion?${params.toString()}`;
 
             try {
                 const response = await fetch(endpoint);
@@ -217,7 +217,7 @@ export default function RecorderDetails() {
     const handleDeleteConfirm = async () => {
         if (selectedDeleteRecorder) {
             try {
-                await fetch(`http://localhost:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
+                await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders/${selectedDeleteRecorder.id_recorder}`, {
                     method: "DELETE",
                 });
 

@@ -28,7 +28,7 @@ export default function LocationDetails() {
         setLanguage(savedLanguage);
 
         // Obtener detalles de la ubicación
-        fetch(`http://localhost:8080/api/v1/locations/${id}`)
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 setLocation(data);
@@ -37,7 +37,7 @@ export default function LocationDetails() {
             .catch((error) => console.error("Error fetching location details:", error));
     
         // Obtener grabadoras asociadas
-        fetch(`http://localhost:8080/api/v1/locations/${id}/recorders`)
+        fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations/${id}/recorders`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.message) {
@@ -66,7 +66,7 @@ export default function LocationDetails() {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/locations/${id}`, {
+            const response = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations/${id}`, {
                 method: "DELETE",
             });
 
@@ -94,7 +94,7 @@ export default function LocationDetails() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/locations/${id}`, {
+            const response = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

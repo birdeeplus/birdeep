@@ -55,6 +55,7 @@ export default function Home() {
   return (
     <div className="w-full">
       <Navbar toggleLanguage={toggleLanguage} language={language} />
+      {console.log("ip: ", process.env.NEXT_PUBLIC_BACKEND_IP)}
 
       {/* Sección pantalla completa con carrusel */}
       <section className="relative w-full h-screen overflow-hidden">
