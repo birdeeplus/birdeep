@@ -37,7 +37,7 @@ export default function EditLocationModal({ location, onClose, onSave, language 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch(`http://localhost:8080/api/v1/locations/${formData.id_location}`, {
+    const res = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations/${formData.id_location}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),

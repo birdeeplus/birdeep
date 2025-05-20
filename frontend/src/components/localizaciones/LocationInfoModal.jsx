@@ -9,7 +9,7 @@ export default function LocationInfoModal({ location, onClose, language }) {
   useEffect(() => {
     if (!location?.id_location) return;
 
-    fetch(`http://localhost:8080/api/v1/locations/${location.id_location}/recorders`)
+    fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations/${location.id_location}/recorders`)
       .then((res) => res.json())
       .then((data) => {
         setRecorders(data.message ? [] : data);

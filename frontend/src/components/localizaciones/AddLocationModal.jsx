@@ -48,7 +48,7 @@ export default function AddLocationModal({ setShowForm, onAddLocation, language 
     e.preventDefault();
 
     try {
-      await fetch("http://localhost:8080/api/v1/locations", {
+      await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
