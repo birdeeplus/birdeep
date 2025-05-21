@@ -78,9 +78,9 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
         }
 
         Promise.all([
-            fetch("http://localhost:8080/api/v1/locations").then(res => res.json()),
-            fetch("http://localhost:8080/api/v1/microphones").then(res => res.json()),
-            fetch("http://localhost:8080/api/v1/processors").then(res => res.json())
+            fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations`).then(res => res.json()),
+            fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones`).then(res => res.json()),
+            fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors`).then(res => res.json())
         ])
             .then(([locData, micData, procData]) => {
                 setLocations(locData);
@@ -150,7 +150,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
             return;
         }
         try {
-            await fetch(`http://localhost:8080/api/v1/recorders/${selectedModifyRecorder.id_recorder}`, {
+            await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders/${selectedModifyRecorder.id_recorder}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -162,7 +162,7 @@ export default function EditRecorderForm({ selectedModifyRecorder, setSelectedMo
                 }),
             });
 
-            const refreshedRecorders = await fetch("http://localhost:8080/api/v1/recorders").then(res => res.json());
+            const refreshedRecorders = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders`).then(res => res.json());
             setRecorders(refreshedRecorders);
             setSelectedModifyRecorder(null);
         } catch (error) {

@@ -79,8 +79,8 @@ export default function AudioPlayer({ src, filename = "grabación", recorderId =
         </div>
 
         <button onClick={() => {
-          
-          const url_modificada = src.replace("http://10.4.117.10:8081", "http://localhost:8080/static")
+
+          const url_modificada = src.replace(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8081`, `http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/static`)
           const url_transformada = url_modificada.replace("static/datos_audios_bd/audio_data", "proxy-audio")
           downloadRecording(url_transformada, filename)
         }

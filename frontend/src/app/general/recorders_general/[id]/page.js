@@ -586,10 +586,10 @@ export default function RecorderDetails() {
                                         </button>
                                         <button
                                             onClick={() => {
-                                                const url_transformada = recording.uri.replace(
-                                                    "static/datos_audios_bd/audio_data",
-                                                    "proxy-audio"
-                                                );
+                                                const url_transformada = recording.uri
+                                                    .replace("static/datos_audios_bd/audio_data", "proxy-audio")
+                                                    .replace("localhost", process.env.NEXT_PUBLIC_BACKEND_IP);
+
                                                 downloadRecording(url_transformada, recording.filename);
                                             }}
                                             className="w-5 h-5"

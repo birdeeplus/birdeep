@@ -6,7 +6,7 @@ export default function RecordingDetailsModal({ id, onClose, language }) {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:8080/api/v1/recordings/${id}`)
+    fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recordings/${id}`)
       .then((res) => res.json())
       .then((data) => setRecording(data))
       .catch((err) => console.error("Error fetching recording:", err));

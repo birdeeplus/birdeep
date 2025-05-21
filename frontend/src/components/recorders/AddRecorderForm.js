@@ -64,9 +64,9 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
 
   useEffect(() => {
     Promise.all([
-      fetch("http://localhost:8080/api/v1/locations").then(res => res.json()),
-      fetch("http://localhost:8080/api/v1/microphones").then(res => res.json()),
-      fetch("http://localhost:8080/api/v1/processors").then(res => res.json())
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/locations`).then(res => res.json()),
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/microphones`).then(res => res.json()),
+      fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/processors`).then(res => res.json())
     ])
       .then(([loc, mic, proc]) => {
         setLocations(loc);
@@ -115,7 +115,7 @@ export default function AddRecorderForm({ setIsAdding, setRecorders, recorders, 
       id_processor_recorder: formData.id_processor_recorder || null
     };
 
-    const response = await fetch("http://localhost:8080/api/v1/recorders", {
+    const response = await fetch(`http://${process.env.NEXT_PUBLIC_BACKEND_IP}:8080/api/v1/recorders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dataToSend)
